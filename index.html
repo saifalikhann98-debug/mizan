@@ -210,8 +210,8 @@ const UNLOCK_KEY='mizan:unlocked:v2';
    See docs/backend-setup.md for the ~5-minute setup + the SQL to paste.
    Leave blank to keep running on the local fallback (submissions stay on-device).
 --------------------------------------------------------------------------- */
-const SUPABASE_URL='';        // e.g. 'https://abcdefgh.supabase.co'
-const SUPABASE_ANON_KEY='';   // the project's anon / public key (NOT service_role)
+const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';   // anon / public key — public by design, access enforced by RLS (NOT service_role)
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
 
 // market = list-price ranges harvested from the web (Dubai-wide), Jun 2026. typical ~ common advertised figure.
