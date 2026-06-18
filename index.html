@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mizan — know the fair price</title>
+<script>/* set theme before paint to avoid a flash */(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,7 +14,7 @@
     --faint:#9A9488; --faint-2:#A39D90; --faint-3:#A9A498; --eyebrow:#A0997F;
     --surface:#FFFFFF; --surface-2:#FBFAF5;
     --line:#EAE4D6; --line-2:#E6E1D5; --line-3:#EFEADF; --line-4:#E4DECF; --line-5:#F2EDE3;
-    --teal:#14534D; --teal-deep:#0F423D; --teal-bg:#EAF0EE; --pill-text:#EAF3F0;
+    --teal:#14534D; --teal-deep:#0F423D; --teal-bg:#EAF0EE; --pill-text:#EAF3F0; --on-teal:#F4F0E6;
     --fair:#2F7D54; --fair-bg:#EBF2EC; --success-bg:#E7F1EA;
     --steep:#B5781F; --steep-bg:#F7EFDD;
     --walk:#B5402F; --walk-bg:#F6E7E2;
@@ -27,6 +28,31 @@
     --mono:'Geist Mono',ui-monospace,monospace;
     --ease:cubic-bezier(.2,.8,.2,1);
   }
+  /* ---- Dark theme: set on <html data-theme="dark"> by the no-flash script + toggle ---- */
+  :root[data-theme="dark"]{
+    --ink:#ECE8E0; --ink-2:#CFC9BD; --muted:#A29D92; --muted-2:#A8A398;
+    --faint:#867F72; --faint-2:#8E8779; --faint-3:#7C7669; --eyebrow:#9C9274;
+    --surface:#1C201E; --surface-2:#252A27;
+    --line:#343A36; --line-2:#3B413C; --line-3:#2E332F; --line-4:#363C37; --line-5:#2B302C;
+    --teal:#5BBBA6; --teal-deep:#74CCB8; --teal-bg:#16241F; --pill-text:#0E1A17; --on-teal:#0E1A17;
+    --fair:#5FB985; --fair-bg:#16271D; --success-bg:#16271D;
+    --steep:#D7A24A; --steep-bg:#292214;
+    --walk:#E2705A; --walk-bg:#2C1915;
+    --hatch-a:#3C3D34; --hatch-b:#2F302A; --feed-dot:#7FB39B;
+    --bg:radial-gradient(140% 90% at 50% -10%, #16201E 0%, #121A18 55%, #0D1413 100%);
+  }
+  :root[data-theme="dark"] .nav{background:rgba(18,24,22,.82)}
+  :root[data-theme="dark"] .hero p{color:var(--muted)}
+  :root[data-theme="dark"] .verdict-line{color:#CBC6BB}
+  :root[data-theme="dark"] .verdict-line em{color:var(--faint-2)}
+  :root[data-theme="dark"] .verdict-stat .sub{color:var(--faint-2)}
+  :root[data-theme="dark"] .result-head .rin{color:var(--faint)}
+  :root[data-theme="dark"] .scale .baseline{background:var(--line-2)}
+  :root[data-theme="dark"] .scale .band.locked{background:repeating-linear-gradient(45deg,#33352E,#33352E 5px,#2A2C26 5px,#2A2C26 10px);color:var(--faint-2)}
+  :root[data-theme="dark"] .modal-input,
+  :root[data-theme="dark"] .note-input{background:var(--surface)}
+  :root[data-theme="dark"] .btn-ghost{background:var(--surface-2);border-color:var(--line-2)}
+  :root[data-theme="dark"] .toast{background:#0C100F;color:#ECE8E0}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background:var(--bg);min-height:100vh;color:var(--ink);
@@ -49,6 +75,14 @@
   .brand .ar{font-size:19px;color:var(--teal);opacity:.7;margin-left:2px}
   .nav-right{display:flex;align-items:center;gap:24px}
   .nav-meta{font-size:13px;color:var(--muted-2)}
+  .theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+    border:1px solid var(--line-2);border-radius:10px;background:var(--surface-2);color:var(--ink);cursor:pointer;flex-shrink:0;transition:border-color .15s}
+  .theme-toggle:hover{border-color:var(--teal)}
+  .theme-toggle:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(20,83,77,.2)}
+  .theme-toggle svg{width:18px;height:18px;display:block}
+  .theme-toggle .icon-sun{display:none}
+  :root[data-theme="dark"] .theme-toggle .icon-sun{display:block}
+  :root[data-theme="dark"] .theme-toggle .icon-moon{display:none}
   .btn-ghost{font-size:13.5px;font-weight:600;color:var(--teal);background:#fff;
     border:1px solid #DBD4C4;border-radius:10px;padding:9px 15px;cursor:pointer;transition:background .15s}
   .btn-ghost:hover{background:var(--surface-2)}
@@ -177,7 +211,7 @@
   .meta-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;flex-wrap:wrap}
   .meta{display:flex;align-items:center;gap:8px;color:var(--faint-2);font-size:11.5px}
   .meta .dot{width:6px;height:6px;border-radius:50%;background:var(--feed-dot);flex-shrink:0}
-  .btn-primary{font-size:13.5px;font-weight:600;color:#F4F0E6;background:var(--teal);border:none;
+  .btn-primary{font-size:13.5px;font-weight:600;color:var(--on-teal);background:var(--teal);border:none;
     border-radius:11px;padding:11px 18px;cursor:pointer;box-shadow:var(--shadow-btn);transition:background .15s}
   .btn-primary:hover{background:var(--teal-deep)}
   .btn-primary:focus-visible{box-shadow:var(--shadow-btn),0 0 0 3px rgba(20,83,77,.3)}
@@ -217,7 +251,7 @@
     font-family:inherit;font-size:14px;color:var(--ink);background:#fff;margin-bottom:18px;outline:none}
   .note-input:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,83,77,.15)}
   .btn-submit{width:100%;height:54px;border:none;border-radius:13px;font-family:inherit;font-size:15px;
-    font-weight:600;cursor:pointer;color:#F4F0E6;background:var(--teal);transition:background .2s ease}
+    font-weight:600;cursor:pointer;color:var(--on-teal);background:var(--teal);transition:background .2s ease}
   .btn-submit:hover:not(:disabled){background:var(--teal-deep)}
   .btn-submit:disabled{background:#C8C2B4;cursor:not-allowed}
   .btn-submit:focus-visible{box-shadow:0 0 0 3px rgba(20,83,77,.3)}
@@ -267,6 +301,10 @@
     </div>
     <div class="nav-right">
       <span class="nav-meta">Crowdsourced fair prices · UAE</span>
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M2 12h2.5M19.5 12H22M4.5 19.5l1.8-1.8M17.7 6.3l1.8-1.8"/></svg>
+      </button>
     </div>
   </div>
 </header>
@@ -297,8 +335,8 @@
         <span class="unit" id="quoteUnit"></span>
       </div>
       <div class="howto">
-        <div class="hrow"><span class="dot" style="background:#C9C3B4"></span><p><strong>Market estimate</strong> — list prices harvested from the web. What companies advertise.</p></div>
-        <div class="hrow"><span class="dot" style="background:#14534D"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report.</p></div>
+        <div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>Market estimate</strong> — list prices harvested from the web. What companies advertise.</p></div>
+        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report.</p></div>
       </div>
     </section>
 
@@ -306,8 +344,8 @@
 
     <!-- mobile-only: the "how it works" explainer moves below the result so the verdict is in the first view -->
     <div class="howto howto-m">
-      <div class="hrow"><span class="dot" style="background:#C9C3B4"></span><p><strong>Market estimate</strong> — list prices harvested from the web. What companies advertise.</p></div>
-      <div class="hrow"><span class="dot" style="background:#14534D"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report.</p></div>
+      <div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>Market estimate</strong> — list prices harvested from the web. What companies advertise.</p></div>
+      <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report.</p></div>
     </div>
   </div>
 
@@ -893,6 +931,9 @@ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show')
   $('area').addEventListener('change',render);
   makeCombobox($('category'),{placeholder:'Search services…',labelledBy:'lbl-cat'});
   makeCombobox($('area'),{placeholder:'Search areas…',labelledBy:'lbl-area'});
+  const tt=$('themeToggle');
+  if(tt) tt.onclick=()=>{ const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next); try{localStorage.setItem('mizan:theme',next)}catch(e){} };
   $('quoted').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/[^0-9.]/g,''); render(); });
   $('modal').addEventListener('click',e=>{ if(e.target===$('modal'))closeModal(); });
   $('modalSubmit').onclick=submitModal;

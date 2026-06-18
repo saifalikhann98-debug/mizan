@@ -60,6 +60,9 @@ CSS custom properties in `:root` — no framework/build).
   stacks at ≤760px (nav tagline hides, form divider flips to bottom). Hero/padding via `clamp()`.
 - Result recomputes live on every input change (no submit step). Verdict tiers:
   Fair / Steep / Walk away / Going rate (round to nearest 5; see index.html `render()`).
+- **Dual theme:** light + dark via CSS-var tokens under `:root` / `:root[data-theme="dark"]`. A no-flash
+  `<head>` script sets `data-theme` from saved choice → system preference; nav toggle persists to localStorage.
+  Light bg = the "mist" radial gradient; dark = a warm-dark green-grey gradient. Brand teal brightens in dark.
 - Respect `prefers-reduced-motion`. Visible `:focus-visible` states. Modal: focus-trap + Esc + backdrop close.
 - One bold element (the verdict word); keep everything else quiet. Verdict meaning never by colour
   alone — the word + stat carry it.
