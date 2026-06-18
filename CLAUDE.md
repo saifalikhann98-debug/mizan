@@ -45,12 +45,22 @@ This is the growth engine: people came to take a number, so ask for one back at 
 - No dark patterns beyond the single contribute-to-unlock gate.
 
 ## Design tokens / conventions
-- Fonts: Fraunces (display), Hanken Grotesk (body/UI), Spline Sans Mono (numbers/prices).
-- Palette (CSS vars in `:root`): `--pine #15302A` (brand), `--fair #2F7A57` (paid/green),
-  `--steep #B0791F` (amber), `--over #BC4632` (red), `--market #A99C86` (estimate/tan),
-  `--info #3A6B8A`, paper `#F6F4EF`.
-- Mobile-first, max-width 540px. Respect `prefers-reduced-motion`. Visible focus states.
-- One bold element (the verdict bar); keep everything else quiet.
+Redesigned Jun 2026 to the `design_handoff_mizan` system (single self-contained `index.html`,
+CSS custom properties in `:root` — no framework/build).
+- Fonts: Newsreader (serif display: hero, verdict word, section/modal headings),
+  Geist (body/UI), Geist Mono (all prices, AED prefixes, scale labels).
+- Palette: `--teal #14534D` (brand, paid band, primary buttons), verdict tones
+  `--fair #2F7D54` / `--steep #B5781F` / `--walk #B5402F` (each with a tint bg),
+  surfaces `#FFFFFF` / `#FBFAF5`, ink `#1C1A15`, hairlines `#EAE4D6`–`#F2EDE3`,
+  hatch `#DAD4C5`/`#E5E0D3` (market band). Page bg = the "mist" radial gradient (one theme constant).
+- Radii: cards 22px · verdict 18px · breakdown/inputs 14–16px · buttons 11–13px · pills 7–20px.
+- Layout: max-width 1140px; single-card two-pane workspace (form left ≤430px, result right);
+  stacks at ≤760px (nav tagline hides, form divider flips to bottom). Hero/padding via `clamp()`.
+- Result recomputes live on every input change (no submit step). Verdict tiers:
+  Fair / Steep / Walk away / Going rate (round to nearest 5; see index.html `render()`).
+- Respect `prefers-reduced-motion`. Visible `:focus-visible` states. Modal: focus-trap + Esc + backdrop close.
+- One bold element (the verdict word); keep everything else quiet. Verdict meaning never by colour
+  alone — the word + stat carry it.
 
 ## Prioritized backlog
 **First real task — make it persist for real (required before launch):**
