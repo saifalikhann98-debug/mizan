@@ -93,6 +93,7 @@
   .howto .dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px}
   .howto p{margin:0;font-size:12.5px;line-height:1.5;color:var(--muted-2)}
   .howto strong{color:var(--ink-2);font-weight:600}
+  .howto-m{display:none}   /* mobile-only copy; shown below the result at <=760px */
 
   /* result */
   .result-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:20px}
@@ -216,7 +217,17 @@
   /* responsive */
   @media (max-width:760px){
     .nav-meta{display:none}
-    .form-col{border-right:none;border-bottom:1px solid var(--line-3);max-width:none}
+    main{padding:24px clamp(16px,5vw,30px) 56px}
+    .hero{margin-bottom:22px}
+    .eyebrow{margin-bottom:10px}
+    .hero h1{font-size:clamp(30px,8.2vw,40px);margin-bottom:10px}
+    .hero p{font-size:15px;line-height:1.5}
+    .form-col{border-right:none;border-bottom:1px solid var(--line-3);max-width:none;padding:22px}
+    .form-col .flabel{margin-bottom:8px}
+    .form-col .select-wrap{margin-bottom:16px}
+    .form-col .howto{display:none}      /* moved below the result on mobile (see .howto-m) */
+    .result-col{padding:22px}
+    .howto-m{display:flex;flex-basis:100%;margin:0;padding:22px;border-top:1px solid var(--line-3)}
   }
   @media (prefers-reduced-motion:reduce){
     *{transition:none!important;animation:none!important}
@@ -271,6 +282,12 @@
     </section>
 
     <section class="result-col" id="result"><div class="loading">Loading prices…</div></section>
+
+    <!-- mobile-only: the "how it works" explainer moves below the result so the verdict is in the first view -->
+    <div class="howto howto-m">
+      <div class="hrow"><span class="dot" style="background:#C9C3B4"></span><p><strong>Market estimate</strong> — list prices harvested from the web. What companies advertise.</p></div>
+      <div class="hrow"><span class="dot" style="background:#14534D"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report.</p></div>
+    </div>
   </div>
 
   <section class="feed" id="feed"></section>
