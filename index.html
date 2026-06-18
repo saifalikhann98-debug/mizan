@@ -503,8 +503,10 @@ function render(){
 
   $('quoteUnit').textContent=cat.unit||'';
 
-  // market (real list data)
-  const mLow=round5(cat.lo), mHigh=round5(cat.hi), mTyp=round5(cat.typical);
+  // market estimate, area-adjusted: Dubai-wide list prices × the area cost factor.
+  // A labelled ESTIMATE (the underlying harvest isn't measured per-area); real paid data stays per-area as reported.
+  const mult=PREMIUM[area]||1;
+  const mLow=round5(cat.lo*mult), mHigh=round5(cat.hi*mult), mTyp=round5(cat.typical*mult);
   // paid (real percentiles — only when revealed)
   let pLow=null,pHigh=null,pMid=null;
   if(paidVisible){ pLow=round5(s.p25); pHigh=round5(s.p75); pMid=round5(s.p50); }

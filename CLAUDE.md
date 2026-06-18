@@ -20,8 +20,10 @@ The whole product is trust + presentation.
   and submissions won't persist — see "First real task" below.
 
 ## The data model — TWO LAYERS (this is the core idea, don't break it)
-1. **Market estimate** (dashed tan band) = REAL list prices harvested from the web, Jun 2026.
-   Dubai-wide, not area-specific, NOT verified. These are what companies *advertise*.
+1. **Market estimate** (hatched band) = REAL list prices harvested from the web, Jun 2026.
+   The harvest is Dubai-wide & NOT verified — these are what companies *advertise*. The UI then
+   **displays it area-adjusted** (list × the area cost factor in `PREMIUM`) as a clearly-labelled
+   ESTIMATE, so the area selector moves the band; real paid data stays per-area as reported.
    Source of truth: `data/market-prices.json` (and the `CATEGORIES` array in index.html).
 2. **Paid** (solid green band) = what real people report paying. Currently **SYNTHETIC seed
    data** generated in `buildSeed()`, clustered just below list prices to mimic reality.
