@@ -203,6 +203,17 @@
 const STORE_KEY='mizan:submissions:v2';
 const UNLOCK_KEY='mizan:unlocked:v2';
 
+/* ---- Backend config (step 3c) --------------------------------------------
+   Fill these to turn on REAL cross-user persistence via Supabase. Both are
+   PUBLIC values, safe to ship in a static file — access is enforced by Row
+   Level Security in the DB (anon may INSERT + SELECT, never UPDATE/DELETE).
+   See docs/backend-setup.md for the ~5-minute setup + the SQL to paste.
+   Leave blank to keep running on the local fallback (submissions stay on-device).
+--------------------------------------------------------------------------- */
+const SUPABASE_URL='';        // e.g. 'https://abcdefgh.supabase.co'
+const SUPABASE_ANON_KEY='';   // the project's anon / public key (NOT service_role)
+const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
+
 // market = list-price ranges harvested from the web (Dubai-wide), Jun 2026. typical ~ common advertised figure.
 const CATEGORIES=[
   {id:'ac',      label:'AC service / cleaning (split unit)', lo:150, hi:350, typical:250},
@@ -260,6 +271,24 @@ let SUBMISSIONS=[],DATA=SEED.slice(),UNLOCKED=false;
 --------------------------------------------------------------------------- */
 const inArtifact = typeof window!=='undefined' && !!window.storage;
 const adapters={
+  // Real cross-user backend (Supabase REST). On only when configured (3c) — see docs/backend-setup.md.
+  supabase: SUPABASE_READY ? {
+    name:'supabase',
+    url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
+    headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
+    async list(){
+      const r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      if(!r.ok) throw new Error('Supabase list failed: '+r.status);
+      const rows=await r.json();
+      if(rows.length>=5000) console.warn('Mizan: read cap (5000) hit — older prices not loaded; move to server-side filtering (P4).');
+      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''})); // DB cols → app shape
+    },
+    async add(sub){ // created_at defaults to now() in the DB; id is generated
+      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},
+        body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null})});
+      if(!r.ok) throw new Error('Supabase add failed: '+r.status);
+    },
+  } : null,
   // Claude.ai artifact runtime (shared key/value scope)
   artifact: inArtifact ? {
     name:'artifact',
@@ -273,7 +302,7 @@ const adapters={
     async add(sub){const all=await this.list();all.push(sub);try{localStorage.setItem(STORE_KEY,JSON.stringify(all))}catch(e){}},
   },
 };
-const shared = adapters.artifact || adapters.local;
+const shared = adapters.supabase || adapters.artifact || adapters.local;
 
 const store={
   get adapter(){return shared.name},
