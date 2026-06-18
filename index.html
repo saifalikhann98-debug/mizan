@@ -327,16 +327,26 @@ async function loadState(){
 
 const RECENT_MS=12*30*24*3600*1000;
 function pct(arr,q){if(!arr.length)return null;const s=[...arr].sort((a,b)=>a-b);const i=(s.length-1)*q;const lo=Math.floor(i),hi=Math.ceil(i);return s[lo]+(s[hi]-s[lo])*(i-lo)}
+// IQR (Tukey) fence: drop gross outliers so one pumped or fat-fingered price (e.g. 28000
+// for 280) can't distort a bucket's range. Needs >=4 points to mean anything; else keep all.
+function iqrKeep(prices){
+  if(prices.length<4)return{kept:prices,trimmed:0};
+  const q1=pct(prices,.25),q3=pct(prices,.75),iqr=q3-q1,lo=q1-1.5*iqr,hi=q3+1.5*iqr;
+  const kept=prices.filter(p=>p>=lo&&p<=hi);
+  return kept.length?{kept,trimmed:prices.length-kept.length}:{kept:prices,trimmed:0};
+}
 function aed(n){return Math.round(n).toLocaleString('en-US')}
 function relTime(t){const d=(Date.now()-t)/(864e5);if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
 
 function paidStats(catId,area){
   const all=DATA.filter(d=>d.c===catId&&d.a===area);
   const fresh=all.filter(d=>Date.now()-d.t<=RECENT_MS);
-  const use=fresh.length>=3?fresh:all, prices=use.map(d=>d.p);
-  if(!prices.length)return{count:0,freshCount:fresh.length};
-  return{count:prices.length,freshCount:fresh.length,min:Math.min(...prices),max:Math.max(...prices),
-    p25:pct(prices,.25),p50:pct(prices,.5),p75:pct(prices,.75),lastSeen:Math.max(...use.map(d=>d.t))};
+  const use=fresh.length>=3?fresh:all, rawPrices=use.map(d=>d.p);
+  if(!rawPrices.length)return{count:0,freshCount:fresh.length};
+  const {kept,trimmed}=iqrKeep(rawPrices);                       // range/percentiles use the de-spiked set
+  return{count:rawPrices.length,freshCount:fresh.length,trimmed, // count stays RAW so the >=5 flip is unchanged
+    min:Math.min(...kept),max:Math.max(...kept),
+    p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
 }
 
 const $=id=>document.getElementById(id);
