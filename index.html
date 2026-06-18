@@ -66,7 +66,7 @@
 
   /* workspace */
   .workspace{display:flex;flex-wrap:wrap;align-items:stretch;background:var(--surface);
-    border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow-card)}
+    border:1px solid var(--line);border-radius:22px;overflow:visible;box-shadow:var(--shadow-card)}
   .form-col{flex:1 1 360px;max-width:430px;min-width:0;padding:30px;border-right:1px solid var(--line-3)}
   .result-col{flex:1.45 1 460px;padding:30px 32px;min-width:0}
   .flabel{display:block;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
@@ -80,6 +80,27 @@
   .select-wrap select:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,83,77,.15)}
   .select-wrap .chev{position:absolute;right:16px;top:50%;transform:translateY(-50%);
     pointer-events:none;width:16px;height:16px}
+  /* custom searchable dropdown (combobox) over the hidden native <select> */
+  .combo{position:relative}
+  .combo-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;height:56px;
+    padding:0 14px 0 16px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface-2);
+    font-family:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;text-align:left}
+  .combo-trigger:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,83,77,.15)}
+  .combo-trigger .combo-val{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .combo-trigger .combo-chev{width:16px;height:16px;flex-shrink:0;transition:transform .15s}
+  .combo-trigger[aria-expanded="true"] .combo-chev{transform:rotate(180deg)}
+  .combo-panel{position:absolute;z-index:40;top:calc(100% + 6px);left:0;right:0;background:var(--surface);
+    border:1px solid var(--line-2);border-radius:14px;box-shadow:0 14px 34px -12px rgba(40,34,20,.3);
+    overflow:hidden;animation:mz-pop .16s var(--ease) both}
+  .combo-search{display:block;width:100%;border:none;border-bottom:1px solid var(--line-3);outline:none;
+    padding:13px 16px;font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface)}
+  .combo-list{list-style:none;margin:0;padding:6px;max-height:280px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .combo-group{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:10px 10px 4px}
+  .combo-opt{padding:9px 10px;border-radius:9px;font-size:14.5px;color:var(--ink);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .combo-opt.active{background:var(--surface-2)}
+  .combo-opt.sel{color:var(--teal);font-weight:600}
+  .combo-opt.sel.active{background:var(--teal-bg)}
+  .combo-empty{padding:14px 12px;font-size:13.5px;color:var(--faint-2);text-align:center}
   .quote-input{display:flex;align-items:center;gap:8px;background:var(--surface-2);
     border:1px solid var(--line-2);border-radius:14px;padding:0 16px;height:56px}
   .quote-input:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,83,77,.15)}
@@ -259,12 +280,12 @@
 
   <div class="workspace">
     <section class="form-col">
-      <label class="flabel" for="category">What are you paying for?</label>
+      <label class="flabel" id="lbl-cat" for="category">What are you paying for?</label>
       <div class="select-wrap">
         <select id="category" aria-label="Service"></select>
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      <label class="flabel" for="area">In which area?</label>
+      <label class="flabel" id="lbl-area" for="area">In which area?</label>
       <div class="select-wrap">
         <select id="area" aria-label="Area"></select>
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -568,6 +589,80 @@ function fillSelects(){
   $('area').value='Al Qusais';
 }
 
+// Custom searchable dropdown over a native <select>. The select stays in the DOM (hidden) as the
+// value/source of truth, so render() + the change wiring are unchanged — this just adds a styled,
+// type-to-filter UI that mirrors the select's <optgroup>/<option> structure. If JS fails to run,
+// the native select stays visible (graceful fallback).
+function makeCombobox(select, opts){
+  opts=opts||{};
+  const wrap=select.closest('.select-wrap')||select.parentElement;
+  select.style.display='none';
+  const oldChev=wrap.querySelector('.chev'); if(oldChev) oldChev.style.display='none';
+  const combo=document.createElement('div'); combo.className='combo';
+  const trigger=document.createElement('button'); trigger.type='button'; trigger.className='combo-trigger';
+  trigger.setAttribute('aria-haspopup','listbox'); trigger.setAttribute('aria-expanded','false');
+  if(opts.labelledBy) trigger.setAttribute('aria-labelledby',opts.labelledBy);
+  else if(opts.ariaLabel) trigger.setAttribute('aria-label',opts.ariaLabel);
+  trigger.innerHTML='<span class="combo-val"></span><svg class="combo-chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  const panel=document.createElement('div'); panel.className='combo-panel'; panel.hidden=true; panel.id=select.id+'-panel';
+  trigger.setAttribute('aria-controls',panel.id);
+  const search=document.createElement('input'); search.type='text'; search.className='combo-search';
+  search.placeholder=opts.placeholder||'Search…'; search.setAttribute('aria-label',opts.placeholder||'Search'); search.autocomplete='off'; search.spellcheck=false;
+  const listEl=document.createElement('ul'); listEl.className='combo-list'; listEl.setAttribute('role','listbox');
+  panel.appendChild(search); panel.appendChild(listEl);
+  combo.appendChild(trigger); combo.appendChild(panel);
+  wrap.appendChild(combo);
+
+  let flat=[], active=-1;
+  function model(){
+    const gs=[...select.querySelectorAll('optgroup')];
+    return gs.length ? gs.map(g=>({label:g.label, opts:[...g.querySelectorAll('option')]}))
+                     : [{label:'', opts:[...select.options]}];
+  }
+  function labelOf(){ const o=[...select.options].find(o=>o.value===select.value); return o?o.text:''; }
+  function syncTrigger(){ trigger.querySelector('.combo-val').textContent=labelOf(); }
+  function build(filter){
+    filter=(filter||'').trim().toLowerCase(); listEl.innerHTML=''; flat=[];
+    model().forEach(g=>{
+      const matches=g.opts.filter(o=>o.text.toLowerCase().includes(filter));
+      if(!matches.length) return;
+      if(g.label){const h=document.createElement('li');h.className='combo-group';h.textContent=g.label;h.setAttribute('role','presentation');listEl.appendChild(h);}
+      matches.forEach(o=>{
+        const li=document.createElement('li');li.className='combo-opt';li.setAttribute('role','option');li.dataset.value=o.value;
+        li.id=select.id+'-opt-'+flat.length;li.textContent=o.text;
+        if(o.value===select.value){li.setAttribute('aria-selected','true');li.classList.add('sel');}
+        listEl.appendChild(li);flat.push(li);
+      });
+    });
+    if(!flat.length){const li=document.createElement('li');li.className='combo-empty';li.textContent='No matches';listEl.appendChild(li);}
+    active=flat.findIndex(li=>li.dataset.value===select.value); if(active<0&&flat.length)active=0;
+    paint();
+  }
+  function paint(){
+    flat.forEach((li,i)=>li.classList.toggle('active',i===active));
+    if(active>=0&&flat[active]){listEl.setAttribute('aria-activedescendant',flat[active].id);flat[active].scrollIntoView({block:'nearest'});}
+    else listEl.removeAttribute('aria-activedescendant');
+  }
+  function open(){ if(!panel.hidden)return; panel.hidden=false; trigger.setAttribute('aria-expanded','true'); search.value=''; build(''); setTimeout(()=>search.focus(),0); document.addEventListener('mousedown',onDown,true); }
+  function close(){ if(panel.hidden)return; panel.hidden=true; trigger.setAttribute('aria-expanded','false'); document.removeEventListener('mousedown',onDown,true); }
+  function onDown(e){ if(!combo.contains(e.target)) close(); }
+  function choose(li){ if(!li||li.dataset.value==null)return; if(select.value!==li.dataset.value){select.value=li.dataset.value;select.dispatchEvent(new Event('change',{bubbles:true}));} syncTrigger(); close(); trigger.focus(); }
+  trigger.addEventListener('click',()=>panel.hidden?open():close());
+  trigger.addEventListener('keydown',e=>{ if(e.key==='ArrowDown'||e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
+  search.addEventListener('input',()=>build(search.value));
+  search.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'){e.preventDefault();if(flat.length){active=Math.min(flat.length-1,active+1);paint();}}
+    else if(e.key==='ArrowUp'){e.preventDefault();if(flat.length){active=Math.max(0,active-1);paint();}}
+    else if(e.key==='Enter'){e.preventDefault();choose(flat[active]);}
+    else if(e.key==='Escape'){e.preventDefault();close();trigger.focus();}
+    else if(e.key==='Tab'){close();}
+  });
+  listEl.addEventListener('mousedown',e=>{const li=e.target.closest('.combo-opt');if(li){e.preventDefault();choose(li);}});
+  listEl.addEventListener('mousemove',e=>{const li=e.target.closest('.combo-opt');if(li){const i=flat.indexOf(li);if(i>=0&&i!==active){active=i;paint();}}});
+  select.addEventListener('change',syncTrigger);
+  syncTrigger();
+}
+
 const TONES={
   fair:{c:'var(--fair)', bg:'var(--fair-bg)'},
   steep:{c:'var(--steep)', bg:'var(--steep-bg)'},
@@ -796,6 +891,8 @@ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show')
   await loadState();
   $('category').addEventListener('change',render);
   $('area').addEventListener('change',render);
+  makeCombobox($('category'),{placeholder:'Search services…',labelledBy:'lbl-cat'});
+  makeCombobox($('area'),{placeholder:'Search areas…',labelledBy:'lbl-area'});
   $('quoted').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/[^0-9.]/g,''); render(); });
   $('modal').addEventListener('click',e=>{ if(e.target===$('modal'))closeModal(); });
   $('modalSubmit').onclick=submitModal;
