@@ -65,6 +65,12 @@
   .range-readout .cap{font-size:12px;color:var(--ink-soft);padding-bottom:4px;margin-left:2px}
   .src-line{font-size:12px;color:var(--ink-soft);margin-top:3px}
   .src-line b{font-weight:600;color:var(--ink)}
+  .conf{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.01em;
+    color:var(--ink-soft);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 9px;white-space:nowrap;flex-shrink:0}
+  .conf .dot{width:7px;height:7px;border-radius:50%;background:var(--market);flex-shrink:0}
+  .conf.high .dot{background:var(--fair)}
+  .conf.med .dot{background:var(--steep)}
+  .conf.low .dot{background:var(--ink-soft)}
 
   .bar-wrap{margin:24px 0 6px;padding-top:26px;position:relative}
   .bar{position:relative;height:12px;background:var(--line);border-radius:7px;overflow:visible}
@@ -379,6 +385,13 @@ function verdictMarket(price,cat){
   return{k:'over', t:'Above the advertised range', d:'Higher than the usual list prices. Ask exactly what\u2019s included, or get another quote.'};
 }
 
+// Confidence in a paid range: more recent prices + freshness = higher confidence.
+function confidenceOf(s){
+  const n=s.freshCount||0, ageMonths=(Date.now()-(s.lastSeen||0))/(30*864e5);
+  let level = n>=12?'high' : n>=6?'med' : 'low';
+  if(ageMonths>6 && level!=='low') level = level==='high'?'med':'low';   // stale data downgrades a notch
+  return {level, label: level==='high'?'High confidence' : level==='med'?'Building confidence' : 'Early data'};
+}
 function render(){
   const catId=$('category').value, area=$('area').value, cat=catById(catId);
   const quoted=parseFloat($('quoted').value);
@@ -395,10 +408,13 @@ function render(){
   const pad=(dMax-dMin)*0.08||10, A=dMin-pad, B=dMax+pad, span=B-A||1;
   const pos=v=>((v-A)/span)*100;
 
-  let headLo,headHi,headCap,srcHTML,medianPos,medianLabel,medianEst;
+  let headLo,headHi,headCap,srcHTML,medianPos,medianLabel,medianEst,confChip='';
   if(paidVisible){
     headLo=s.p25; headHi=s.p75; headCap='what most pay';
-    srcHTML=`<span class="src-line"><b>${s.freshCount}</b> real prices paid here · last ${relTime(s.lastSeen)}</span>`;
+    const conf=confidenceOf(s);
+    confChip=`<span class="conf ${conf.level}"><span class="dot"></span>${conf.label}</span>`;
+    const trimNote=s.trimmed>0?` · ${s.trimmed} outlier${s.trimmed>1?'s':''} set aside`:'';
+    srcHTML=`<span class="src-line"><b>${s.freshCount}</b> real prices paid here · last ${relTime(s.lastSeen)}${trimNote}</span>`;
     medianPos=pos(s.p50); medianLabel='median paid'; medianEst=false;
   }else{
     headLo=cat.lo; headHi=cat.hi; headCap='usual list price';
@@ -445,7 +461,7 @@ function render(){
   const endHi=paidVisible?Math.max(cat.hi,s.max):cat.hi;
 
   box.innerHTML=`<div class="card verdict" id="vcard">
-    <div class="vhead"><span class="vtitle">${area}</span></div>
+    <div class="vhead"><span class="vtitle">${area}</span>${confChip}</div>
     <div class="range-readout">
       <span class="big">${aed(headLo)}</span><span class="dash">–</span><span class="big">${aed(headHi)}</span>
       <span class="cap">AED · ${headCap}</span>
