@@ -508,13 +508,27 @@ function contributeHTML(lockedMode){
       <p class="contrib-sub">One honest price keeps the ranges real for the next person.</p>
     </div></div>`;
 }
+// Per-device anti-pump (client-side deterrent; real server-side rate-limiting is a follow-on —
+// it needs a Supabase edge function or DB trigger). Limits how much one device can push.
+const CAP_BUCKET=2, CAP_DAY=12, DAY_MS=864e5;
+function submitGuard(sub){
+  let log=[]; try{log=JSON.parse(localStorage.getItem('mizan:log'))||[]}catch(e){}
+  const now=Date.now(); log=log.filter(e=>now-e.t<DAY_MS);                       // only the last 24h counts
+  if(log.some(e=>e.c===sub.c&&e.a===sub.a&&e.p===sub.p)) return{ok:false,msg:'You already added that exact price'};
+  if(log.filter(e=>e.c===sub.c&&e.a===sub.a).length>=CAP_BUCKET) return{ok:false,msg:'Thanks — you’ve added enough here for today'};
+  if(log.length>=CAP_DAY) return{ok:false,msg:'That’s a lot of prices today — try again tomorrow'};
+  return{ok:true, commit(){ log.push({c:sub.c,a:sub.a,p:sub.p,t:now}); try{localStorage.setItem('mizan:log',JSON.stringify(log))}catch(e){} }};
+}
 function wireContribute(){
   const btn=$('addBtn'); if(!btn)return;
   btn.onclick=()=>{const f=$('addForm');f.classList.toggle('show');if(f.classList.contains('show'))$('newPrice').focus()};
   $('submitPrice').onclick=async()=>{
     const p=parseFloat($('newPrice').value);
     if(isNaN(p)||p<=0){toast('Enter a price first');$('newPrice').focus();return}
+    if(p>=1000000){toast('That price looks too high');$('newPrice').focus();return}
     const sub={c:$('category').value,a:$('area').value,p:Math.round(p),t:Date.now(),note:($('newNote').value||'').trim()};
+    const guard=submitGuard(sub);
+    if(!guard.ok){toast(guard.msg);return}
     const wasLocked=!UNLOCKED;
     let synced=true;
     try{
@@ -524,6 +538,7 @@ function wireContribute(){
       synced=false;
       SUBMISSIONS=SUBMISSIONS.concat(sub);      // degrade gracefully: keep their price for this session
     }
+    guard.commit();                            // count this submission against the per-device caps
     UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
     DATA=SEED.concat(SUBMISSIONS);
     render(); renderFeed();
