@@ -1,0 +1,23 @@
+{
+  "_about": "List-price ranges for common Dubai services, harvested from public web sources. These are ADVERTISED prices (sell-side), Dubai-wide, NOT verified and NOT area-specific. They power Mizan's 'market estimate' backdrop layer only. Do not present as verified paid data.",
+  "currency": "AED",
+  "as_of": "2026-06",
+  "categories": [
+    { "id": "ac",       "label": "AC service / cleaning (split unit)", "lo": 150, "hi": 350,  "typical": 250,  "unit": "per unit",  "note": "Basic split-unit service/clean. Wild spread AED 50–600 reported; deep clean to ~350. Duct/central systems are a separate, far higher category." },
+    { "id": "haircut",  "label": "Men's haircut",                      "lo": 40,  "hi": 150,  "typical": 70,   "unit": "per cut",   "note": "Budget barbers from ~30–80; premium fades 150–180; luxury experiences 300+." },
+    { "id": "salon",    "label": "Salon — cut + blow-dry",             "lo": 120, "hi": 350,  "typical": 200,  "unit": "per visit", "note": "ESTIMATE — not individually web-verified to the same depth; treat as rough." },
+    { "id": "gym",      "label": "Gym membership (monthly)",           "lo": 150, "hi": 600,  "typical": 320,  "unit": "per month", "note": "Budget chains from 99–200; mid 250–450; premium 800–1500+. Avg business-district ~321. Location adds 30–50%." },
+    { "id": "gp",       "label": "GP consultation",                    "lo": 150, "hi": 500,  "typical": 250,  "unit": "per visit", "note": "Private community clinics 150–300; hospital outpatient 300–500. Insurance co-pay separate." },
+    { "id": "dental",   "label": "Dental cleaning (scale + polish)",   "lo": 99,  "hi": 450,  "typical": 250,  "unit": "per visit", "note": "Offers from 99–149; common 200–350; deep cleaning higher." },
+    { "id": "cleaning", "label": "Home deep clean (2-bed)",            "lo": 450, "hi": 900,  "typical": 600,  "unit": "per job",   "note": "Two cleaners, 4–6 hrs. Regular (non-deep) cleaning is ~35–50/hr instead." },
+    { "id": "handyman", "label": "Handyman (per hour)",                "lo": 75,  "hi": 200,  "typical": 110,  "unit": "per hour",  "note": "Common 80–150/hr; min call-out ~99–129; specialist plumbing/electrical higher." },
+    { "id": "carserv",  "label": "Car minor service (oil + check)",    "lo": 200, "hi": 700,  "typical": 400,  "unit": "per service","note": "Minor service (oil + inspection) ~350–800 independent; bare oil change 150–350; dealers up to 1400." },
+    { "id": "movers",   "label": "Movers (1-bed, within Dubai)",       "lo": 800, "hi": 2000, "typical": 1100, "unit": "per move",  "note": "Basic local 1-bed ~800–1500; avg ~1100; full-service with packing pushes higher." }
+  ],
+  "area_premium": {
+    "_about": "Rough cost multipliers by area, applied to the synthetic paid-seed only. NOT from web data. Replace with real signal as paid data accumulates.",
+    "Dubai Marina": 1.12, "Jumeirah": 1.15, "Business Bay": 1.08, "JLT": 1.05,
+    "Al Barsha": 1.0, "Bur Dubai": 0.94, "Silicon Oasis": 0.94, "Deira": 0.9,
+    "Al Qusais": 0.9, "International City": 0.85
+  }
+}
