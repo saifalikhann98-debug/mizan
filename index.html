@@ -337,19 +337,69 @@ const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.
 // real paid data breaks the core honesty rule (CLAUDE.md). Flip to true only for local demos.
 const USE_SEED=false;
 
-// market = list-price ranges harvested from the web (Dubai-wide), Jun 2026. typical ~ common advertised figure.
-// unit = the per-X label shown beside the quote input (sourced from data/market-prices.json).
+// market = list-price ranges (Dubai-wide), typical ~ common advertised figure. unit = the per-X
+// label beside the quote input. group = optgroup in the picker.
+// The first 10 (ac…movers) are web-researched (see data/market-prices.json). The rest are
+// reasonable market ESTIMATES (not individually web-verified) — refine over time. All are shown
+// under the honest "Market estimate" label; none is presented as verified paid data.
 const CATEGORIES=[
-  {id:'ac',      label:'AC service / cleaning (split unit)', lo:150, hi:350, typical:250, unit:'/unit'},
-  {id:'haircut', label:"Men's haircut",                       lo:40,  hi:150, typical:70,  unit:'/cut'},
-  {id:'salon',   label:'Salon — cut + blow-dry',              lo:120, hi:350, typical:200, unit:'/visit'},
-  {id:'gym',     label:'Gym membership (monthly)',            lo:150, hi:600, typical:320, unit:'/month'},
-  {id:'gp',      label:'GP consultation',                     lo:150, hi:500, typical:250, unit:'/visit'},
-  {id:'dental',  label:'Dental cleaning (scale + polish)',    lo:99,  hi:450, typical:250, unit:'/visit'},
-  {id:'cleaning',label:'Home deep clean (2-bed)',             lo:450, hi:900, typical:600, unit:'/job'},
-  {id:'handyman',label:'Handyman (per hour)',                 lo:75,  hi:200, typical:110, unit:'/hour'},
-  {id:'carserv', label:'Car minor service (oil + check)',     lo:200, hi:700, typical:400, unit:'/service'},
-  {id:'movers',  label:'Movers (1-bed, within Dubai)',        lo:800, hi:2000,typical:1100,unit:'/move'},
+  // Home & cleaning
+  {id:'ac',        label:'AC service / cleaning (split unit)', lo:150, hi:350,  typical:250,  unit:'/unit',    group:'Home & cleaning'},
+  {id:'cleaning',  label:'Home deep clean (2-bed)',            lo:450, hi:900,  typical:600,  unit:'/job',     group:'Home & cleaning'},
+  {id:'pest',      label:'Pest control',                       lo:150, hi:500,  typical:250,  unit:'/visit',   group:'Home & cleaning'},
+  {id:'ductclean', label:'AC duct deep-clean',                 lo:300, hi:1200, typical:600,  unit:'/job',     group:'Home & cleaning'},
+  {id:'upholstery',label:'Sofa & carpet cleaning',            lo:120, hi:450,  typical:250,  unit:'/job',     group:'Home & cleaning'},
+  {id:'watertank', label:'Water-tank cleaning',                lo:150, hi:500,  typical:300,  unit:'/job',     group:'Home & cleaning'},
+  {id:'pool',      label:'Pool maintenance',                   lo:350, hi:1200, typical:650,  unit:'/month',   group:'Home & cleaning'},
+  {id:'windows',   label:'Window cleaning',                    lo:100, hi:400,  typical:200,  unit:'/visit',   group:'Home & cleaning'},
+  // Repairs & handyman
+  {id:'handyman',  label:'Handyman (per hour)',                lo:75,  hi:200,  typical:110,  unit:'/hour',    group:'Repairs & handyman'},
+  {id:'plumber',   label:'Plumber call-out',                   lo:100, hi:350,  typical:180,  unit:'/visit',   group:'Repairs & handyman'},
+  {id:'electrician',label:'Electrician call-out',              lo:100, hi:350,  typical:180,  unit:'/visit',   group:'Repairs & handyman'},
+  {id:'painting',  label:'Painting (per room)',                lo:250, hi:800,  typical:450,  unit:'/room',    group:'Repairs & handyman'},
+  {id:'applrepair',label:'Appliance repair (washer/fridge)',   lo:150, hi:600,  typical:300,  unit:'/repair',  group:'Repairs & handyman'},
+  {id:'tvmount',   label:'TV wall-mounting',                   lo:100, hi:400,  typical:200,  unit:'/job',     group:'Repairs & handyman'},
+  {id:'acinstall', label:'AC installation (split)',            lo:300, hi:1200, typical:600,  unit:'/unit',    group:'Repairs & handyman'},
+  // Auto
+  {id:'carserv',   label:'Car minor service (oil + check)',    lo:200, hi:700,  typical:400,  unit:'/service', group:'Auto'},
+  {id:'carwash',   label:'Car wash & detailing',               lo:30,  hi:600,  typical:150,  unit:'/service', group:'Auto'},
+  {id:'oilchange', label:'Oil change',                         lo:150, hi:500,  typical:280,  unit:'/service', group:'Auto'},
+  {id:'tyres',     label:'Tyre replacement (set of 4)',        lo:600, hi:3000, typical:1400, unit:'/set',     group:'Auto'},
+  {id:'carac',     label:'Car AC re-gas',                      lo:150, hi:500,  typical:280,  unit:'/service', group:'Auto'},
+  {id:'carbattery',label:'Car battery replacement',            lo:250, hi:900,  typical:500,  unit:'/service', group:'Auto'},
+  {id:'tint',      label:'Car window tinting',                 lo:300, hi:1500, typical:700,  unit:'/car',     group:'Auto'},
+  // Beauty & grooming
+  {id:'haircut',   label:"Men's haircut",                      lo:40,  hi:150,  typical:70,   unit:'/cut',     group:'Beauty & grooming'},
+  {id:'salon',     label:'Salon — cut + blow-dry',             lo:120, hi:350,  typical:200,  unit:'/visit',   group:'Beauty & grooming'},
+  {id:'womenshair',label:'Women’s cut & color',                lo:200, hi:800,  typical:400,  unit:'/visit',   group:'Beauty & grooming'},
+  {id:'keratin',   label:'Keratin / hair treatment',           lo:300, hi:1500, typical:700,  unit:'/visit',   group:'Beauty & grooming'},
+  {id:'manipedi',  label:'Mani-pedi',                          lo:80,  hi:250,  typical:140,  unit:'/visit',   group:'Beauty & grooming'},
+  {id:'facial',    label:'Facial',                             lo:150, hi:600,  typical:300,  unit:'/visit',   group:'Beauty & grooming'},
+  {id:'massage',   label:'Massage (60 min)',                   lo:150, hi:500,  typical:300,  unit:'/session', group:'Beauty & grooming'},
+  {id:'waxing',    label:'Waxing / threading',                 lo:30,  hi:200,  typical:90,   unit:'/visit',   group:'Beauty & grooming'},
+  {id:'lashes',    label:'Eyelash extensions',                 lo:150, hi:500,  typical:280,  unit:'/set',     group:'Beauty & grooming'},
+  // Health & fitness
+  {id:'gym',       label:'Gym membership (monthly)',           lo:150, hi:600,  typical:320,  unit:'/month',   group:'Health & fitness'},
+  {id:'gp',        label:'GP consultation',                    lo:150, hi:500,  typical:250,  unit:'/visit',   group:'Health & fitness'},
+  {id:'dental',    label:'Dental cleaning (scale + polish)',   lo:99,  hi:450,  typical:250,  unit:'/visit',   group:'Health & fitness'},
+  {id:'physio',    label:'Physiotherapy session',              lo:150, hi:500,  typical:300,  unit:'/session', group:'Health & fitness'},
+  {id:'eyetest',   label:'Eye test (optician)',                lo:50,  hi:250,  typical:120,  unit:'/visit',   group:'Health & fitness'},
+  {id:'bloodtest', label:'Blood-test panel',                   lo:150, hi:800,  typical:400,  unit:'/panel',   group:'Health & fitness'},
+  // Pets
+  {id:'petgroom',  label:'Pet grooming',                       lo:80,  hi:350,  typical:180,  unit:'/visit',   group:'Pets'},
+  {id:'vet',       label:'Vet consultation',                   lo:150, hi:400,  typical:230,  unit:'/visit',   group:'Pets'},
+  {id:'petboard',  label:'Pet boarding',                       lo:50,  hi:200,  typical:100,  unit:'/night',   group:'Pets'},
+  // Home help & kids
+  {id:'maid',      label:'Maid / cleaner (hourly)',            lo:25,  hi:60,   typical:40,   unit:'/hour',    group:'Home help & kids'},
+  {id:'nanny',     label:'Nanny (monthly)',                    lo:1800,hi:4000, typical:2800, unit:'/month',   group:'Home help & kids'},
+  {id:'tutor',     label:'Private tutor',                      lo:80,  hi:300,  typical:150,  unit:'/hour',    group:'Home help & kids'},
+  {id:'swim',      label:'Swimming lessons',                   lo:80,  hi:250,  typical:150,  unit:'/lesson',  group:'Home help & kids'},
+  // Laundry & garments
+  {id:'laundry',   label:'Laundry (per kg)',                   lo:8,   hi:25,   typical:15,   unit:'/kg',      group:'Laundry & garments'},
+  {id:'dryclean',  label:'Dry cleaning (per item)',            lo:10,  hi:60,   typical:25,   unit:'/item',    group:'Laundry & garments'},
+  {id:'tailoring', label:'Tailoring / alterations',            lo:20,  hi:150,  typical:60,   unit:'/item',    group:'Laundry & garments'},
+  // Moving
+  {id:'movers',    label:'Movers (1-bed, within Dubai)',       lo:800, hi:2000, typical:1100, unit:'/move',    group:'Moving'},
 ];
 const AREAS=['Al Qusais','Deira','Bur Dubai','Business Bay','JLT','Dubai Marina','Al Barsha','Jumeirah','Silicon Oasis','International City'];
 const PREMIUM={'Dubai Marina':1.12,'Jumeirah':1.15,'Business Bay':1.08,'JLT':1.05,
@@ -498,7 +548,10 @@ const $=id=>document.getElementById(id);
 function escapeHTML(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
 function fillSelects(){
-  $('category').innerHTML=CATEGORIES.map(c=>`<option value="${c.id}">${escapeHTML(c.label)}</option>`).join('');
+  const groups=[];
+  CATEGORIES.forEach(c=>{let g=groups.find(x=>x.name===c.group);if(!g){g={name:c.group||'Other',items:[]};groups.push(g)}g.items.push(c)});
+  $('category').innerHTML=groups.map(g=>`<optgroup label="${escapeHTML(g.name)}">`+
+    g.items.map(c=>`<option value="${c.id}">${escapeHTML(c.label)}</option>`).join('')+`</optgroup>`).join('');
   $('area').innerHTML=AREAS.map(a=>`<option value="${escapeHTML(a)}">${escapeHTML(a)}</option>`).join('');
   $('area').value='Al Qusais';
 }
