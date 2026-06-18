@@ -214,6 +214,10 @@ const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';   // anon / public key — public by design, access enforced by RLS (NOT service_role)
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
 
+// Synthetic seed = DEMO ONLY. Must stay false in production: showing fabricated prices as
+// real paid data breaks the core honesty rule (CLAUDE.md). Flip to true only for local demos.
+const USE_SEED=false;
+
 // market = list-price ranges harvested from the web (Dubai-wide), Jun 2026. typical ~ common advertised figure.
 const CATEGORIES=[
   {id:'ac',      label:'AC service / cleaning (split unit)', lo:150, hi:350, typical:250},
@@ -256,7 +260,7 @@ function buildSeed(){
   });
   return out;
 }
-const SEED=buildSeed();
+const SEED=USE_SEED?buildSeed():[];   // empty in production → buckets show market estimate until real prices arrive
 let SUBMISSIONS=[],DATA=SEED.slice(),UNLOCKED=false;
 
 /* ---- Persistence ---------------------------------------------------------
@@ -514,6 +518,10 @@ function wireContribute(){
 
 function renderFeed(){
   const recent=[...DATA].sort((a,b)=>b.t-a.t).slice(0,8);
+  if(!recent.length){
+    $('feed').innerHTML=`<h2>Recently paid</h2><p class="feed-sub">No real prices yet — be the first. Add what you paid above and it shows up here for the next person.</p>`;
+    return;
+  }
   const rows=recent.map(d=>{
     const old=Date.now()-d.t>RECENT_MS, cat=catById(d.c);
     return `<div class="row"><span class="rprice">AED ${aed(d.p)}</span>
