@@ -234,7 +234,6 @@
     </div>
     <div class="nav-right">
       <span class="nav-meta">Crowdsourced fair prices · Dubai</span>
-      <button type="button" class="btn-ghost" id="navAddBtn">Add a price</button>
     </div>
   </div>
 </header>
@@ -715,7 +714,6 @@ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show')
   $('category').addEventListener('change',render);
   $('area').addEventListener('change',render);
   $('quoted').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/[^0-9.]/g,''); render(); });
-  $('navAddBtn').onclick=openModal;
   $('modal').addEventListener('click',e=>{ if(e.target===$('modal'))closeModal(); });
   $('modalSubmit').onclick=submitModal;
   $('modalDone').onclick=closeModal;
