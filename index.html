@@ -3,7 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mizan — know the fair price</title>
+<title>Mizan - Fair prices for Dubai &amp; UAE services</title>
+<meta name="description" content="See what UAE residents actually pay for AC cleaning, haircuts, salon, gym, movers and more, next to advertised prices. Check the fair price before you pay.">
+<link rel="canonical" href="https://www.mizan-price.com/">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#EEF2F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16201E" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Mizan">
+<meta property="og:title" content="Mizan - Know the fair price for UAE services">
+<meta property="og:description" content="What UAE residents actually pay for everyday services - AC cleaning, haircuts, salon, gym, movers and more - laid over the prices companies advertise.">
+<meta property="og:url" content="https://www.mizan-price.com/">
+<meta property="og:image" content="https://www.mizan-price.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_AE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mizan - Know the fair price for UAE services">
+<meta name="twitter:description" content="What UAE residents actually pay for everyday services, laid over advertised prices. Check before you pay.">
+<meta name="twitter:image" content="https://www.mizan-price.com/og.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebSite","@id":"https://www.mizan-price.com/#website","url":"https://www.mizan-price.com/","name":"Mizan","description":"Crowdsourced fair prices for everyday services in the UAE.","inLanguage":"en"},
+{"@type":"WebApplication","@id":"https://www.mizan-price.com/#app","name":"Mizan","url":"https://www.mizan-price.com/","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","browserRequirements":"Requires JavaScript","description":"Pick a service and area and instantly see what UAE residents pay versus advertised list prices, with a fair / steep / walk-away verdict.","offers":{"@type":"Offer","price":"0","priceCurrency":"AED"},"areaServed":{"@type":"Country","name":"United Arab Emirates"}},
+{"@type":"FAQPage","@id":"https://www.mizan-price.com/#faq","mainEntity":[
+{"@type":"Question","name":"How much should AC cleaning cost in Dubai?","acceptedAnswer":{"@type":"Answer","text":"A standard split-unit AC service is usually advertised around AED 150 to 350 in Dubai. Many residents pay less than the top of that range, which is exactly the gap Mizan shows you."}},
+{"@type":"Question","name":"What is a fair price for a men's haircut in the UAE?","acceptedAnswer":{"@type":"Answer","text":"Men's haircuts in the UAE commonly run from about AED 40 at budget barbers to AED 150 at premium salons. Mizan compares the advertised rate with what people report actually paying in your area."}},
+{"@type":"Question","name":"How does Mizan work?","acceptedAnswer":{"@type":"Answer","text":"Pick a service and your area, optionally enter the price you were quoted, and Mizan instantly shows the advertised market range, the resident-reported paid range, and a clear verdict: fair, steep, or walk away."}},
+{"@type":"Question","name":"Is Mizan free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes, Mizan is completely free. It is built on prices reported by the community, never paid placements from businesses."}},
+{"@type":"Question","name":"Which services and areas does Mizan cover?","acceptedAnswer":{"@type":"Answer","text":"Mizan covers dozens of everyday services, from AC cleaning, salon and gym to movers, pest control and car service, across all seven UAE emirates."}},
+{"@type":"Question","name":"Where do the prices come from?","acceptedAnswer":{"@type":"Answer","text":"Market estimates are advertised list prices from the web; the paid range comes from residents reporting what they actually paid, with outlier trimming so one odd price cannot skew the result."}}
+]}
+]}
+</script>
 <script>/* set theme before paint to avoid a flash */(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -232,6 +265,17 @@
 
   /* footer */
   .footnote{max-width:680px;margin:40px 0 0;font-size:12px;line-height:1.6;color:var(--faint-2)}
+  .faq{margin-top:60px;max-width:760px}
+  .faq h2{font-family:var(--serif);font-weight:500;font-size:30px;margin:0 0 18px;letter-spacing:.2px}
+  .faq details{border-top:1px solid var(--line-4)}
+  .faq details:last-of-type{border-bottom:1px solid var(--line-4)}
+  .faq summary{list-style:none;cursor:pointer;padding:18px 2px;font-size:16px;font-weight:600;color:var(--ink);
+    display:flex;justify-content:space-between;align-items:center;gap:16px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";font-family:var(--mono);font-size:20px;font-weight:400;color:var(--faint-2);flex-shrink:0}
+  .faq details[open] summary::after{content:"\2212"}
+  .faq summary:focus-visible{outline:none;color:var(--teal)}
+  .faq details p{margin:0 0 18px;padding-right:28px;font-size:14.5px;line-height:1.6;color:var(--muted)}
 
   /* modal */
   .overlay{position:fixed;inset:0;z-index:50;background:rgba(28,26,21,.46);
@@ -350,6 +394,16 @@
   </div>
 
   <section class="feed" id="feed"></section>
+
+  <section class="faq" id="faq">
+    <h2>Common questions</h2>
+    <details><summary>How much should AC cleaning cost in Dubai?</summary><p>A standard split-unit AC service is usually advertised around AED 150 to 350 in Dubai. Many residents pay less than the top of that range, which is exactly the gap Mizan shows you.</p></details>
+    <details><summary>What is a fair price for a men's haircut in the UAE?</summary><p>Men's haircuts in the UAE commonly run from about AED 40 at budget barbers to AED 150 at premium salons. Mizan compares the advertised rate with what people report actually paying in your area.</p></details>
+    <details><summary>How does Mizan work?</summary><p>Pick a service and your area, optionally enter the price you were quoted, and Mizan instantly shows the advertised market range, the resident-reported paid range, and a clear verdict: fair, steep, or walk away.</p></details>
+    <details><summary>Is Mizan free to use?</summary><p>Yes, Mizan is completely free. It is built on prices reported by the community, never paid placements from businesses.</p></details>
+    <details><summary>Which services and areas does Mizan cover?</summary><p>Mizan covers dozens of everyday services, from AC cleaning, salon and gym to movers, pest control and car service, across all seven UAE emirates.</p></details>
+    <details><summary>Where do the prices come from?</summary><p>Market estimates are advertised list prices from the web; the paid range comes from residents reporting what they actually paid, with outlier trimming so one odd price cannot skew the result.</p></details>
+  </section>
 
   <p class="footnote">Mizan shows two layers: <b>market estimates</b> are advertised list prices harvested from the web; the <b>paid range</b> comes from residents reporting what they actually paid. Reports are shared anonymously — no name or contact is attached.</p>
 </main>
