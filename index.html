@@ -405,7 +405,7 @@
     <details><summary>Where do the prices come from?</summary><p>Market estimates are advertised list prices from the web; the paid range comes from residents reporting what they actually paid, with outlier trimming so one odd price cannot skew the result.</p></details>
   </section>
 
-  <p class="footnote">Mizan shows two layers: <b>market estimates</b> are advertised list prices harvested from the web; the <b>paid range</b> comes from residents reporting what they actually paid. Reports are shared anonymously — no name or contact is attached.</p>
+  <p class="footnote">Mizan shows two layers: <b>market estimates</b> are advertised list prices harvested from the web; the <b>paid range</b> comes from residents reporting what they actually paid. Reports are shared anonymously — no name or contact is attached. <a href="/prices/" style="color:var(--teal);font-weight:600">Browse price guides for every service →</a></p>
 </main>
 
 <div class="overlay hidden" id="modal">
@@ -980,6 +980,10 @@ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show')
 
 (async function(){
   fillSelects();
+  // deep-link: /?service=<id>&area=<name> pre-selects (used by the /prices SEO pages)
+  const _p=new URLSearchParams(location.search);
+  const _s=_p.get('service'); if(_s&&catById(_s))$('category').value=_s;
+  const _a=_p.get('area'); if(_a&&AREAS.includes(_a))$('area').value=_a;
   await loadState();
   $('category').addEventListener('change',render);
   $('area').addEventListener('change',render);
