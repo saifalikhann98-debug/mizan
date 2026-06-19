@@ -40,10 +40,10 @@
 ]}
 ]}
 </script>
-<script>/* set theme before paint to avoid a flash */(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
+<script>/* set theme + text direction before paint to avoid a flash */(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}try{var p=location.pathname.replace(/^\/+/,'');if(p.indexOf('ar')===0||location.search.indexOf('lang=ar')>-1){document.documentElement.lang='ar';document.documentElement.setAttribute('dir','rtl');}}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#1C1A15; --ink-2:#43403A; --muted:#75716A; --muted-2:#7A766C;
@@ -334,6 +334,22 @@
   @media (prefers-reduced-motion:reduce){
     *{transition:none!important;animation:none!important}
   }
+
+  /* ---- Arabic / RTL ---- (Newsreader/Geist have no Arabic glyphs → IBM Plex Sans Arabic;
+     prices stay in Geist Mono + forced LTR so ranges and % read correctly) */
+  html[lang="ar"] body{font-family:'IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',sans-serif}
+  html[lang="ar"] .hero h1,html[lang="ar"] .verdict-word,html[lang="ar"] .feed h2,
+  html[lang="ar"] .faq h2,html[lang="ar"] .dialog h3{font-family:'IBM Plex Sans Arabic',sans-serif;font-weight:600}
+  html[lang="ar"] .eyebrow,html[lang="ar"] .kicker,html[lang="ar"] .scale-head .t,
+  html[lang="ar"] .pill{letter-spacing:0}                       /* letter-spacing breaks Arabic shaping */
+  html[lang="ar"] .verdict-stat .big,html[lang="ar"] .brow .v,html[lang="ar"] .endlabel,
+  html[lang="ar"] .scale,html[lang="ar"] .quote-input,html[lang="ar"] .modal-input{direction:ltr}
+  /* numbers stay in Geist Mono; the درهم word falls back to the Arabic font (mono can't shape it) */
+  html[lang="ar"] .cur,html[lang="ar"] .scale-head .u,html[lang="ar"] .brow .v,
+  html[lang="ar"] .qmark .qlabel{font-family:'Geist Mono','IBM Plex Sans Arabic',ui-monospace,monospace}
+  html[lang="ar"] .verdict-stat{text-align:left}
+  html[lang="ar"] .brow .v{text-align:left}
+  html[lang="ar"] .faq details p{padding-right:0;padding-left:28px}
 </style>
 </head>
 <body>
@@ -453,6 +469,138 @@ const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.
 // Synthetic seed = DEMO ONLY. Must stay false in production: showing fabricated prices as
 // real paid data breaks the core honesty rule (CLAUDE.md). Flip to true only for local demos.
 const USE_SEED=false;
+
+/* ---- i18n (en / ar) ------------------------------------------------------
+   LANG comes from the URL path (/ar… served as a generated copy of this file)
+   or ?lang=ar for testing. Default en. Arabic strings are machine MSA pending a
+   native review (see docs/arabic-review.md). The price SCALE stays LTR. */
+const LANG = (location.pathname.replace(/^\/+/,'').startsWith('ar') || new URLSearchParams(location.search).get('lang')==='ar') ? 'ar' : 'en';
+const T = {
+  en:{
+    tagline:'Crowdsourced fair prices · UAE', langLink:'عربي', langHref:'/ar/',
+    eyebrow:'The gap is the point', h1a:'Know the ', h1em:'fair price', h1b:'before you pay.',
+    subhead:'What UAE residents actually paid, laid over the list prices companies advertise. Pick a service and your area, the verdict updates as you go.',
+    lblCat:'What are you paying for?', lblArea:'In which area?', lblQuote:'The price you were quoted', quoteOpt:'— optional', aed:'AED',
+    howMarketStrong:'Market estimate', howMarket:' — list prices harvested from the web. What companies advertise.',
+    howPaidStrong:'Paid range', howPaid:' — what residents report actually paying. Gets sharper with every report.',
+    loading:'Loading prices…', rin:'in', scaleTitle:'The price scale', residentsPaid:'RESIDENTS PAID',
+    legendList:'List prices', legendPaid:'Actually paid',
+    bdAdvertised:'Advertised (list)', bdResidents:'Residents paid', bdYourQuote:'Your quote',
+    paidReveal:'🔒 add a price to reveal', paidNone:'no reports yet',
+    kVerdict:'Verdict', kEstimate:'Estimate',
+    vFair:'Fair', vSteep:'Steep', vWalk:'Walk away', vGoing:'Going rate', vBelow:'Below market', vAround:'Around market',
+    lGoingPaid:(s,a)=>`Here’s what ${s} runs in ${a}. Enter a quote to get a verdict.`,
+    lGoingEst:(s,a)=>`Here’s what ${s} is advertised at in ${a}. Add a price to reveal what residents actually pay.`,
+    lFairLow:'At or below what residents typically pay here. Lock it in.',
+    lFairMid:'Within the range residents actually report paying. Reasonable.',
+    lSteepPaid:'You’re near advertised list price. Most residents pay less — there’s room to push back.',
+    lWalk:'Above even the highest advertised rate. Get another quote before you commit.',
+    lBelow:'Cheaper than what companies usually advertise. Looks fair — confirm what’s included.',
+    lAround:'Close to the going advertised rate. Reasonable — real paid prices often run lower.',
+    lSteepEst:'At the pricey end of what’s advertised. Shop one or two more quotes first.',
+    sUnderMost:'under what most pay', sOverPaid:'over typical paid', sOverList:'over typical list', sOverMarket:'over market high',
+    rAim:'Aim for around', rSmart:'You’re paying smart', rRoom:'Room to negotiate', rOver:'Overpaying by', rTypical:'Typical list',
+    estNote:' (vs advertised prices — not verified paid data)',
+    metaNone:'No resident reports yet · be the first',
+    metaPaid:(c,n,t)=>`${c} · ${n} resident report${n>1?'s':''} · last ${t}`,
+    metaLocked:n=>`${n} residents reported · add yours to reveal the range`,
+    metaThin:(n,m)=>`${n} resident report${n>1?'s':''} so far · ${m} more to unlock the range`,
+    confHigh:'High confidence', confMed:'Building confidence', confLow:'Early data',
+    ctaReport:'Report what you paid',
+    mTitle:'What did you actually pay?', mSubA:'For ', mSubB:' in ', mSubC:'. Shared anonymously — no name, no contact.',
+    mAdd:'Add my price', mNote:'Optional note — e.g. 2 split units, incl. gas',
+    mDoneTitle:'Added to the scale.', mThanks:(s,a)=>`Thank you — the next person who checks ${s} in ${a} gets a sharper estimate because of you.`, mDone:'Done',
+    feedTitle:'Recently paid', feedSub:'Fresh prices keep the ranges honest. Old ones fade.',
+    feedEmpty:'No real prices yet — be the first. Add what you paid and it shows up here for the next person.',
+    faqTitle:'Common questions',
+    foot:'Mizan shows two layers: <b>market estimates</b> are advertised list prices harvested from the web; the <b>paid range</b> comes from residents reporting what they actually paid. Reports are shared anonymously — no name or contact is attached. ',
+    footLink:'Browse price guides for every service →', footHref:'/prices/',
+    tEnter:'Enter a price first', tHigh:'That price looks too high', tEnough:'Thanks — you’ve added enough here for today',
+    tDup:'You already added that exact price', tLot:'That’s a lot of prices today — try again tomorrow',
+    tLocal:'Saved on this device only', tUnlocked:'Unlocked, thank you', tAdded:'Added, thank you',
+  },
+  ar:{
+    tagline:'أسعار عادلة من السكان · الإمارات', langLink:'English', langHref:'/',
+    eyebrow:'الفارق هو الأهم', h1a:'اعرف ', h1em:'السعر العادل', h1b:'قبل أن تدفع.',
+    subhead:'ما يدفعه سكان الإمارات فعلاً، مقابل الأسعار التي تعلنها الشركات. اختر خدمة ومنطقتك، وتُحدَّث النتيجة فوراً.',
+    lblCat:'ما الخدمة التي تدفع مقابلها؟', lblArea:'في أي منطقة؟', lblQuote:'السعر الذي عُرض عليك', quoteOpt:'— اختياري', aed:'درهم',
+    howMarketStrong:'تقدير السوق', howMarket:' — الأسعار المُعلنة على الإنترنت. ما تعلنه الشركات.',
+    howPaidStrong:'النطاق المدفوع', howPaid:' — ما يبلّغ السكان أنهم دفعوه فعلاً. يصبح أدقّ مع كل بلاغ.',
+    loading:'جارٍ تحميل الأسعار…', rin:'في', scaleTitle:'مقياس الأسعار', residentsPaid:'ما دفعه السكان',
+    legendList:'الأسعار المُعلنة', legendPaid:'المدفوع فعلاً',
+    bdAdvertised:'المُعلن', bdResidents:'دفع السكان', bdYourQuote:'عرضك',
+    paidReveal:'🔒 أضف سعراً للكشف', paidNone:'لا بلاغات بعد',
+    kVerdict:'الحُكم', kEstimate:'تقدير',
+    vFair:'عادل', vSteep:'مرتفع', vWalk:'تجنّبه', vGoing:'السعر السائد', vBelow:'أقل من السوق', vAround:'قريب من السوق',
+    lGoingPaid:(s,a)=>`هذا ما تكلّفه ${s} في ${a}. أدخل عرض سعر للحصول على حُكم.`,
+    lGoingEst:(s,a)=>`هذا ما يُعلَن عن ${s} في ${a}. أضف سعراً للكشف عمّا يدفعه السكان فعلاً.`,
+    lFairLow:'عند ما يدفعه السكان عادةً هنا أو أقل منه. ثبّته.',
+    lFairMid:'ضمن النطاق الذي يبلّغ السكان بدفعه فعلاً. معقول.',
+    lSteepPaid:'أنت قرب السعر المُعلن. معظم السكان يدفعون أقل، وهناك مجال للتفاوض.',
+    lWalk:'أعلى حتى من أعلى سعر مُعلن. احصل على عرض آخر قبل أن توافق.',
+    lBelow:'أرخص ممّا تعلنه الشركات عادةً. يبدو عادلاً، تأكّد ممّا يشمله العرض.',
+    lAround:'قريب من السعر المُعلن السائد. معقول، لكن الأسعار المدفوعة فعلاً غالباً أقل.',
+    lSteepEst:'في الطرف المرتفع ممّا هو مُعلن. قارن عرضاً أو عرضين آخرين أولاً.',
+    sUnderMost:'أقل ممّا يدفعه الأغلبية', sOverPaid:'فوق المدفوع المعتاد', sOverList:'فوق المُعلن المعتاد', sOverMarket:'فوق أعلى سعر سوقي',
+    rAim:'استهدف نحو', rSmart:'تدفع بذكاء', rRoom:'مجال للتفاوض', rOver:'تدفع زيادة', rTypical:'السعر المُعلن المعتاد',
+    estNote:' (مقابل الأسعار المُعلنة، وليست بيانات مدفوعة موثّقة)',
+    metaNone:'لا بلاغات من السكان بعد · كن أول من يضيف',
+    metaPaid:(c,n,t)=>`${c} · ${n} بلاغ من السكان · آخرها ${t}`,
+    metaLocked:n=>`أبلغ ${n} من السكان · أضف بلاغك للكشف عن النطاق`,
+    metaThin:(n,m)=>`${n} بلاغ حتى الآن · ${m} أخرى لفتح النطاق`,
+    confHigh:'ثقة عالية', confMed:'ثقة متنامية', confLow:'بيانات أولية',
+    ctaReport:'أبلغ عمّا دفعته',
+    mTitle:'كم دفعت فعلاً؟', mSubA:'عن ', mSubB:' في ', mSubC:'. يُشارَك بشكل مجهول، بدون اسم أو وسيلة تواصل.',
+    mAdd:'أضف سعري', mNote:'ملاحظة اختيارية، مثلاً وحدتان سبليت، شامل تعبئة الغاز',
+    mDoneTitle:'أُضيف إلى المقياس.', mThanks:(s,a)=>`شكراً لك، الشخص التالي الذي يتحقّق من ${s} في ${a} سيحصل على تقدير أدقّ بفضلك.`, mDone:'تم',
+    feedTitle:'مدفوعات حديثة', feedSub:'الأسعار الحديثة تبقي النطاقات صادقة. القديمة تتلاشى.',
+    feedEmpty:'لا أسعار حقيقية بعد، كن أول من يضيف. أضف ما دفعته وسيظهر هنا للشخص التالي.',
+    faqTitle:'الأسئلة الشائعة',
+    foot:'يعرض ميزان طبقتين: <b>تقديرات السوق</b> هي الأسعار المُعلنة على الإنترنت؛ و<b>النطاق المدفوع</b> يأتي من بلاغات السكان عمّا دفعوه فعلاً. البلاغات مجهولة، بدون اسم أو وسيلة تواصل. ',
+    footLink:'تصفّح أدلة الأسعار لكل خدمة ←', footHref:'/ar/prices/',
+    tEnter:'أدخل سعراً أولاً', tHigh:'هذا السعر يبدو مرتفعاً جداً', tEnough:'شكراً، أضفت ما يكفي هنا اليوم',
+    tDup:'أضفت هذا السعر نفسه من قبل', tLot:'أضفت أسعاراً كثيرة اليوم، حاول غداً',
+    tLocal:'حُفظ على هذا الجهاز فقط', tUnlocked:'فُتح، شكراً لك', tAdded:'أُضيف، شكراً لك',
+  },
+};
+const L = T[LANG];
+// Arabic display labels for services (by id) and areas (by name); English uses the originals.
+const CAT_AR = {ac:'تنظيف المكيفات',haircut:'قص شعر رجالي',salon:'قص وتصفيف الشعر',gym:'اشتراك نادٍ رياضي',gp:'استشارة طبيب عام',dental:'تنظيف الأسنان',cleaning:'تنظيف عميق للمنزل',handyman:'صيانة منزلية (بالساعة)',carserv:'صيانة سيارة (زيت وفحص)',movers:'نقل الأثاث',pest:'مكافحة الحشرات',ductclean:'تنظيف مجاري التكييف',upholstery:'تنظيف الكنب والسجاد',watertank:'تنظيف خزان المياه',pool:'صيانة المسابح',windows:'تنظيف النوافذ',plumber:'زيارة سبّاك',electrician:'زيارة كهربائي',painting:'دهان الجدران',applrepair:'إصلاح الأجهزة المنزلية',tvmount:'تركيب التلفزيون على الحائط',acinstall:'تركيب المكيفات',carwash:'غسيل وتلميع السيارات',oilchange:'تغيير زيت السيارة',tyres:'تبديل الإطارات',carac:'تعبئة فريون السيارة',carbattery:'تبديل بطارية السيارة',tint:'تظليل السيارات',womenshair:'قص وصبغ الشعر النسائي',keratin:'علاج الكيراتين',manipedi:'مانيكير وباديكير',facial:'تنظيف البشرة',massage:'جلسة مساج',waxing:'إزالة الشعر بالشمع والخيط',lashes:'تركيب الرموش',physio:'جلسة علاج طبيعي',eyetest:'فحص النظر',bloodtest:'تحاليل الدم',petgroom:'تجميل الحيوانات الأليفة',vet:'استشارة بيطرية',petboard:'إيواء الحيوانات الأليفة',maid:'عاملة منزلية (بالساعة)',nanny:'مربية أطفال (شهرياً)',tutor:'مدرّس خصوصي',swim:'دروس سباحة',laundry:'غسيل الملابس (بالكيلو)',dryclean:'تنظيف جاف',tailoring:'خياطة وتعديلات'};
+const AREA_AR = {'Al Qusais':'القصيص','Deira':'ديرة','Bur Dubai':'بر دبي','Business Bay':'الخليج التجاري','JLT':'أبراج بحيرات الجميرا','Dubai Marina':'دبي مارينا','Al Barsha':'البرشاء','Jumeirah':'جميرا','Silicon Oasis':'واحة السيليكون','International City':'المدينة العالمية','Abu Dhabi – Corniche':'أبوظبي - الكورنيش','Al Reem Island':'جزيرة الريم','Yas Island':'جزيرة ياس','Khalifa City':'مدينة خليفة','Mussafah':'مصفّح','Al Ain':'العين','Sharjah – Al Nahda':'الشارقة - النهدة','Sharjah – Al Majaz':'الشارقة - المجاز','Sharjah – Muwaileh':'الشارقة - مويلح','Sharjah – City':'مدينة الشارقة','Ajman – Al Nuaimiya':'عجمان - النعيمية','Ajman – City':'مدينة عجمان','RAK – Al Nakheel':'رأس الخيمة - النخيل','RAK – City':'مدينة رأس الخيمة','Fujairah – City':'مدينة الفجيرة','Umm Al Quwain – City':'مدينة أم القيوين'};
+const svcLabel = c => (LANG==='ar' && CAT_AR[c.id]) ? CAT_AR[c.id] : c.label;
+const areaLabel = a => (LANG==='ar' && AREA_AR[a]) ? AREA_AR[a] : a;
+const emirateLabel = e => (LANG==='ar' && AREA_AR[e]) ? AREA_AR[e] : e;
+Object.assign(AREA_AR,{'Dubai':'دبي','Abu Dhabi':'أبوظبي','Sharjah':'الشارقة','Ajman':'عجمان','Ras Al Khaimah':'رأس الخيمة','Fujairah':'الفجيرة','Umm Al Quwain':'أم القيوين'});
+const GROUP_AR={'Home & cleaning':'المنزل والتنظيف','Repairs & handyman':'الإصلاحات والصيانة','Auto':'السيارات','Beauty & grooming':'التجميل والعناية','Health & fitness':'الصحة واللياقة','Pets':'الحيوانات الأليفة','Home help & kids':'المساعدة المنزلية والأطفال','Laundry & garments':'الغسيل والملابس','Moving':'النقل'};
+const UNIT_AR={'/unit':'للوحدة','/job':'للمهمة','/visit':'للزيارة','/month':'شهرياً','/hour':'للساعة','/room':'للغرفة','/repair':'للإصلاح','/service':'للخدمة','/set':'للطقم','/car':'للسيارة','/cut':'للقصة','/session':'للجلسة','/panel':'للباقة','/night':'لليلة','/lesson':'للدرس','/kg':'للكيلو','/item':'للقطعة','/move':'للنقلة'};
+const groupLabel = g => (LANG==='ar' && GROUP_AR[g]) ? GROUP_AR[g] : g;
+const unitLabel  = u => (LANG==='ar' && UNIT_AR[u]) ? UNIT_AR[u] : (u||'');
+// price formatters — Arabic shows "<n> درهم" (number-first, Western numerals per UAE convention)
+const money      = n => LANG==='ar' ? `${aed(n)} درهم` : `AED ${aed(n)}`;
+const moneyRange = (a,b) => LANG==='ar' ? `${aed(a)} – ${aed(b)} درهم` : `AED ${aed(a)} – ${aed(b)}`;
+// extra UI strings + the FAQ content (per-locale)
+Object.assign(T.en,{
+  noMatches:'No matches', searchSvc:'Search services…', searchArea:'Search areas…', docTitle:'Mizan — Is the price fair?',
+  faqs:[
+    [`How much should AC cleaning cost in Dubai?`,`A standard split-unit AC service is usually advertised around AED 150 to 350 in Dubai. Many residents pay less than the top of that range, which is exactly the gap Mizan shows you.`],
+    [`What is a fair price for a men's haircut in the UAE?`,`Men's haircuts in the UAE commonly run from about AED 40 at budget barbers to AED 150 at premium salons. Mizan compares the advertised rate with what people report actually paying in your area.`],
+    [`How does Mizan work?`,`Pick a service and your area, optionally enter the price you were quoted, and Mizan instantly shows the advertised market range, the resident-reported paid range, and a clear verdict: fair, steep, or walk away.`],
+    [`Is Mizan free to use?`,`Yes, Mizan is completely free. It is built on prices reported by the community, never paid placements from businesses.`],
+    [`Which services and areas does Mizan cover?`,`Mizan covers dozens of everyday services, from AC cleaning, salon and gym to movers, pest control and car service, across all seven UAE emirates.`],
+    [`Where do the prices come from?`,`Market estimates are advertised list prices from the web; the paid range comes from residents reporting what they actually paid, with outlier trimming so one odd price cannot skew the result.`],
+  ],
+});
+Object.assign(T.ar,{
+  noMatches:'لا نتائج مطابقة', searchSvc:'ابحث عن خدمة…', searchArea:'ابحث عن منطقة…', docTitle:'ميزان — هل السعر عادل؟',
+  faqs:[
+    [`كم يجب أن تكلّف خدمة تنظيف المكيفات في دبي؟`,`تُعلَن خدمة تنظيف وحدة سبليت عادةً بين 150 و350 درهماً في دبي. كثير من السكان يدفعون أقل من الحد الأعلى للنطاق، وهذه بالضبط الفجوة التي يكشفها ميزان.`],
+    [`ما هو السعر العادل لقص الشعر الرجالي في الإمارات؟`,`يتراوح قص الشعر الرجالي في الإمارات عادةً من نحو 40 درهماً لدى الحلاقين الاقتصاديين إلى 150 درهماً في الصالونات الراقية. يقارن ميزان السعر المُعلن بما يبلّغ الناس بدفعه فعلاً في منطقتك.`],
+    [`كيف يعمل ميزان؟`,`اختر خدمة ومنطقتك، وأدخل السعر الذي عُرض عليك اختيارياً، فيعرض ميزان فوراً النطاق المُعلن في السوق، والنطاق المدفوع المبلّغ من السكان، وحُكماً واضحاً: عادل أو مرتفع أو تجنّبه.`],
+    [`هل استخدام ميزان مجاني؟`,`نعم، ميزان مجاني تماماً. وهو مبني على أسعار يبلّغ عنها المجتمع، وليس على إعلانات مدفوعة من الشركات.`],
+    [`ما الخدمات والمناطق التي يغطّيها ميزان؟`,`يغطّي ميزان عشرات الخدمات اليومية، من تنظيف المكيفات والصالون والنادي الرياضي إلى نقل الأثاث ومكافحة الحشرات وصيانة السيارات، في جميع إمارات الدولة السبع.`],
+    [`من أين تأتي الأسعار؟`,`تقديرات السوق هي أسعار مُعلنة من الإنترنت؛ والنطاق المدفوع يأتي من بلاغات السكان عمّا دفعوه فعلاً، مع استبعاد القيم الشاذة كي لا يحرّف سعرٌ واحد غريب النتيجة.`],
+  ],
+});
 
 // market = list-price ranges (Dubai-wide), typical ~ common advertised figure. unit = the per-X
 // label beside the quote input. group = optgroup in the picker.
@@ -639,7 +787,9 @@ function iqrKeep(prices){
 }
 function aed(n){return Math.round(n).toLocaleString('en-US')}
 function round5(n){return Math.round(n/5)*5}
-function relTime(t){const d=(Date.now()-t)/(864e5);if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
+function relTime(t){const d=(Date.now()-t)/(864e5);
+  if(LANG==='ar'){if(d<1)return'اليوم';if(d<2)return'أمس';if(d<30)return'منذ '+Math.round(d)+' يوم';const m=Math.round(d/30);if(m<12)return'منذ '+m+' شهر';return'منذ '+Math.round(m/12)+' سنة'}
+  if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
 
 function paidStats(catId,area){
   const all=DATA.filter(d=>d.c===catId&&d.a===area);
@@ -657,7 +807,7 @@ function confidenceOf(s){
   const n=s.freshCount||0, ageMonths=(Date.now()-(s.lastSeen||0))/(30*864e5);
   let level = n>=12?'high' : n>=6?'med' : 'low';
   if(ageMonths>6 && level!=='low') level = level==='high'?'med':'low';   // stale data downgrades a notch
-  return {level, label: level==='high'?'High confidence' : level==='med'?'Building confidence' : 'Early data'};
+  return {level, label: level==='high'?L.confHigh : level==='med'?L.confMed : L.confLow};
 }
 
 // Per-device anti-pump (client-side deterrent; real server-side rate-limiting is a follow-on —
@@ -666,9 +816,9 @@ const CAP_BUCKET=2, CAP_DAY=12, DAY_MS=864e5;
 function submitGuard(sub){
   let log=[]; try{log=JSON.parse(localStorage.getItem('mizan:log'))||[]}catch(e){}
   const now=Date.now(); log=log.filter(e=>now-e.t<DAY_MS);                       // only the last 24h counts
-  if(log.some(e=>e.c===sub.c&&e.a===sub.a&&e.p===sub.p)) return{ok:false,msg:'You already added that exact price'};
-  if(log.filter(e=>e.c===sub.c&&e.a===sub.a).length>=CAP_BUCKET) return{ok:false,msg:'Thanks — you’ve added enough here for today'};
-  if(log.length>=CAP_DAY) return{ok:false,msg:'That’s a lot of prices today — try again tomorrow'};
+  if(log.some(e=>e.c===sub.c&&e.a===sub.a&&e.p===sub.p)) return{ok:false,msg:L.tDup};
+  if(log.filter(e=>e.c===sub.c&&e.a===sub.a).length>=CAP_BUCKET) return{ok:false,msg:L.tEnough};
+  if(log.length>=CAP_DAY) return{ok:false,msg:L.tLot};
   return{ok:true, commit(){ log.push({c:sub.c,a:sub.a,p:sub.p,t:now}); try{localStorage.setItem('mizan:log',JSON.stringify(log))}catch(e){} }};
 }
 
@@ -678,10 +828,10 @@ function escapeHTML(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>
 function fillSelects(){
   const groups=[];
   CATEGORIES.forEach(c=>{let g=groups.find(x=>x.name===c.group);if(!g){g={name:c.group||'Other',items:[]};groups.push(g)}g.items.push(c)});
-  $('category').innerHTML=groups.map(g=>`<optgroup label="${escapeHTML(g.name)}">`+
-    g.items.map(c=>`<option value="${c.id}">${escapeHTML(c.label)}</option>`).join('')+`</optgroup>`).join('');
-  $('area').innerHTML=AREA_GROUPS.map(g=>`<optgroup label="${escapeHTML(g.emirate)}">`+
-    g.areas.map(a=>`<option value="${escapeHTML(a[0])}">${escapeHTML(a[0])}</option>`).join('')+`</optgroup>`).join('');
+  $('category').innerHTML=groups.map(g=>`<optgroup label="${escapeHTML(groupLabel(g.name))}">`+
+    g.items.map(c=>`<option value="${c.id}">${escapeHTML(svcLabel(c))}</option>`).join('')+`</optgroup>`).join('');
+  $('area').innerHTML=AREA_GROUPS.map(g=>`<optgroup label="${escapeHTML(emirateLabel(g.emirate))}">`+
+    g.areas.map(a=>`<option value="${escapeHTML(a[0])}">${escapeHTML(areaLabel(a[0]))}</option>`).join('')+`</optgroup>`).join('');
   $('area').value='Al Qusais';
 }
 
@@ -730,7 +880,7 @@ function makeCombobox(select, opts){
         listEl.appendChild(li);flat.push(li);
       });
     });
-    if(!flat.length){const li=document.createElement('li');li.className='combo-empty';li.textContent='No matches';listEl.appendChild(li);}
+    if(!flat.length){const li=document.createElement('li');li.className='combo-empty';li.textContent=L.noMatches;listEl.appendChild(li);}
     active=flat.findIndex(li=>li.dataset.value===select.value); if(active<0&&flat.length)active=0;
     paint();
   }
@@ -774,7 +924,7 @@ function render(){
   const hasPaid=s.count>=5;                 // a real paid range needs >=5 reports
   const paidVisible=hasPaid&&UNLOCKED;      // gate: revealed only after the user contributes
 
-  $('quoteUnit').textContent=cat.unit||'';
+  $('quoteUnit').textContent=unitLabel(cat.unit);
 
   // market estimate, area-adjusted: Dubai-wide list prices × the area cost factor.
   // A labelled ESTIMATE (the underlying harvest isn't measured per-area); real paid data stays per-area as reported.
@@ -792,91 +942,92 @@ function render(){
 
   // ---- verdict ----
   let tier,word,kicker,line,statBig='',statSub='',hasStat=false,roomLabel,roomValue;
+  const svcLow = LANG==='ar'?svcLabel(cat):cat.label.toLowerCase();   // Arabic has no case; en lowercases inline
+  const areaL = areaLabel(area);
   if(paidVisible){
-    kicker=hasQuote?'Verdict':'Estimate';
+    kicker=hasQuote?L.kVerdict:L.kEstimate;
     if(!hasQuote){
-      tier='going'; word='Going rate';
-      line=`Here’s what ${cat.label.toLowerCase()} runs in ${escapeHTML(area)}. Enter a quote to get a verdict.`;
-      roomLabel='Aim for around'; roomValue='AED '+aed(pMid);
+      tier='going'; word=L.vGoing;
+      line=L.lGoingPaid(svcLow, escapeHTML(areaL));
+      roomLabel=L.rAim; roomValue=money(pMid);
     } else if(q<=pHigh){
-      tier='fair'; word='Fair';
-      line=q<=pMid?'At or below what residents typically pay here. Lock it in.'
-                  :'Within the range residents actually report paying. Reasonable.';
-      const vs=Math.round((1-q/pHigh)*100); if(vs>=3){hasStat=true;statBig=vs+'%';statSub='under what most pay';}
-      roomLabel='You’re paying smart'; roomValue='✓';
+      tier='fair'; word=L.vFair;
+      line=q<=pMid?L.lFairLow:L.lFairMid;
+      const vs=Math.round((1-q/pHigh)*100); if(vs>=3){hasStat=true;statBig=vs+'%';statSub=L.sUnderMost;}
+      roomLabel=L.rSmart; roomValue='✓';
     } else if(q<=mHigh){
-      tier='steep'; word='Steep';
-      const over=Math.round((q/pMid-1)*100); hasStat=true; statBig='+'+over+'%'; statSub='over typical paid';
-      line='You’re near advertised list price. Most residents pay less — there’s room to push back.';
-      roomLabel='Room to negotiate'; roomValue='AED '+aed(q-pMid);
+      tier='steep'; word=L.vSteep;
+      const over=Math.round((q/pMid-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverPaid;
+      line=L.lSteepPaid;
+      roomLabel=L.rRoom; roomValue=money(q-pMid);
     } else {
-      tier='walk'; word='Walk away';
-      const over=Math.round((q/mHigh-1)*100); hasStat=true; statBig='+'+over+'%'; statSub='over market high';
-      line='Above even the highest advertised rate. Get another quote before you commit.';
-      roomLabel='Overpaying by'; roomValue='AED '+aed(q-pMid);
+      tier='walk'; word=L.vWalk;
+      const over=Math.round((q/mHigh-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverMarket;
+      line=L.lWalk;
+      roomLabel=L.rOver; roomValue=money(q-pMid);
     }
   } else {
     // no revealed paid range → market-only read, honestly labelled an estimate
-    kicker='Estimate';
+    kicker=L.kEstimate;
     if(!hasQuote){
-      tier='going'; word='Going rate';
-      line=`Here’s what ${cat.label.toLowerCase()} is advertised at in ${escapeHTML(area)}. Add a price to reveal what residents actually pay.`;
-      roomLabel='Typical list'; roomValue='AED '+aed(mTyp);
+      tier='going'; word=L.vGoing;
+      line=L.lGoingEst(svcLow, escapeHTML(areaL));
+      roomLabel=L.rTypical; roomValue=money(mTyp);
     } else if(q<=mLow){
-      tier='fair'; word='Below market';
-      line='Cheaper than what companies usually advertise. Looks fair — confirm what’s included.';
-      roomLabel='Typical list'; roomValue='AED '+aed(mTyp);
+      tier='fair'; word=L.vBelow;
+      line=L.lBelow;
+      roomLabel=L.rTypical; roomValue=money(mTyp);
     } else if(q<=mTyp){
-      tier='going'; word='Around market';
-      line='Close to the going advertised rate. Reasonable — real paid prices often run lower.';
-      roomLabel='Typical list'; roomValue='AED '+aed(mTyp);
+      tier='going'; word=L.vAround;
+      line=L.lAround;
+      roomLabel=L.rTypical; roomValue=money(mTyp);
     } else if(q<=mHigh){
-      tier='steep'; word='Steep';
-      const over=Math.round((q/mTyp-1)*100); if(over>=3){hasStat=true;statBig='+'+over+'%';statSub='over typical list';}
-      line='At the pricey end of what’s advertised. Shop one or two more quotes first.';
-      roomLabel='Room to negotiate'; roomValue='AED '+aed(q-mTyp);
+      tier='steep'; word=L.vSteep;
+      const over=Math.round((q/mTyp-1)*100); if(over>=3){hasStat=true;statBig='+'+over+'%';statSub=L.sOverList;}
+      line=L.lSteepEst;
+      roomLabel=L.rRoom; roomValue=money(q-mTyp);
     } else {
-      tier='walk'; word='Walk away';
-      const over=Math.round((q/mHigh-1)*100); hasStat=true; statBig='+'+over+'%'; statSub='over market high';
-      line='Above even the highest advertised rate. Get another quote before you commit.';
-      roomLabel='Overpaying by'; roomValue='AED '+aed(q-mHigh);
+      tier='walk'; word=L.vWalk;
+      const over=Math.round((q/mHigh-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverMarket;
+      line=L.lWalk;
+      roomLabel=L.rOver; roomValue=money(q-mHigh);
     }
   }
   const tone=TONES[tier];
-  const estNote=(!paidVisible&&hasQuote)?' <em>(vs advertised prices — not verified paid data)</em>':'';
+  const estNote=(!paidVisible&&hasQuote)?` <em>${L.estNote.trim()}</em>`:'';
 
   // ---- breakdown values ----
-  const paidRowVal = paidVisible ? `AED ${aed(pLow)} – ${aed(pHigh)}`
-                   : hasPaid     ? '🔒 add a price to reveal'
-                                 : 'no reports yet';
+  const paidRowVal = paidVisible ? moneyRange(pLow,pHigh)
+                   : hasPaid     ? L.paidReveal
+                                 : L.paidNone;
   const paidRowCls = paidVisible ? 'v paid' : 'v muted';
   const quoteRow = hasQuote
-    ? `<div class="brow"><span class="k">Your quote</span><span class="v" style="color:${tone.c}">AED ${aed(q)}</span></div>` : '';
+    ? `<div class="brow"><span class="k">${L.bdYourQuote}</span><span class="v" style="color:${tone.c}">${money(q)}</span></div>` : '';
 
   // ---- meta line (real report count + confidence/gate state) ----
   let metaText;
-  if(s.count===0) metaText='No resident reports yet · be the first';
-  else if(paidVisible){ const conf=confidenceOf(s); metaText=`${conf.label} · ${s.count} resident report${s.count>1?'s':''} · last ${relTime(s.lastSeen)}`; }
-  else if(hasPaid) metaText=`${s.count} residents reported · add yours to reveal the range`;
-  else metaText=`${s.count} resident report${s.count>1?'s':''} so far · ${5-s.count} more to unlock the range`;
+  if(s.count===0) metaText=L.metaNone;
+  else if(paidVisible){ const conf=confidenceOf(s); metaText=L.metaPaid(conf.label, s.count, relTime(s.lastSeen)); }
+  else if(hasPaid) metaText=L.metaLocked(s.count);
+  else metaText=L.metaThin(s.count, 5-s.count);
 
   // ---- scale geometry ----
   const mL=pos(mLow), mW=pos(mHigh)-pos(mLow);
   let paidBandHTML='';
   if(paidVisible){
     paidBandHTML=`<div class="band paid" style="left:${pos(pLow)}%;width:${Math.max(0,pos(pHigh)-pos(pLow))}%"></div>
-      <div class="pill" style="left:${pos(pMid)}%">RESIDENTS PAID</div>`;
+      <div class="pill" style="left:${pos(pMid)}%">${L.residentsPaid}</div>`;
   } else if(hasPaid){
     paidBandHTML=`<div class="band locked" style="left:${mL+mW*0.28}%;width:${mW*0.4}%">🔒</div>`;
   }
   const quoteHTML = hasQuote
     ? `<div class="qmark" style="left:${pos(q)}%;background:${tone.c}">
-         <div class="qlabel" style="background:${tone.c}">AED ${aed(q)}</div>
+         <div class="qlabel" style="background:${tone.c}">${money(q)}</div>
          <div class="qtri" style="border-top:5px solid ${tone.c}"></div>
        </div>` : '';
 
   $('result').innerHTML=`
-    <div class="result-head"><span class="svc">${escapeHTML(cat.label)}</span><span class="rin">in</span><span class="rar">${escapeHTML(area)}</span></div>
+    <div class="result-head"><span class="svc">${escapeHTML(svcLabel(cat))}</span><span class="rin">${L.rin}</span><span class="rar">${escapeHTML(areaL)}</span></div>
     <div class="verdict" style="background:${tone.bg};border:1px solid ${tone.c}22">
       <div class="verdict-top">
         <div>
@@ -888,8 +1039,8 @@ function render(){
       <p class="verdict-line">${line}${estNote}</p>
     </div>
     <div class="scale-sec">
-      <div class="scale-head"><span class="t">The price scale</span><span class="u">AED</span></div>
-      <div class="scale">
+      <div class="scale-head"><span class="t">${L.scaleTitle}</span><span class="u">${L.aed}</span></div>
+      <div class="scale" dir="ltr">
         <div class="baseline"></div>
         <div class="band market" style="left:${mL}%;width:${Math.max(0,mW)}%"></div>
         ${paidBandHTML}
@@ -898,19 +1049,19 @@ function render(){
         ${quoteHTML}
       </div>
       <div class="legend">
-        <div><span class="sw mkt"></span><span class="lbl">List prices</span></div>
-        <div><span class="sw paid"></span><span class="lbl">Actually paid</span></div>
+        <div><span class="sw mkt"></span><span class="lbl">${L.legendList}</span></div>
+        <div><span class="sw paid"></span><span class="lbl">${L.legendPaid}</span></div>
       </div>
     </div>
     <div class="breakdown">
-      <div class="brow"><span class="k">Advertised (list)</span><span class="v">AED ${aed(mLow)} – ${aed(mHigh)}</span></div>
-      <div class="brow"><span class="k paid">Residents paid</span><span class="${paidRowCls}">${paidRowVal}</span></div>
+      <div class="brow"><span class="k">${L.bdAdvertised}</span><span class="v">${moneyRange(mLow,mHigh)}</span></div>
+      <div class="brow"><span class="k paid">${L.bdResidents}</span><span class="${paidRowCls}">${paidRowVal}</span></div>
       ${quoteRow}
       <div class="brow alt"><span class="k">${roomLabel}</span><span class="v strong">${roomValue}</span></div>
     </div>
     <div class="meta-row">
       <div class="meta"><span class="dot"></span>${metaText}</div>
-      <button type="button" class="btn-primary" id="reportBtn">Report what you paid</button>
+      <button type="button" class="btn-primary" id="reportBtn">${L.ctaReport}</button>
     </div>`;
 
   const rb=$('reportBtn'); if(rb) rb.onclick=openModal;
@@ -919,25 +1070,25 @@ function render(){
 function renderFeed(){
   const recent=[...DATA].sort((a,b)=>b.t-a.t).slice(0,8);
   if(!recent.length){
-    $('feed').innerHTML=`<h2>Recently paid</h2><p class="feed-sub">No real prices yet — be the first. Add what you paid and it shows up here for the next person.</p>`;
+    $('feed').innerHTML=`<h2>${L.feedTitle}</h2><p class="feed-sub">${L.feedEmpty}</p>`;
     return;
   }
   const rows=recent.map(d=>{
     const cat=catById(d.c);
     return `<div class="frow">
-      <div class="amt"><span class="cur">AED</span><span class="n">${aed(d.p)}</span></div>
-      <div class="fmid"><div class="fs">${cat?escapeHTML(cat.label):escapeHTML(d.c)}</div>
-        <div class="fa">${escapeHTML(d.a)}${d.note?' · '+escapeHTML(d.note):''}</div></div>
+      <div class="amt"><span class="cur">${L.aed}</span><span class="n">${aed(d.p)}</span></div>
+      <div class="fmid"><div class="fs">${cat?escapeHTML(svcLabel(cat)):escapeHTML(d.c)}</div>
+        <div class="fa">${escapeHTML(areaLabel(d.a))}${d.note?' · '+escapeHTML(d.note):''}</div></div>
       <span class="fwhen">${relTime(d.t)}</span></div>`;
   }).join('');
-  $('feed').innerHTML=`<h2>Recently paid</h2><p class="feed-sub">Fresh prices keep the ranges honest. Old ones fade.</p><div class="rows">${rows}</div>`;
+  $('feed').innerHTML=`<h2>${L.feedTitle}</h2><p class="feed-sub">${L.feedSub}</p><div class="rows">${rows}</div>`;
 }
 
 // ===== Add-a-price modal =====
 let lastFocus=null;
 function openModal(){
   const cat=catById($('category').value), area=$('area').value;
-  $('modalSub').innerHTML=`For <strong>${escapeHTML(cat.label)}</strong> in <strong>${escapeHTML(area)}</strong>. Shared anonymously — no name, no contact.`;
+  $('modalSub').innerHTML=`${L.mSubA}<strong>${escapeHTML(svcLabel(cat))}</strong>${L.mSubB}<strong>${escapeHTML(areaLabel(area))}</strong>${L.mSubC}`;
   $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
   $('modalPrice').value=''; $('modalNote').value=''; updateModalBtn();
   $('modal').classList.remove('hidden');
@@ -961,7 +1112,7 @@ function updateModalBtn(){ const v=parseFloat($('modalPrice').value); $('modalSu
 async function submitModal(){
   const p=parseFloat($('modalPrice').value);
   if(isNaN(p)||p<=0){return}
-  if(p>=1000000){toast('That price looks too high');return}
+  if(p>=1000000){toast(L.tHigh);return}
   const sub={c:$('category').value,a:$('area').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub);
   if(!guard.ok){toast(guard.msg);return}
@@ -972,18 +1123,53 @@ async function submitModal(){
   UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   DATA=SEED.concat(SUBMISSIONS);
   const cat=catById(sub.c);
-  $('modalSuccessText').textContent=`Thank you — the next person who checks ${cat.label} in ${sub.a} gets a sharper estimate because of you.`;
+  $('modalSuccessText').textContent=L.mThanks(svcLabel(cat), areaLabel(sub.a));
   $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
   setTimeout(()=>{const d=$('modalDone'); if(d)d.focus()},30);
   render(); renderFeed();
-  if(!synced) toast('Saved on this device only');
+  if(!synced) toast(L.tLocal);
 }
 
 let toastTimer;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
 
+// Localize the static chrome (nav/hero/form/how-it-works/FAQ/footer). Called only for Arabic —
+// the English markup is already correct, so en is left byte-untouched. Interactive UI uses L directly.
+function applyStaticI18n(){
+  const esc=escapeHTML, set=(sel,txt)=>{const e=document.querySelector(sel); if(e) e.textContent=txt;};
+  document.documentElement.lang=LANG; document.documentElement.dir=(LANG==='ar'?'rtl':'ltr');
+  document.title=L.docTitle;
+  set('.nav-meta', L.tagline);
+  const ll=document.querySelector('.nav-right a');
+  if(ll){ ll.textContent=L.langLink; ll.setAttribute('href',L.langHref); const other=(LANG==='ar'?'en':'ar');
+    ll.setAttribute('lang',other); ll.setAttribute('hreflang',other); ll.setAttribute('aria-label',L.langLink); }
+  set('.eyebrow', L.eyebrow);
+  const h1=document.querySelector('.hero h1'); if(h1) h1.innerHTML=`${esc(L.h1a)}<em>${esc(L.h1em)}</em><br>${esc(L.h1b)}`;
+  set('.hero p', L.subhead);
+  set('#lbl-cat', L.lblCat); set('#lbl-area', L.lblArea);
+  const ql=document.querySelector('label[for="quoted"]'); if(ql) ql.innerHTML=`${esc(L.lblQuote)} <span class="opt">${esc(L.quoteOpt)}</span>`;
+  const fc=document.querySelector('.quote-input .cur'); if(fc) fc.textContent=L.aed;
+  document.querySelectorAll('.howto').forEach(h=>{ h.innerHTML=
+    `<div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>${esc(L.howMarketStrong)}</strong>${esc(L.howMarket)}</p></div>`+
+    `<div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>${esc(L.howPaidStrong)}</strong>${esc(L.howPaid)}</p></div>`; });
+  const ld=document.querySelector('#result .loading'); if(ld) ld.textContent=L.loading;
+  // modal
+  set('#modalTitle', L.mTitle);
+  const mc=document.querySelector('.modal-input .cur'); if(mc) mc.textContent=L.aed;
+  const mn=$('modalNote'); if(mn) mn.setAttribute('placeholder', L.mNote);
+  set('#modalSubmit', L.mAdd);
+  const msH=document.querySelector('#modalSuccess h3'); if(msH) msH.textContent=L.mDoneTitle;
+  set('#modalDone', L.mDone);
+  // FAQ (rebuilt from L.faqs)
+  const faqEl=$('faq'); if(faqEl && L.faqs) faqEl.innerHTML=`<h2>${esc(L.faqTitle)}</h2>`+
+    L.faqs.map(qa=>`<details><summary>${esc(qa[0])}</summary><p>${esc(qa[1])}</p></details>`).join('');
+  // footer (L.foot contains trusted <b> markup)
+  const fn=document.querySelector('.footnote'); if(fn) fn.innerHTML=`${L.foot}<a href="${L.footHref}" style="color:var(--teal);font-weight:600">${esc(L.footLink)}</a>`;
+}
+
 (async function(){
   fillSelects();
+  if(LANG==='ar') applyStaticI18n();
   // deep-link: /?service=<id>&area=<name> pre-selects (used by the /prices SEO pages)
   const _p=new URLSearchParams(location.search);
   const _s=_p.get('service'); if(_s&&catById(_s))$('category').value=_s;
@@ -991,8 +1177,8 @@ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show')
   await loadState();
   $('category').addEventListener('change',render);
   $('area').addEventListener('change',render);
-  makeCombobox($('category'),{placeholder:'Search services…',labelledBy:'lbl-cat'});
-  makeCombobox($('area'),{placeholder:'Search areas…',labelledBy:'lbl-area'});
+  makeCombobox($('category'),{placeholder:L.searchSvc,labelledBy:'lbl-cat'});
+  makeCombobox($('area'),{placeholder:L.searchArea,labelledBy:'lbl-area'});
   const tt=$('themeToggle');
   if(tt) tt.onclick=()=>{ const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme',next); try{localStorage.setItem('mizan:theme',next)}catch(e){} };

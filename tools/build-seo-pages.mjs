@@ -191,7 +191,7 @@ function nav(L, altPath, altLabel) {
   const brand = L.lang === 'ar'
     ? `<a class="brand" href="${L.base}/">${SCALE}<span class="ar" style="opacity:1;font-size:22px">ميزان</span></a>`
     : `<a class="brand" href="/">${SCALE}<span class="w">Mizan</span><span class="ar">ميزان</span></a>`;
-  return `<header class="nav"><div class="nav-in">${brand}<div class="nav-r"><a href="${altPath}">${altLabel}</a><a href="${L.lang === 'ar' ? '/' : '/'}">${L.navCta}</a></div></div></header>`;
+  return `<header class="nav"><div class="nav-in">${brand}<div class="nav-r"><a href="${altPath}">${altLabel}</a><a href="${L.lang === 'ar' ? '/ar/' : '/'}">${L.navCta}</a></div></div></header>`;
 }
 function footer(L) {
   return `<footer><div class="foot-in">${L.foot} ${L.footLinks(ORIGIN === '' ? '' : '')}</div></footer></body></html>`;
@@ -226,7 +226,7 @@ function servicePage(L, s) {
 <table><thead><tr><th>${esc(L.thEmirate)}</th><th class="ra">${esc(L.thRange)}</th></tr></thead><tbody>${rows}</tbody></table>
 <p class="note">${esc(L.estNote)}</p>
 <h2>${esc(L.fairH)}</h2><p>${L.fairP(esc(n))}</p>
-<div class="ctabox"><p>${esc(L.ctaP(n))}</p><a class="btn" href="/?service=${s.id}">${esc(L.ctaBtn(n))} ${L.arrow}</a></div>
+<div class="ctabox"><p>${esc(L.ctaP(n))}</p><a class="btn" href="${L.lang === 'ar' ? '/ar/' : '/'}?service=${s.id}">${esc(L.ctaBtn(n))} ${L.arrow}</a></div>
 <h2>${esc(L.faqH)}</h2>
 ${faqs.map(f=>`<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n')}
 ${related ? `<h2>${esc(L.relatedH)}</h2><div class="related">${related}</div>` : ''}
@@ -245,18 +245,23 @@ function hubPage(L) {
 <h1>${esc(L.hubH1)}</h1><p class="lede">${L.hubLede}</p>${body}</main>` + footer(L);
 }
 
-// Arabic landing page (the EN homepage is the live app; AR users get a content landing -> tool + guides)
-function arLanding() {
-  const L = LOC.ar;
-  const jsonld = { "@context":"https://schema.org","@type":"WebPage","name":"ميزان","url":`${ORIGIN}/ar/`,"inLanguage":"ar","description":"اعرف السعر العادل للخدمات في الإمارات قبل أن تدفع." };
-  return head(L, 'ميزان - اعرف السعر العادل لخدمات الإمارات', 'ما يدفعه سكان الإمارات فعلاً للخدمات اليومية، مقابل الأسعار المُعلنة. تحقّق من السعر العادل قبل أن تدفع.', '/ar/', '/', '/ar/', jsonld)
-    + nav(L, '/', 'English') + `<main>
-<h1>اعرف السعر العادل قبل أن تدفع</h1>
-<p class="lede">يعرض <strong>ميزان</strong> ما يدفعه سكان الإمارات فعلاً للخدمات اليومية، مقابل الأسعار التي تعلنها الشركات. اختر خدمة ومنطقتك لترى ما إن كان عرض السعر عادلاً.</p>
-<div class="ctabox"><p>جرّب الأداة التفاعلية الآن.</p><a class="btn" href="/">افتح أداة ميزان ←</a></div>
-<h2>${esc(L.guides)}</h2><p>تصفّح أدلة الأسعار لكل خدمة، مع تفصيل لكل إمارة وما يدفعه السكان فعلاً.</p>
-<p><a href="/ar/prices/">عرض كل أدلة الأسعار ←</a></p>
-</main>` + footer(L);
+// Arabic interactive tool at /ar/ — the live app (index.html) with its <head> rewritten for
+// Arabic SEO (canonical/og/locale/lang). The app's own JS detects the /ar path and renders the
+// UI in Arabic + RTL; the BODY is byte-identical to the English app (single source, zero drift).
+function arApp() {
+  let h = html;
+  h = h.replace('<html lang="en">', '<html lang="ar" dir="rtl">');
+  h = h.replace(/<title>[\s\S]*?<\/title>/, '<title>ميزان - اعرف السعر العادل لخدمات الإمارات</title>');
+  h = h.replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="ما يدفعه سكان الإمارات فعلاً للخدمات اليومية، مقابل الأسعار التي تعلنها الشركات. تحقّق من السعر العادل قبل أن تدفع.">');
+  h = h.replace('<link rel="canonical" href="https://www.mizan-price.com/">', '<link rel="canonical" href="https://www.mizan-price.com/ar/">');
+  h = h.replace('<meta property="og:url" content="https://www.mizan-price.com/">', '<meta property="og:url" content="https://www.mizan-price.com/ar/">');
+  h = h.replace('<meta property="og:locale" content="en_AE">', '<meta property="og:locale" content="ar_AE">');
+  h = h.replace('<meta property="og:title" content="Mizan - Know the fair price for UAE services">', '<meta property="og:title" content="ميزان - اعرف السعر العادل لخدمات الإمارات">');
+  h = h.replace(/<meta property="og:description" content="[^"]*">/, '<meta property="og:description" content="ما يدفعه سكان الإمارات فعلاً للخدمات اليومية، مقابل الأسعار التي تعلنها الشركات.">');
+  h = h.replace('<meta name="twitter:title" content="Mizan - Know the fair price for UAE services">', '<meta name="twitter:title" content="ميزان - اعرف السعر العادل لخدمات الإمارات">');
+  h = h.replace(/<meta name="twitter:description" content="[^"]*">/, '<meta name="twitter:description" content="ما يدفعه سكان الإمارات فعلاً للخدمات اليومية، مقابل الأسعار المُعلنة. تحقّق قبل أن تدفع.">');
+  h = h.replace('"inLanguage":"en"', '"inLanguage":"ar"');
+  return h;
 }
 
 // ---- write everything ----
@@ -277,7 +282,7 @@ for (const key of ['en', 'ar']) {
   });
 }
 fs.mkdirSync(path.join(ROOT, 'ar'), { recursive: true });
-fs.writeFileSync(path.join(ROOT, 'ar', 'index.html'), arLanding()); pages++;
+fs.writeFileSync(path.join(ROOT, 'ar', 'index.html'), arApp()); pages++;
 
 // ---- sitemap (en + ar) ----
 const enUrls = [ORIGIN + '/', ORIGIN + '/prices/', ...services.map(s => `${ORIGIN}/prices/${s.slug}`)];
