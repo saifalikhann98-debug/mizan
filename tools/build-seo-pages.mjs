@@ -285,7 +285,7 @@ fs.mkdirSync(path.join(ROOT, 'ar'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'ar', 'index.html'), arApp()); pages++;
 
 // ---- sitemap (en + ar) ----
-const enUrls = [ORIGIN + '/', ORIGIN + '/prices/', ...services.map(s => `${ORIGIN}/prices/${s.slug}`)];
+const enUrls = [ORIGIN + '/', ORIGIN + '/rent', ORIGIN + '/prices/', ...services.map(s => `${ORIGIN}/prices/${s.slug}`)];
 const arUrls = [ORIGIN + '/ar/', ORIGIN + '/ar/prices/', ...services.map(s => `${ORIGIN}/ar/prices/${s.slug}`)];
 const all = [...enUrls, ...arUrls];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +

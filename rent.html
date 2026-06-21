@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAE Rent — fair price check & legal increase calculator | Mizan</title>
+<meta name="description" content="See what tenants actually pay to rent in UAE communities, and calculate the maximum rent increase your landlord can legally charge under Dubai's RERA rules (Decree 43 of 2013).">
+<link rel="canonical" href="https://www.mizan-price.com/rent">
+<link rel="alternate" hreflang="en" href="https://www.mizan-price.com/rent">
+<link rel="alternate" hreflang="x-default" href="https://www.mizan-price.com/rent">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#EEF2F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16201E" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Mizan">
+<meta property="og:title" content="UAE Rent — fair price check & legal increase calculator">
+<meta property="og:description" content="What tenants actually pay to rent across the UAE, plus the maximum legal rent increase under Dubai's RERA rules.">
+<meta property="og:url" content="https://www.mizan-price.com/rent">
+<meta property="og:image" content="https://www.mizan-price.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_AE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="UAE Rent — fair price & legal increase calculator">
+<meta name="twitter:description" content="What tenants actually pay to rent across the UAE, plus the maximum legal rent increase.">
+<meta name="twitter:image" content="https://www.mizan-price.com/og.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebApplication","@id":"https://www.mizan-price.com/rent#app","name":"Mizan Rent","url":"https://www.mizan-price.com/rent","applicationCategory":"FinanceApplication","operatingSystem":"Web","description":"Check fair UAE rent by community and calculate the maximum legal rent increase under Dubai RERA rules.","offers":{"@type":"Offer","price":"0","priceCurrency":"AED"},"areaServed":{"@type":"Country","name":"United Arab Emirates"}},
+{"@type":"FAQPage","@id":"https://www.mizan-price.com/rent#faq","mainEntity":[
+{"@type":"Question","name":"How much can my landlord legally increase rent in Dubai?","acceptedAnswer":{"@type":"Answer","text":"Under Dubai Decree 43 of 2013, the maximum increase depends on how far your current rent is below the average market rent: up to 10% below, no increase; 11-20% below, up to 5%; 21-30% below, up to 10%; 31-40% below, up to 15%; more than 40% below, up to 20%."}},
+{"@type":"Question","name":"What is a fair rent in the UAE?","acceptedAnswer":{"@type":"Answer","text":"A fair rent is at or below the typical asking range for that property type in your community. Landlords often list high and negotiate down, so what tenants actually sign is usually below the advertised figure."}}
+]}
+]}
+</script>
+<script>/* set theme before paint to avoid a flash */(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C1A15; --ink-2:#43403A; --muted:#75716A; --muted-2:#7A766C;
+    --faint:#9A9488; --faint-2:#A39D90; --faint-3:#A9A498; --eyebrow:#A0997F;
+    --surface:#FFFFFF; --surface-2:#FBFAF5;
+    --line:#EAE4D6; --line-2:#E6E1D5; --line-3:#EFEADF; --line-4:#E4DECF; --line-5:#F2EDE3;
+    --teal:#14534D; --teal-deep:#0F423D; --teal-bg:#EAF0EE; --pill-text:#EAF3F0; --on-teal:#F4F0E6;
+    --fair:#2F7D54; --fair-bg:#EBF2EC; --success-bg:#E7F1EA;
+    --steep:#B5781F; --steep-bg:#F7EFDD;
+    --walk:#B5402F; --walk-bg:#F6E7E2;
+    --hatch-a:#DAD4C5; --hatch-b:#E5E0D3; --feed-dot:#7FB39B;
+    --bg:radial-gradient(140% 90% at 50% -10%, #EEF2F1 0%, #E3EAE8 55%, #D7E2DF 100%);
+    --shadow-card:0 1px 2px rgba(40,34,20,.04), 0 24px 50px -36px rgba(40,34,20,.35);
+    --shadow-btn:0 10px 22px -12px rgba(20,83,77,.8);
+    --shadow-paid:0 3px 10px -3px rgba(20,83,77,.55);
+    --shadow-modal:0 40px 90px -30px rgba(28,26,21,.6);
+    --serif:'Newsreader',Georgia,serif;
+    --mono:'Geist Mono',ui-monospace,monospace;
+    --ease:cubic-bezier(.2,.8,.2,1);
+  }
+  :root[data-theme="dark"]{
+    --ink:#ECE8E0; --ink-2:#CFC9BD; --muted:#A29D92; --muted-2:#A8A398;
+    --faint:#867F72; --faint-2:#8E8779; --faint-3:#7C7669; --eyebrow:#9C9274;
+    --surface:#1C201E; --surface-2:#252A27;
+    --line:#343A36; --line-2:#3B413C; --line-3:#2E332F; --line-4:#363C37; --line-5:#2B302C;
+    --teal:#5BBBA6; --teal-deep:#74CCB8; --teal-bg:#16241F; --pill-text:#0E1A17; --on-teal:#0E1A17;
+    --fair:#5FB985; --fair-bg:#16271D; --success-bg:#16271D;
+    --steep:#D7A24A; --steep-bg:#292214;
+    --walk:#E2705A; --walk-bg:#2C1915;
+    --hatch-a:#3C3D34; --hatch-b:#2F302A; --feed-dot:#7FB39B;
+    --bg:radial-gradient(140% 90% at 50% -10%, #16201E 0%, #121A18 55%, #0D1413 100%);
+  }
+  :root[data-theme="dark"] .nav{background:rgba(18,24,22,.82)}
+  :root[data-theme="dark"] .hero p{color:var(--muted)}
+  :root[data-theme="dark"] .verdict-line{color:#CBC6BB}
+  :root[data-theme="dark"] .verdict-line em{color:var(--faint-2)}
+  :root[data-theme="dark"] .verdict-stat .sub{color:var(--faint-2)}
+  :root[data-theme="dark"] .result-head .rin{color:var(--faint)}
+  :root[data-theme="dark"] .modal-input,:root[data-theme="dark"] .note-input{background:var(--surface)}
+  :root[data-theme="dark"] .btn-ghost{background:var(--surface-2);border-color:var(--line-2)}
+  :root[data-theme="dark"] .toast{background:#0C100F;color:#ECE8E0}
+  :root[data-theme="dark"] .seg{background:var(--surface-2)}
+  :root[data-theme="dark"] .slabs th{background:var(--surface-2)}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);min-height:100vh;color:var(--ink);
+    font-family:'Geist',system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  ::placeholder{color:var(--faint-3)}
+  button{font-family:inherit}
+  :focus-visible{outline:none}
+  a{color:var(--teal)}
+  @keyframes mz-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+  @keyframes mz-fade{from{opacity:0}to{opacity:1}}
+
+  /* nav */
+  .nav{position:sticky;top:0;z-index:10;background:rgba(248,246,240,.82);
+    backdrop-filter:saturate(140%) blur(12px);-webkit-backdrop-filter:saturate(140%) blur(12px);
+    border-bottom:1px solid var(--line-4)}
+  .nav-in{max-width:1140px;margin:0 auto;padding:16px 32px;display:flex;align-items:center;
+    justify-content:space-between;gap:20px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+  .brand svg{width:22px;height:22px;flex-shrink:0}
+  .brand .word{font-family:var(--serif);font-size:25px;line-height:1;letter-spacing:.2px}
+  .brand .ar{font-size:19px;color:var(--teal);opacity:.7;margin-left:2px}
+  .nav-right{display:flex;align-items:center;gap:22px}
+  .nav-link{font-size:13.5px;font-weight:600;color:var(--teal);text-decoration:none}
+  .nav-link:hover{text-decoration:underline}
+  .theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+    border:1px solid var(--line-2);border-radius:10px;background:var(--surface-2);color:var(--ink);cursor:pointer;flex-shrink:0;transition:border-color .15s}
+  .theme-toggle:hover{border-color:var(--teal)}
+  .theme-toggle:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(20,83,77,.2)}
+  .theme-toggle svg{width:18px;height:18px;display:block}
+  .theme-toggle .icon-sun{display:none}
+  :root[data-theme="dark"] .theme-toggle .icon-sun{display:block}
+  :root[data-theme="dark"] .theme-toggle .icon-moon{display:none}
+
+  /* layout */
+  main{max-width:1140px;margin:0 auto;padding:clamp(32px,6vw,54px) clamp(18px,5vw,32px) 70px}
+  .hero{max-width:720px;margin-bottom:30px}
+  .eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--eyebrow);margin-bottom:18px}
+  .hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(34px,7vw,54px);
+    line-height:1.05;letter-spacing:.2px;margin:0 0 18px}
+  .hero h1 em{font-style:italic;color:var(--teal)}
+  .hero p{font-size:17px;line-height:1.55;color:#65615A;margin:0;max-width:60ch}
+
+  /* segmented tabs */
+  .seg{display:inline-flex;gap:4px;background:#EEEAE0;border-radius:13px;padding:4px;margin-bottom:22px}
+  .seg-btn{border:none;background:transparent;font-size:14px;font-weight:600;color:var(--muted);
+    padding:10px 18px;border-radius:10px;cursor:pointer;transition:background .15s,color .15s}
+  .seg-btn.active{background:var(--surface);color:var(--teal);box-shadow:0 1px 3px rgba(40,34,20,.12)}
+  .seg-btn:focus-visible{box-shadow:0 0 0 3px rgba(20,83,77,.2)}
+
+  /* workspace */
+  .workspace{display:flex;flex-wrap:wrap;align-items:stretch;background:var(--surface);
+    border:1px solid var(--line);border-radius:22px;overflow:visible;box-shadow:var(--shadow-card)}
+  .form-col{flex:1 1 360px;max-width:440px;min-width:0;padding:30px;border-right:1px solid var(--line-3)}
+  .result-col{flex:1.4 1 440px;padding:30px 32px;min-width:0;display:flex;flex-direction:column;justify-content:center}
+  .flabel{display:block;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--faint);margin:0 0 12px}
+  .flabel .opt{text-transform:none;letter-spacing:0;font-weight:400;color:#B6B0A4}
+  .select-wrap{position:relative;margin-bottom:24px}
+  .select-wrap select{appearance:none;-webkit-appearance:none;width:100%;min-width:0;height:56px;
+    padding:0 44px 0 16px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface-2);
+    font-family:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;
+    text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+  .select-wrap select:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,83,77,.15)}
+  .select-wrap .chev{position:absolute;right:16px;top:50%;transform:translateY(-50%);pointer-events:none;width:16px;height:16px}
+  .combo{position:relative}
+  .combo-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;height:56px;
+    padding:0 14px 0 16px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface-2);
+    font-family:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;text-align:left}
+  .combo-trigger:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,83,77,.15)}
+  .combo-trigger .combo-val{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .combo-trigger .combo-chev{width:16px;height:16px;flex-shrink:0;transition:transform .15s}
+  .combo-trigger[aria-expanded="true"] .combo-chev{transform:rotate(180deg)}
+  .combo-panel{position:absolute;z-index:40;top:calc(100% + 6px);left:0;right:0;background:var(--surface);
+    border:1px solid var(--line-2);border-radius:14px;box-shadow:0 14px 34px -12px rgba(40,34,20,.3);
+    overflow:hidden;animation:mz-pop .16s var(--ease) both}
+  .combo-search{display:block;width:100%;border:none;border-bottom:1px solid var(--line-3);outline:none;
+    padding:13px 16px;font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface)}
+  .combo-list{list-style:none;margin:0;padding:6px;max-height:280px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .combo-group{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:10px 10px 4px}
+  .combo-opt{padding:9px 10px;border-radius:9px;font-size:14.5px;color:var(--ink);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .combo-opt.active{background:var(--surface-2)}
+  .combo-opt.sel{color:var(--teal);font-weight:600}
+  .combo-opt.sel.active{background:var(--teal-bg)}
+  .combo-empty{padding:14px 12px;font-size:13.5px;color:var(--faint-2);text-align:center}
+  .quote-input{display:flex;align-items:center;gap:8px;background:var(--surface-2);
+    border:1px solid var(--line-2);border-radius:14px;padding:0 16px;height:56px}
+  .quote-input:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,83,77,.15)}
+  .quote-input .cur{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--teal)}
+  .quote-input input{flex:1;min-width:0;border:none;outline:none;background:transparent;
+    font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ink)}
+  .quote-input .unit{font-size:13px;color:var(--faint-3)}
+  .hint{margin:10px 0 0;font-size:12px;line-height:1.5;color:var(--faint-2)}
+  .howto{margin-top:26px;padding-top:22px;border-top:1px solid var(--line-3);display:flex;flex-direction:column;gap:14px}
+  .howto .hrow{display:flex;gap:11px;align-items:flex-start}
+  .howto .dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px}
+  .howto p{margin:0;font-size:12.5px;line-height:1.5;color:var(--muted-2)}
+  .howto strong{color:var(--ink-2);font-weight:600}
+
+  /* result */
+  .result-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .result-head .svc{font-size:16px;font-weight:600}
+  .result-head .rin{font-size:13px;color:#C2BCAF}
+  .result-head .rar{font-size:15px;color:var(--muted)}
+  .verdict{border-radius:18px;padding:22px;animation:mz-fade .3s both}
+  .verdict-top{display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .kicker{font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;opacity:.8;margin-bottom:4px}
+  .verdict-word{font-family:var(--serif);font-weight:500;font-size:42px;line-height:.98}
+  .verdict-stat{text-align:right;flex-shrink:0}
+  .verdict-stat .big{font-family:var(--mono);font-size:32px;font-weight:600;line-height:1}
+  .verdict-stat .sub{font-size:11px;color:#8A857A;margin-top:5px}
+  .verdict-line{margin:15px 0 0;font-size:14.5px;line-height:1.5;color:#4D4A43}
+  .verdict-line em{font-style:normal;color:#8A857A;font-size:13px}
+
+  /* breakdown */
+  .breakdown{margin-top:24px;border:1px solid var(--line-3);border-radius:16px;overflow:hidden}
+  .brow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line-5)}
+  .brow:last-child{border-bottom:none}
+  .brow.alt{background:#FAF7F0}
+  :root[data-theme="dark"] .brow.alt{background:var(--surface-2)}
+  .brow .k{font-size:13.5px;color:var(--muted)}
+  .brow .k.paid{color:var(--teal);font-weight:500}
+  .brow .v{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--ink-2);text-align:right}
+  .brow .v.paid{font-weight:600;color:var(--teal)}
+  .brow .v.strong{font-weight:600;color:var(--ink)}
+  .brow .v.muted{color:var(--faint-2);font-weight:500}
+
+  /* meta + cta */
+  .meta-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;flex-wrap:wrap}
+  .meta{display:flex;align-items:center;gap:8px;color:var(--faint-2);font-size:11.5px}
+  .meta .dot{width:6px;height:6px;border-radius:50%;background:var(--feed-dot);flex-shrink:0}
+  .btn-primary{font-size:13.5px;font-weight:600;color:var(--on-teal);background:var(--teal);border:none;
+    border-radius:11px;padding:11px 18px;cursor:pointer;box-shadow:var(--shadow-btn);transition:background .15s}
+  .btn-primary:hover{background:var(--teal-deep)}
+  .btn-primary:focus-visible{box-shadow:var(--shadow-btn),0 0 0 3px rgba(20,83,77,.3)}
+  .actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .btn-ghost{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:var(--teal);
+    background:transparent;border:1px solid var(--line-2);border-radius:11px;padding:10px 15px;cursor:pointer;transition:background .15s,border-color .15s}
+  .btn-ghost:hover{background:var(--teal-bg);border-color:var(--teal)}
+  .btn-ghost:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(20,83,77,.25)}
+  .btn-ghost svg{width:15px;height:15px;flex-shrink:0}
+
+  /* calculator result */
+  .calc-empty{padding:30px 0;text-align:center;color:var(--muted);font-size:14.5px;line-height:1.6}
+  .legalbox{border-radius:18px;padding:24px;animation:mz-fade .3s both}
+  .legalbox .kicker{margin-bottom:6px}
+  .legalbox .big{font-family:var(--serif);font-weight:500;font-size:52px;line-height:1}
+  .legalbox .sub{font-size:14px;margin-top:6px}
+  .legalbox .line{margin:16px 0 0;font-size:14.5px;line-height:1.55;color:#4D4A43}
+  :root[data-theme="dark"] .legalbox .line{color:#CBC6BB}
+
+  /* explainer + slabs */
+  .explain{margin-top:56px;max-width:760px}
+  .explain h2{font-family:var(--serif);font-weight:500;font-size:28px;margin:0 0 14px;letter-spacing:.2px}
+  .explain p{font-size:14.5px;line-height:1.6;color:var(--muted);margin:0 0 16px}
+  .slabs{width:100%;border-collapse:collapse;font-size:14px;border:1px solid var(--line-3);border-radius:12px;overflow:hidden}
+  .slabs th,.slabs td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line-5)}
+  .slabs th{background:#FAF7F0;font-weight:600;color:var(--ink-2);font-size:12.5px}
+  .slabs td:last-child,.slabs th:last-child{font-family:var(--mono);font-weight:600;color:var(--teal);text-align:right}
+  .slabs tr:last-child td{border-bottom:none}
+  .disclaimer{font-size:12px;color:var(--faint-2);line-height:1.6;margin-top:16px}
+  .footnote{max-width:760px;margin:36px 0 0;font-size:12px;line-height:1.6;color:var(--faint-2)}
+
+  /* modal */
+  .overlay{position:fixed;inset:0;z-index:50;background:rgba(28,26,21,.46);display:flex;align-items:center;justify-content:center;padding:24px;animation:mz-fade .2s both}
+  .dialog{width:440px;max-width:100%;background:var(--surface-2);border-radius:22px;padding:30px;box-shadow:var(--shadow-modal);animation:mz-pop .28s var(--ease) both}
+  .dialog h3{font-family:var(--serif);font-weight:500;font-size:30px;margin:0 0 6px}
+  .dialog .dsub{margin:0 0 22px;font-size:13.5px;color:#8A857A;line-height:1.5}
+  .dialog .dsub strong{color:var(--ink-2);font-weight:600}
+  .modal-input{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line-2);border-radius:14px;padding:0 16px;height:58px;margin-bottom:14px}
+  .modal-input:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,83,77,.15)}
+  .modal-input .cur{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--teal)}
+  .modal-input input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:var(--mono);font-size:24px;font-weight:500;color:var(--ink)}
+  .note-input{width:100%;border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;color:var(--ink);background:#fff;margin-bottom:18px;outline:none}
+  .note-input:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,83,77,.15)}
+  .btn-submit{width:100%;height:54px;border:none;border-radius:13px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;color:var(--on-teal);background:var(--teal);transition:background .2s ease}
+  .btn-submit:hover:not(:disabled){background:var(--teal-deep)}
+  .btn-submit:disabled{background:#C8C2B4;cursor:not-allowed}
+  .btn-submit:focus-visible{box-shadow:0 0 0 3px rgba(20,83,77,.3)}
+  .modal-success{text-align:center;padding:8px 0}
+  .modal-success .check{width:54px;height:54px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+  .modal-success h3{font-family:var(--serif);font-weight:500;font-size:30px;margin:0 0 8px}
+  .modal-success p{margin:0 0 24px;font-size:14px;color:var(--muted);line-height:1.5}
+  .hidden{display:none!important}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .loading{padding:48px 0;text-align:center;color:var(--muted);font-size:14px}
+
+  @media (max-width:760px){
+    .nav-in{padding:14px 18px}
+    .nav-right{gap:14px}
+    main{padding:24px clamp(16px,5vw,30px) 56px}
+    .hero{margin-bottom:18px}
+    .hero h1{font-size:clamp(28px,8vw,38px)}
+    .hero p{font-size:15px}
+    .form-col{border-right:none;border-bottom:1px solid var(--line-3);max-width:none;padding:22px}
+    .result-col{padding:22px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="nav-in">
+  <a class="brand" href="/" aria-label="Mizan home">
+    <svg viewBox="0 0 32 32" fill="none" stroke="var(--teal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 5v22M9 27h14M6 11h20"/><path d="M6 11l-3.4 6.8a3.8 3.8 0 0 0 6.8 0z"/><path d="M26 11l-3.4 6.8a3.8 3.8 0 0 0 6.8 0z"/></svg>
+    <span class="word">Mizan <span class="ar">ميزان</span></span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="/">Check a service price</a>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</div></header>
+
+<main>
+  <div class="hero">
+    <div class="eyebrow">Rent · UAE</div>
+    <h1>Is your rent <em>fair</em> — and is the increase <em>legal?</em></h1>
+    <p>What tenants actually pay across UAE communities, plus a calculator for the maximum rent increase your landlord can legally charge under Dubai's RERA rules.</p>
+  </div>
+
+  <div class="seg" role="tablist" aria-label="Rent tools">
+    <button class="seg-btn active" id="tabFair" role="tab" aria-selected="true">Is my rent fair?</button>
+    <button class="seg-btn" id="tabLegal" role="tab" aria-selected="false">Is my increase legal?</button>
+  </div>
+
+  <!-- Panel 1: fair rent -->
+  <section class="workspace" id="panelFair">
+    <div class="form-col">
+      <label class="flabel" id="lbl-type">Property type</label>
+      <div class="select-wrap"><select id="rtype" aria-labelledby="lbl-type"></select>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
+      <label class="flabel" id="lbl-area">Community</label>
+      <div class="select-wrap"><select id="rarea" aria-labelledby="lbl-area"></select>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
+      <label class="flabel" for="rquote">The rent you're paying or being asked <span class="opt">— optional</span></label>
+      <div class="quote-input"><span class="cur">AED</span><input type="text" inputmode="numeric" id="rquote" placeholder="0" aria-label="Annual rent in AED"><span class="unit">/year</span></div>
+      <div class="howto">
+        <div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>Asking range</strong> — what's advertised for this type here. Landlords list high and negotiate.</p></div>
+        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Tenants signed</strong> — what residents report actually agreeing. Add yours to sharpen it.</p></div>
+      </div>
+    </div>
+    <div class="result-col"><div id="rresult" class="loading">Loading…</div></div>
+  </section>
+
+  <!-- Panel 2: legal increase -->
+  <section class="workspace hidden" id="panelLegal">
+    <div class="form-col">
+      <label class="flabel" for="curRent">Your current annual rent</label>
+      <div class="quote-input"><span class="cur">AED</span><input type="text" inputmode="numeric" id="curRent" placeholder="0" aria-label="Current annual rent in AED"><span class="unit">/year</span></div>
+      <div style="height:18px"></div>
+      <label class="flabel" id="lbl-ctype">Property type</label>
+      <div class="select-wrap"><select id="ctype" aria-labelledby="lbl-ctype"></select>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
+      <label class="flabel" id="lbl-carea">Community</label>
+      <div class="select-wrap"><select id="carea" aria-labelledby="lbl-carea"></select>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
+      <label class="flabel" for="mktAvg">Average market rent for similar units <span class="opt">— editable</span></label>
+      <div class="quote-input"><span class="cur">AED</span><input type="text" inputmode="numeric" id="mktAvg" placeholder="0" aria-label="Average market rent in AED"><span class="unit">/year</span></div>
+      <p class="hint">Prefilled from our estimate. For the official figure, use the <a href="https://dubailand.gov.ae/en/eservices/rental-index/" target="_blank" rel="noopener">DLD rental index / calculator</a>.</p>
+    </div>
+    <div class="result-col"><div id="cresult" class="calc-empty">Enter your current rent to see the maximum increase your landlord can legally charge.</div></div>
+  </section>
+
+  <section class="explain">
+    <h2>How Dubai's rent-increase cap works</h2>
+    <p>Under Dubai Decree (43) of 2013, the maximum your landlord can raise the rent depends on how far your current rent sits <em>below</em> the average market rent (the RERA rental index) for similar properties:</p>
+    <table class="slabs">
+      <tr><th>Your rent vs market average</th><th>Max increase</th></tr>
+      <tr><td>Up to 10% below</td><td>0%</td></tr>
+      <tr><td>11% – 20% below</td><td>5%</td></tr>
+      <tr><td>21% – 30% below</td><td>10%</td></tr>
+      <tr><td>31% – 40% below</td><td>15%</td></tr>
+      <tr><td>More than 40% below</td><td>20%</td></tr>
+    </table>
+    <p class="disclaimer">Guidance only — not legal advice. The authoritative market figure comes from the Dubai Land Department's rental index / calculator, and a 90-day written notice is required before any change. Other emirates set their own rules.</p>
+  </section>
+
+  <p class="footnote">Mizan shows advertised asking rents next to what UAE tenants report actually signing — reports are anonymous. Rent figures are estimates, not quotes or an official index. <a href="/">Check fair prices for services →</a></p>
+</main>
+
+<div class="overlay hidden" id="modal">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div id="modalForm">
+      <h3 id="modalTitle">What rent did you sign?</h3>
+      <p class="dsub" id="modalSub"></p>
+      <div class="modal-input"><span class="cur">AED</span><input type="text" inputmode="numeric" id="modalPrice" placeholder="0" aria-label="Annual rent you signed, in AED"></div>
+      <input type="text" class="note-input" id="modalNote" maxlength="60" placeholder="Optional note — e.g. 4 cheques, unfurnished" aria-label="Optional note (no personal info)">
+      <button type="button" class="btn-submit" id="modalSubmit" disabled>Add my rent</button>
+    </div>
+    <div id="modalSuccess" class="modal-success hidden">
+      <div class="check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2F7D54" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <h3>Added.</h3>
+      <p id="modalSuccessText"></p>
+      <button type="button" class="btn-submit" id="modalDone">Done</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORE_KEY='mizan:submissions:v2';
+const UNLOCK_KEY='mizan:unlocked:v2';
+const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';
+const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
+
+// Property types + per-community annual rent ESTIMATES (AED/year) — [lo, typical, hi] asking.
+// 2026 market estimates (NOT an official index); refine over time. null = limited data for that type.
+const RTYPES=[
+  {id:'studio', label:'Studio'},
+  {id:'1br',    label:'1 bedroom'},
+  {id:'2br',    label:'2 bedrooms'},
+  {id:'3br',    label:'3 bedrooms'},
+  {id:'villa',  label:'Villa (3–4 bed)'},
+];
+const RAREAS=[
+  {emirate:'Dubai', name:'Dubai Marina',        r:{studio:[62,78,98],  '1br':[88,110,145], '2br':[135,170,225], '3br':[200,260,360], villa:null}},
+  {emirate:'Dubai', name:'JLT',                 r:{studio:[55,68,85],  '1br':[80,98,125],  '2br':[115,145,190], '3br':[165,205,270], villa:null}},
+  {emirate:'Dubai', name:'Downtown Dubai',      r:{studio:[75,92,115], '1br':[105,135,175],'2br':[165,210,290], '3br':[260,330,460], villa:null}},
+  {emirate:'Dubai', name:'Business Bay',        r:{studio:[60,75,95],  '1br':[88,110,145], '2br':[135,170,230], '3br':[210,270,380], villa:null}},
+  {emirate:'Dubai', name:'JVC',                 r:{studio:[42,52,65],  '1br':[58,70,90],   '2br':[85,105,135],  '3br':[120,150,195], villa:[150,190,260]}},
+  {emirate:'Dubai', name:'Al Barsha',           r:{studio:[42,52,66],  '1br':[60,74,95],   '2br':[90,115,150],  '3br':[130,165,215], villa:[180,235,330]}},
+  {emirate:'Dubai', name:'Dubai Silicon Oasis', r:{studio:[35,43,55],  '1br':[50,62,80],   '2br':[72,90,118],   '3br':[100,128,165], villa:[140,180,240]}},
+  {emirate:'Dubai', name:'Deira',               r:{studio:[30,38,50],  '1br':[42,53,68],   '2br':[62,78,100],   '3br':[88,110,140],  villa:null}},
+  {emirate:'Dubai', name:'Bur Dubai',           r:{studio:[36,46,58],  '1br':[50,62,80],   '2br':[72,90,118],   '3br':[100,125,165], villa:null}},
+  {emirate:'Dubai', name:'Al Qusais',           r:{studio:[30,38,48],  '1br':[42,52,66],   '2br':[60,75,95],    '3br':[85,108,140],  villa:null}},
+  {emirate:'Dubai', name:'International City',   r:{studio:[28,35,45],  '1br':[38,47,60],   '2br':[58,72,92],    '3br':null,          villa:null}},
+  {emirate:'Abu Dhabi', name:'Al Reem Island',  r:{studio:[45,56,72],  '1br':[62,78,100],  '2br':[95,118,155],  '3br':[135,170,225], villa:null}},
+  {emirate:'Abu Dhabi', name:'Khalifa City',    r:{studio:[40,50,62],  '1br':[55,70,90],   '2br':[80,100,130],  '3br':[110,140,185], villa:[140,180,250]}},
+  {emirate:'Sharjah', name:'Al Nahda (Sharjah)',r:{studio:[22,28,36],  '1br':[30,38,48],   '2br':[44,55,70],    '3br':[60,75,95],    villa:null}},
+  {emirate:'Sharjah', name:'Al Majaz',          r:{studio:[24,30,40],  '1br':[33,42,55],   '2br':[48,60,78],    '3br':[65,82,105],   villa:null}},
+];
+const areaByName=n=>RAREAS.find(a=>a.name===n);
+const typeById=id=>RTYPES.find(t=>t.id===id);
+function rentRange(area,typeId){const a=areaByName(area); if(!a)return null; const v=a.r[typeId]; return v?v.map(x=>x*1000):null;} // ×1000 → AED/year
+
+/* ---- persistence (shared with the services app: same table, category = rent-<type>) ---- */
+const inArtifact = typeof window!=='undefined' && !!window.storage;
+const adapters={
+  supabase: SUPABASE_READY ? {
+    name:'supabase',
+    url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
+    headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
+    async list(){
+      const r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      if(!r.ok) throw new Error('list '+r.status);
+      const rows=await r.json();
+      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''}));
+    },
+    async add(sub){
+      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},
+        body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null})});
+      if(!r.ok) throw new Error('add '+r.status);
+    },
+  } : null,
+  local:{
+    name:'local',
+    async list(){try{return JSON.parse(localStorage.getItem(STORE_KEY))||[]}catch(e){return[]}},
+    async add(sub){const all=await this.list();all.push(sub);try{localStorage.setItem(STORE_KEY,JSON.stringify(all))}catch(e){}},
+  },
+};
+const shared = adapters.supabase || adapters.local;
+const store={
+  list(){return shared.list()},
+  add(sub){return shared.add(sub)},
+  async get(key){try{return localStorage.getItem(key)}catch(e){return null}},
+  async set(key,val){try{localStorage.setItem(key,String(val))}catch(e){}},
+};
+let SUBMISSIONS=[], UNLOCKED=false;
+async function loadState(){ try{SUBMISSIONS=await store.list()}catch(e){SUBMISSIONS=[]} UNLOCKED=(await store.get(UNLOCK_KEY))==='1'; }
+
+/* ---- stats (same approach as the services app) ---- */
+const RECENT_MS=12*30*24*3600*1000;
+function pct(arr,q){if(!arr.length)return null;const s=[...arr].sort((a,b)=>a-b);const i=(s.length-1)*q;const lo=Math.floor(i),hi=Math.ceil(i);return s[lo]+(s[hi]-s[lo])*(i-lo)}
+function iqrKeep(prices){if(prices.length<4)return{kept:prices};const q1=pct(prices,.25),q3=pct(prices,.75),iqr=q3-q1,lo=q1-1.5*iqr,hi=q3+1.5*iqr;const kept=prices.filter(p=>p>=lo&&p<=hi);return kept.length?{kept}:{kept:prices}}
+function paidStats(cat,area){
+  const all=SUBMISSIONS.filter(d=>d.c===cat&&d.a===area);
+  const fresh=all.filter(d=>Date.now()-d.t<=RECENT_MS);
+  const use=fresh.length>=3?fresh:all, raw=use.map(d=>d.p);
+  if(!raw.length)return{count:0,freshCount:fresh.length};
+  const {kept}=iqrKeep(raw);
+  return{count:raw.length,freshCount:fresh.length,p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
+}
+const CAP_BUCKET=2, CAP_DAY=12, DAY_MS=864e5;
+function submitGuard(sub){
+  let log=[];try{log=JSON.parse(localStorage.getItem('mizan:log'))||[]}catch(e){}
+  const now=Date.now();log=log.filter(e=>now-e.t<DAY_MS);
+  if(log.some(e=>e.c===sub.c&&e.a===sub.a&&e.p===sub.p))return{ok:false,msg:'You already added that exact rent'};
+  if(log.filter(e=>e.c===sub.c&&e.a===sub.a).length>=CAP_BUCKET)return{ok:false,msg:'Thanks — you’ve added enough here for today'};
+  if(log.length>=CAP_DAY)return{ok:false,msg:'That’s a lot today — try again tomorrow'};
+  return{ok:true,commit(){log.push({c:sub.c,a:sub.a,p:sub.p,t:now});try{localStorage.setItem('mizan:log',JSON.stringify(log))}catch(e){}}};
+}
+const $=id=>document.getElementById(id);
+function escapeHTML(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function aed(n){return Math.round(n).toLocaleString('en-US')}
+function money(n){return 'AED '+aed(n)}
+function moneyRange(a,b){return 'AED '+aed(a)+' – '+aed(b)}
+function relTime(t){const d=(Date.now()-t)/864e5;if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
+
+/* ---- combobox (same as the services app) ---- */
+function makeCombobox(select, opts){
+  opts=opts||{};
+  const wrap=select.closest('.select-wrap')||select.parentElement;
+  select.style.display='none';
+  const oldChev=wrap.querySelector('.chev'); if(oldChev) oldChev.style.display='none';
+  const combo=document.createElement('div'); combo.className='combo';
+  const trigger=document.createElement('button'); trigger.type='button'; trigger.className='combo-trigger';
+  trigger.setAttribute('aria-haspopup','listbox'); trigger.setAttribute('aria-expanded','false');
+  if(opts.labelledBy) trigger.setAttribute('aria-labelledby',opts.labelledBy);
+  trigger.innerHTML='<span class="combo-val"></span><svg class="combo-chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  const panel=document.createElement('div'); panel.className='combo-panel'; panel.hidden=true; panel.id=select.id+'-panel';
+  trigger.setAttribute('aria-controls',panel.id);
+  const search=document.createElement('input'); search.type='text'; search.className='combo-search';
+  search.placeholder=opts.placeholder||'Search…'; search.setAttribute('aria-label',opts.placeholder||'Search'); search.autocomplete='off'; search.spellcheck=false;
+  const listEl=document.createElement('ul'); listEl.className='combo-list'; listEl.setAttribute('role','listbox');
+  panel.appendChild(search); panel.appendChild(listEl);
+  combo.appendChild(trigger); combo.appendChild(panel); wrap.appendChild(combo);
+  let flat=[], active=-1;
+  function model(){const gs=[...select.querySelectorAll('optgroup')];return gs.length?gs.map(g=>({label:g.label,opts:[...g.querySelectorAll('option')]})):[{label:'',opts:[...select.options]}];}
+  function labelOf(){const o=[...select.options].find(o=>o.value===select.value);return o?o.text:''}
+  function syncTrigger(){trigger.querySelector('.combo-val').textContent=labelOf()}
+  function build(filter){
+    filter=(filter||'').trim().toLowerCase(); listEl.innerHTML=''; flat=[];
+    model().forEach(g=>{
+      const matches=g.opts.filter(o=>o.text.toLowerCase().includes(filter));
+      if(!matches.length)return;
+      if(g.label){const h=document.createElement('li');h.className='combo-group';h.textContent=g.label;h.setAttribute('role','presentation');listEl.appendChild(h);}
+      matches.forEach(o=>{const li=document.createElement('li');li.className='combo-opt';li.setAttribute('role','option');li.dataset.value=o.value;li.id=select.id+'-opt-'+flat.length;li.textContent=o.text;if(o.value===select.value){li.setAttribute('aria-selected','true');li.classList.add('sel')}listEl.appendChild(li);flat.push(li);});
+    });
+    if(!flat.length){const li=document.createElement('li');li.className='combo-empty';li.textContent='No matches';listEl.appendChild(li);}
+    active=flat.findIndex(li=>li.dataset.value===select.value); if(active<0&&flat.length)active=0; paint();
+  }
+  function paint(){flat.forEach((li,i)=>li.classList.toggle('active',i===active));if(active>=0&&flat[active]){listEl.setAttribute('aria-activedescendant',flat[active].id);flat[active].scrollIntoView({block:'nearest'})}else listEl.removeAttribute('aria-activedescendant')}
+  function open(){if(!panel.hidden)return;panel.hidden=false;trigger.setAttribute('aria-expanded','true');search.value='';build('');setTimeout(()=>search.focus(),0);document.addEventListener('mousedown',onDown,true)}
+  function close(){if(panel.hidden)return;panel.hidden=true;trigger.setAttribute('aria-expanded','false');document.removeEventListener('mousedown',onDown,true)}
+  function onDown(e){if(!combo.contains(e.target))close()}
+  function choose(li){if(!li||li.dataset.value==null)return;if(select.value!==li.dataset.value){select.value=li.dataset.value;select.dispatchEvent(new Event('change',{bubbles:true}))}syncTrigger();close();trigger.focus()}
+  trigger.addEventListener('click',()=>panel.hidden?open():close());
+  trigger.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='Enter'||e.key===' '){e.preventDefault();open()}});
+  search.addEventListener('input',()=>build(search.value));
+  search.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();if(flat.length){active=Math.min(flat.length-1,active+1);paint()}}else if(e.key==='ArrowUp'){e.preventDefault();if(flat.length){active=Math.max(0,active-1);paint()}}else if(e.key==='Enter'){e.preventDefault();choose(flat[active])}else if(e.key==='Escape'){e.preventDefault();close();trigger.focus()}else if(e.key==='Tab'){close()}});
+  listEl.addEventListener('mousedown',e=>{const li=e.target.closest('.combo-opt');if(li){e.preventDefault();choose(li)}});
+  listEl.addEventListener('mousemove',e=>{const li=e.target.closest('.combo-opt');if(li){const i=flat.indexOf(li);if(i>=0&&i!==active){active=i;paint()}}});
+  select.addEventListener('change',syncTrigger); syncTrigger();
+}
+
+const TONES={fair:{c:'var(--fair)',bg:'var(--fair-bg)'},steep:{c:'var(--steep)',bg:'var(--steep-bg)'},walk:{c:'var(--walk)',bg:'var(--walk-bg)'},going:{c:'var(--teal)',bg:'var(--teal-bg)'}};
+
+function fillSelect(sel, withTypes){
+  if(withTypes){ sel.innerHTML=RTYPES.map(t=>`<option value="${t.id}">${escapeHTML(t.label)}</option>`).join(''); sel.value='1br'; return; }
+  const groups=[];
+  RAREAS.forEach(a=>{let g=groups.find(x=>x.e===a.emirate);if(!g){g={e:a.emirate,items:[]};groups.push(g)}g.items.push(a)});
+  sel.innerHTML=groups.map(g=>`<optgroup label="${escapeHTML(g.e)}">`+g.items.map(a=>`<option value="${escapeHTML(a.name)}">${escapeHTML(a.name)}</option>`).join('')+`</optgroup>`).join('');
+  sel.value='Dubai Marina';
+}
+
+/* ===== FAIR RENT ===== */
+let shareMsg='', shareUrl='';
+function renderFair(){
+  const typeId=$('rtype').value, area=$('rarea').value, type=typeById(typeId);
+  const qRaw=parseFloat($('rquote').value), q=(!isNaN(qRaw)&&qRaw>0)?qRaw:0, hasQuote=q>0;
+  const range=rentRange(area,typeId);
+  const cat='rent-'+typeId;
+  const s=paidStats(cat,area);
+  const hasPaid=s.count>=5, paidVisible=hasPaid&&UNLOCKED;
+
+  if(!range){
+    $('rresult').innerHTML=`<div class="result-head"><span class="svc">${escapeHTML(type.label)}</span><span class="rin">in</span><span class="rar">${escapeHTML(area)}</span></div>
+      <div class="verdict" style="background:var(--teal-bg)"><div class="kicker" style="color:var(--teal)">Limited data</div>
+      <p class="verdict-line">We don't have a reliable asking range for a ${escapeHTML(type.label.toLowerCase())} in ${escapeHTML(area)} yet. Pick another type, or add what you signed to start the range.</p></div>
+      <div class="meta-row"><div class="meta"><span class="dot"></span>Be the first to report here</div>
+      <button type="button" class="btn-primary" id="reportBtn">Report your rent</button></div>`;
+    const rb=$('reportBtn'); if(rb) rb.onclick=openModal; shareMsg=''; shareUrl=location.origin+'/rent';
+    return;
+  }
+  const [lo,typ,hi]=range;
+  const pLo=paidVisible?s.p25:null, pHi=paidVisible?s.p75:null, pMid=paidVisible?s.p50:null;
+  const refLo=paidVisible?pLo:lo, refMid=paidVisible?pMid:typ, refHi=paidVisible?pHi:hi;
+
+  let tier,word,kicker=hasQuote?'Verdict':(paidVisible?'Going rate':'Asking range'),line,statBig='',statSub='',hasStat=false;
+  if(!hasQuote){
+    tier='going'; word=paidVisible?'Going rate':'Typical asking';
+    line=paidVisible?`In ${escapeHTML(area)}, a ${escapeHTML(type.label.toLowerCase())} is signing around ${moneyRange(pLo,pHi)} a year. Enter a figure to check it.`
+                    :`A ${escapeHTML(type.label.toLowerCase())} in ${escapeHTML(area)} is advertised around ${moneyRange(lo,hi)} a year. Add a signed rent to reveal what tenants actually pay.`;
+  } else if(q<=refLo){
+    tier='fair'; word='Below market';
+    line='Below the usual range here — that looks like a good deal. Confirm the cheque count and what’s included.';
+    const vs=Math.round((1-q/refHi)*100); if(vs>=3){hasStat=true;statBig=vs+'%';statSub='under the top of range';}
+  } else if(q<=refMid){
+    tier='fair'; word='Fair';
+    line='Within what tenants pay for this type here. Reasonable — a couple of viewings could still trim it.';
+  } else if(q<=refHi){
+    tier='steep'; word='Top of market';
+    const over=Math.round((q/refMid-1)*100); if(over>=3){hasStat=true;statBig='+'+over+'%';statSub='over typical';}
+    line='At the high end of the range. There’s usually room to negotiate, especially with more cheques.';
+  } else {
+    tier='walk'; word='Over market';
+    const over=Math.round((q/refHi-1)*100); hasStat=true; statBig='+'+over+'%'; statSub='over the top of range';
+    line='Above the typical range for this type and area. Push back hard or keep looking.';
+  }
+  const tone=TONES[tier];
+
+  const signedVal = paidVisible ? moneyRange(pLo,pHi) : hasPaid ? '🔒 add a rent to reveal' : 'no reports yet';
+  const signedCls = paidVisible ? 'v paid' : 'v muted';
+  const quoteRow = hasQuote ? `<div class="brow"><span class="k">Your rent</span><span class="v" style="color:${tone.c}">${money(q)}/yr</span></div>` : '';
+  let metaText;
+  if(s.count===0) metaText='No tenant reports yet · be the first';
+  else if(paidVisible) metaText=`${s.count} tenant report${s.count>1?'s':''} · last ${relTime(s.lastSeen)}`;
+  else if(hasPaid) metaText=`${s.count} tenants reported · add yours to reveal the range`;
+  else metaText=`${s.count} report${s.count>1?'s':''} so far · ${5-s.count} more to unlock`;
+
+  shareMsg=`${type.label} rent in ${area}: ${paidVisible?'tenants sign':'asking'} ${moneyRange(refLo,refHi)}/yr. Is your rent fair? Check on Mizan:`;
+  shareUrl=location.origin+'/rent?type='+typeId+'&area='+encodeURIComponent(area);
+
+  $('rresult').innerHTML=`
+    <div class="result-head"><span class="svc">${escapeHTML(type.label)} rent</span><span class="rin">in</span><span class="rar">${escapeHTML(area)}</span></div>
+    <div class="verdict" style="background:${tone.bg};border:1px solid ${tone.c}22">
+      <div class="verdict-top"><div><div class="kicker" style="color:${tone.c}">${kicker}</div><div class="verdict-word" style="color:${tone.c}">${word}</div></div>
+      ${hasStat?`<div class="verdict-stat"><div class="big" style="color:${tone.c}">${statBig}</div><div class="sub">${statSub}</div></div>`:''}</div>
+      <p class="verdict-line">${line}</p>
+    </div>
+    <div class="breakdown">
+      <div class="brow"><span class="k">Asking range (advertised)</span><span class="v">${moneyRange(lo,hi)}/yr</span></div>
+      <div class="brow"><span class="k paid">Tenants signed</span><span class="${signedCls}">${signedVal}</span></div>
+      ${quoteRow}
+      <div class="brow alt"><span class="k">Typical asking</span><span class="v strong">${money(typ)}/yr</span></div>
+    </div>
+    <div class="meta-row"><div class="meta"><span class="dot"></span>${metaText}</div>
+      <div class="actions">
+        <button type="button" class="btn-ghost" id="shareBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share</button>
+        <button type="button" class="btn-primary" id="reportBtn">Report your rent</button>
+      </div>
+    </div>`;
+  const rb=$('reportBtn'); if(rb) rb.onclick=openModal;
+  const sb=$('shareBtn'); if(sb) sb.onclick=shareResult;
+}
+function shareResult(){
+  if(!shareMsg)return;
+  if(navigator.share){navigator.share({title:'Mizan',text:shareMsg,url:shareUrl}).catch(()=>{});return;}
+  window.open('https://wa.me/?text='+encodeURIComponent(shareMsg+' '+shareUrl),'_blank','noopener');
+  try{if(navigator.clipboard)navigator.clipboard.writeText(shareUrl)}catch(e){}
+}
+
+/* ===== LEGAL INCREASE (Dubai Decree 43/2013) ===== */
+function rentCap(current, market){
+  if(!(current>0)||!(market>0))return null;
+  const below=(market-current)/market*100;
+  let cap; if(below<=10)cap=0; else if(below<=20)cap=5; else if(below<=30)cap=10; else if(below<=40)cap=15; else cap=20;
+  return {below, cap, maxNew:Math.round(current*(1+cap/100))};
+}
+function prefillMarket(){
+  const range=rentRange($('carea').value, $('ctype').value);
+  if(range && !$('mktAvg').dataset.touched){ $('mktAvg').value=range[1]; }
+  renderLegal();
+}
+function renderLegal(){
+  const cur=parseFloat($('curRent').value)*1, mkt=parseFloat($('mktAvg').value)*1;
+  if(!(cur>0)){ $('cresult').className='calc-empty'; $('cresult').innerHTML='Enter your current rent to see the maximum increase your landlord can legally charge.'; return; }
+  if(!(mkt>0)){ $('cresult').className='calc-empty'; $('cresult').innerHTML='Enter (or keep) the average market rent for similar units to calculate the cap.'; return; }
+  const res=rentCap(cur,mkt); const below=Math.round(res.below);
+  let tone, head, sub, line;
+  if(res.cap===0){
+    tone=TONES.fair; head='No increase'; sub='allowed this renewal';
+    line = below<=0 ? `Your rent is at or above the market average, so under Decree 43 the landlord cannot legally raise it at renewal.`
+                    : `Your rent is only about ${below}% below the market average — within 10%, so no increase is permitted this renewal.`;
+  } else {
+    tone=res.cap>=15?TONES.steep:TONES.going; head='Up to '+res.cap+'%'; sub='maximum legal increase';
+    line=`Your rent is about ${below}% below the market average, so the landlord may raise it by up to ${res.cap}% — a maximum new rent of <strong>${money(res.maxNew)}/yr</strong>. They must give 90 days’ written notice.`;
+  }
+  $('cresult').className='';
+  $('cresult').innerHTML=`
+    <div class="legalbox" style="background:${tone.bg};border:1px solid ${tone.c}22">
+      <div class="kicker" style="color:${tone.c}">Maximum legal increase</div>
+      <div class="big" style="color:${tone.c}">${head}</div>
+      <div class="sub" style="color:${tone.c}">${sub}</div>
+      <p class="line">${line}</p>
+    </div>
+    <div class="breakdown">
+      <div class="brow"><span class="k">Current rent</span><span class="v">${money(cur)}/yr</span></div>
+      <div class="brow"><span class="k">Market average</span><span class="v">${money(mkt)}/yr</span></div>
+      <div class="brow"><span class="k">Below market</span><span class="v">${below}%</span></div>
+      <div class="brow alt"><span class="k">Max new rent</span><span class="v strong">${money(res.maxNew)}/yr</span></div>
+    </div>`;
+}
+
+/* ===== modal (report a signed rent) ===== */
+let lastFocus=null;
+function openModal(){
+  const type=typeById($('rtype').value), area=$('rarea').value;
+  $('modalSub').innerHTML=`For a <strong>${escapeHTML(type.label)}</strong> in <strong>${escapeHTML(area)}</strong>, per year. Shared anonymously — no name, no contact.`;
+  $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
+  $('modalPrice').value=''; $('modalNote').value=''; updateModalBtn();
+  $('modal').classList.remove('hidden'); lastFocus=document.activeElement;
+  document.addEventListener('keydown',onModalKey); setTimeout(()=>$('modalPrice').focus(),30);
+}
+function closeModal(){$('modal').classList.add('hidden');document.removeEventListener('keydown',onModalKey);if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+function onModalKey(e){if(e.key==='Escape'){closeModal()}else if(e.key==='Tab'){trapFocus(e)}}
+function trapFocus(e){const f=[...$('modal').querySelectorAll('button,input')].filter(el=>el.offsetParent!==null&&!el.disabled);if(!f.length)return;const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
+function updateModalBtn(){const v=parseFloat($('modalPrice').value);$('modalSubmit').disabled=!(v>0)}
+async function submitModal(){
+  const p=parseFloat($('modalPrice').value); if(isNaN(p)||p<=0)return;
+  if(p>=10000000){toast('That rent looks too high');return}
+  const sub={c:'rent-'+$('rtype').value,a:$('rarea').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
+  const guard=submitGuard(sub); if(!guard.ok){toast(guard.msg);return}
+  let synced=true;
+  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
+  const type=typeById($('rtype').value);
+  $('modalSuccessText').textContent=`Thank you — the next person renting a ${type.label.toLowerCase()} in ${sub.a} gets a sharper picture because of you.`;
+  $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
+  setTimeout(()=>{const d=$('modalDone');if(d)d.focus()},30);
+  renderFair(); if(!synced) toast('Saved on this device only');
+}
+let toastTimer;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
+
+/* ===== tabs ===== */
+function showTab(which){
+  const fair=which==='fair';
+  $('panelFair').classList.toggle('hidden',!fair); $('panelLegal').classList.toggle('hidden',fair);
+  $('tabFair').classList.toggle('active',fair); $('tabLegal').classList.toggle('active',!fair);
+  $('tabFair').setAttribute('aria-selected',fair); $('tabLegal').setAttribute('aria-selected',!fair);
+}
+
+(async function(){
+  fillSelect($('rtype'),true); fillSelect($('rarea'),false);
+  fillSelect($('ctype'),true); fillSelect($('carea'),false);
+  // deep-link: /rent?type=1br&area=JLT
+  const p=new URLSearchParams(location.search);
+  const t=p.get('type'); if(t&&typeById(t)){$('rtype').value=t;$('ctype').value=t;}
+  const a=p.get('area'); if(a&&areaByName(a)){$('rarea').value=a;$('carea').value=a;}
+  await loadState();
+  makeCombobox($('rtype'),{placeholder:'Search types…',labelledBy:'lbl-type'});
+  makeCombobox($('rarea'),{placeholder:'Search communities…',labelledBy:'lbl-area'});
+  makeCombobox($('ctype'),{placeholder:'Search types…',labelledBy:'lbl-ctype'});
+  makeCombobox($('carea'),{placeholder:'Search communities…',labelledBy:'lbl-carea'});
+  $('rtype').addEventListener('change',renderFair);
+  $('rarea').addEventListener('change',renderFair);
+  $('rquote').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.]/g,'');renderFair()});
+  $('ctype').addEventListener('change',prefillMarket);
+  $('carea').addEventListener('change',prefillMarket);
+  $('curRent').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.]/g,'');renderLegal()});
+  $('mktAvg').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.]/g,'');e.target.dataset.touched='1';renderLegal()});
+  $('tabFair').onclick=()=>showTab('fair'); $('tabLegal').onclick=()=>showTab('legal');
+  const tt=$('themeToggle'); if(tt) tt.onclick=()=>{const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);try{localStorage.setItem('mizan:theme',next)}catch(e){}};
+  $('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
+  $('modalSubmit').onclick=submitModal; $('modalDone').onclick=closeModal;
+  $('modalPrice').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.]/g,'');updateModalBtn()});
+  // if deep-linked with a type/area for the calculator, jump to it
+  if(p.get('tab')==='legal') showTab('legal');
+  renderFair(); prefillMarket();
+})();
+</script>
+</body>
+</html>

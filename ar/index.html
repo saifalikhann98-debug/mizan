@@ -371,7 +371,8 @@
     </div>
     <div class="nav-right">
       <span class="nav-meta">Crowdsourced fair prices · UAE</span>
-      <a href="/ar/" hreflang="ar" lang="ar" aria-label="العربية" style="font-size:14px;font-weight:600;color:var(--teal);flex-shrink:0;text-decoration:none">عربي</a>
+      <a href="/rent" id="navRent" style="font-size:14px;font-weight:600;color:var(--teal);flex-shrink:0;text-decoration:none">Rent</a>
+      <a href="/ar/" id="langLink" hreflang="ar" lang="ar" aria-label="العربية" style="font-size:14px;font-weight:600;color:var(--teal);flex-shrink:0;text-decoration:none">عربي</a>
       <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M2 12h2.5M19.5 12H22M4.5 19.5l1.8-1.8M17.7 6.3l1.8-1.8"/></svg>
@@ -588,7 +589,7 @@ const moneyRange = (a,b) => LANG==='ar' ? `${aed(a)} – ${aed(b)} درهم` : `
 // extra UI strings + the FAQ content (per-locale)
 Object.assign(T.en,{
   noMatches:'No matches', searchSvc:'Search services…', searchArea:'Search areas…', docTitle:'Mizan — Is the price fair?',
-  shareBtn:'Share', shareResidents:'residents pay', shareTypical:'typically', shareCheck:'Is your quote fair? Check on Mizan:',
+  shareBtn:'Share', shareResidents:'residents pay', shareTypical:'typically', shareCheck:'Is your quote fair? Check on Mizan:', navRent:'Rent',
   faqs:[
     [`How much should AC cleaning cost in Dubai?`,`A standard split-unit AC service is usually advertised around AED 150 to 350 in Dubai. Many residents pay less than the top of that range, which is exactly the gap Mizan shows you.`],
     [`What is a fair price for a men's haircut in the UAE?`,`Men's haircuts in the UAE commonly run from about AED 40 at budget barbers to AED 150 at premium salons. Mizan compares the advertised rate with what people report actually paying in your area.`],
@@ -600,7 +601,7 @@ Object.assign(T.en,{
 });
 Object.assign(T.ar,{
   noMatches:'لا نتائج مطابقة', searchSvc:'ابحث عن خدمة…', searchArea:'ابحث عن منطقة…', docTitle:'ميزان — هل السعر عادل؟',
-  shareBtn:'مشاركة', shareResidents:'يدفع السكان', shareTypical:'عادةً', shareCheck:'هل سعرك عادل؟ تحقّق على ميزان:',
+  shareBtn:'مشاركة', shareResidents:'يدفع السكان', shareTypical:'عادةً', shareCheck:'هل سعرك عادل؟ تحقّق على ميزان:', navRent:'الإيجارات',
   faqs:[
     [`كم يجب أن تكلّف خدمة تنظيف المكيفات في دبي؟`,`تُعلَن خدمة تنظيف وحدة سبليت عادةً بين 150 و350 درهماً في دبي. كثير من السكان يدفعون أقل من الحد الأعلى للنطاق، وهذه بالضبط الفجوة التي يكشفها ميزان.`],
     [`ما هو السعر العادل لقص الشعر الرجالي في الإمارات؟`,`يتراوح قص الشعر الرجالي في الإمارات عادةً من نحو 40 درهماً لدى الحلاقين الاقتصاديين إلى 150 درهماً في الصالونات الراقية. يقارن ميزان السعر المُعلن بما يبلّغ الناس بدفعه فعلاً في منطقتك.`],
@@ -1169,7 +1170,8 @@ function applyStaticI18n(){
   document.documentElement.lang=LANG; document.documentElement.dir=(LANG==='ar'?'rtl':'ltr');
   document.title=L.docTitle;
   set('.nav-meta', L.tagline);
-  const ll=document.querySelector('.nav-right a');
+  const rl=document.getElementById('navRent'); if(rl) rl.textContent=L.navRent;
+  const ll=document.getElementById('langLink');
   if(ll){ ll.textContent=L.langLink; ll.setAttribute('href',L.langHref); const other=(LANG==='ar'?'en':'ar');
     ll.setAttribute('lang',other); ll.setAttribute('hreflang',other); ll.setAttribute('aria-label',L.langLink); }
   set('.eyebrow', L.eyebrow);
