@@ -461,6 +461,23 @@ const RAREAS=[
   {emirate:'Abu Dhabi', name:'Khalifa City',    r:{studio:[40,50,62],  '1br':[55,70,90],   '2br':[80,100,130],  '3br':[110,140,185], villa:[140,180,250]}},
   {emirate:'Sharjah', name:'Al Nahda (Sharjah)',r:{studio:[22,28,36],  '1br':[30,38,48],   '2br':[44,55,70],    '3br':[60,75,95],    villa:null}},
   {emirate:'Sharjah', name:'Al Majaz',          r:{studio:[24,30,40],  '1br':[33,42,55],   '2br':[48,60,78],    '3br':[65,82,105],   villa:null}},
+  // --- expanded communities (2026 estimates, calibrated to the set above) ---
+  {emirate:'Dubai', name:'Palm Jumeirah',       r:{studio:[95,120,160], '1br':[140,180,240], '2br':[200,260,380], '3br':[320,430,650], villa:[550,850,1500]}},
+  {emirate:'Dubai', name:'JBR',                 r:{studio:[75,95,120],  '1br':[110,145,200], '2br':[160,215,300], '3br':[240,320,450], villa:null}},
+  {emirate:'Dubai', name:'Dubai Hills Estate',  r:{studio:[58,75,98],   '1br':[85,110,150],  '2br':[130,165,230], '3br':[190,250,360], villa:[280,420,750]}},
+  {emirate:'Dubai', name:'The Greens',          r:{studio:[55,70,90],   '1br':[80,102,135],  '2br':[120,152,205], '3br':[175,225,300], villa:null}},
+  {emirate:'Dubai', name:'Barsha Heights',      r:{studio:[48,62,80],   '1br':[68,86,115],   '2br':[100,128,170], '3br':[140,180,240], villa:null}},
+  {emirate:'Dubai', name:'Motor City',          r:{studio:[42,54,70],   '1br':[60,76,100],   '2br':[88,112,150],  '3br':[125,160,220], villa:[180,235,340]}},
+  {emirate:'Dubai', name:'Al Furjan',           r:{studio:[45,58,75],   '1br':[62,80,105],   '2br':[90,115,155],  '3br':[130,165,225], villa:[180,240,360]}},
+  {emirate:'Dubai', name:'JVT',                 r:{studio:[42,54,70],   '1br':[58,74,98],    '2br':[85,108,145],  '3br':[120,155,210], villa:[160,205,290]}},
+  {emirate:'Dubai', name:'Arjan',               r:{studio:[38,50,65],   '1br':[55,70,95],    '2br':[80,105,145],  '3br':[120,155,210], villa:null}},
+  {emirate:'Dubai', name:'Town Square',         r:{studio:[38,48,62],   '1br':[52,66,88],    '2br':[75,95,130],   '3br':[105,135,180], villa:[150,195,270]}},
+  {emirate:'Dubai', name:'Dubai Sports City',   r:{studio:[35,46,60],   '1br':[50,64,85],    '2br':[72,92,125],   '3br':[100,130,175], villa:null}},
+  {emirate:'Dubai', name:'Discovery Gardens',   r:{studio:[38,48,62],   '1br':[52,65,85],    '2br':[75,95,125],   '3br':null,          villa:null}},
+  {emirate:'Dubai', name:'Mirdif',              r:{studio:[35,46,60],   '1br':[50,65,88],    '2br':[72,92,125],   '3br':[100,130,175], villa:[130,175,270]}},
+  {emirate:'Abu Dhabi', name:'Saadiyat Island', r:{studio:[60,80,105],  '1br':[85,112,150],  '2br':[130,168,230], '3br':[190,250,350], villa:[350,490,820]}},
+  {emirate:'Abu Dhabi', name:'Al Raha Beach',   r:{studio:[55,72,95],   '1br':[80,102,135],  '2br':[120,152,210], '3br':[175,225,310], villa:null}},
+  {emirate:'Sharjah', name:'Muwailih',          r:{studio:[22,30,40],   '1br':[30,40,52],    '2br':[45,58,78],    '3br':[62,80,105],   villa:null}},
 ];
 const areaByName=n=>RAREAS.find(a=>a.name===n);
 const typeById=id=>RTYPES.find(t=>t.id===id);
