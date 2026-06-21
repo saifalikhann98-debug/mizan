@@ -86,3 +86,39 @@ Deep-link format: `https://www.mizan-price.com/?service=<id>&area=<Area>` (e.g.
 - **WhatsApp:** your building/community groups.
 - **Pace it:** a few genuine replies/posts a week, not a blast. One good r/dubai answer can
   out-perform everything else combined.
+
+---
+
+# Rent posts (link the new rent guides)
+
+The strongest rent backlink play is answering the two questions r/dubai asks *constantly*:
+"my landlord is raising my rent — is that legal?" and "how much is rent for a [X]-bed in [area]?"
+
+## R1. Reply — "is my rent increase legal?" (the highest-value one)
+Drop this on any "landlord raising rent / renewal increase" thread:
+> Dubai caps how much a landlord can raise rent at renewal — it's set by how far your current
+> rent is *below* the market average (Decree 43 of 2013): within 10% of market = no increase
+> allowed, then it steps up to a max of 20% if you're well below. They also need to give 90 days'
+> written notice. I built a free calculator that works out your exact cap — punch in your current
+> rent + the market average and it tells you the most they can legally charge:
+> https://www.mizan-price.com/rent — full disclosure, it's mine, no ads.
+
+## R2. Reply — "how much is rent for a 1-bed in [area]?"
+Swap the area + numbers to match (grab them from the guide):
+> For Dubai Marina, 1-beds are mostly advertised around AED 88k–145k/yr right now — but asking
+> isn't signed; people usually negotiate below the top. I put together a free page with the
+> typical range by bedroom type for Marina: https://www.mizan-price.com/rent/dubai-marina
+> (mine, no ads). Check a couple of live listings too.
+
+Guide links by area: `/rent/dubai-marina`, `/rent/jlt`, `/rent/downtown-dubai`, `/rent/business-bay`,
+`/rent/jvc`, `/rent/al-barsha`, `/rent/al-qusais`, `/rent/deira`, `/rent/bur-dubai`,
+`/rent/dubai-silicon-oasis`, `/rent/international-city`, `/rent/al-reem-island`, `/rent/khalifa-city`.
+
+## R3. Facebook (Dubai expat / housing / community groups)
+> Two free tools for anyone renewing or flat-hunting: a checker for whether your rent is fair by
+> community (studio → villa), and a calculator for the max your landlord can *legally* raise rent
+> under Dubai's RERA rules. No ads, no sign-up 👉 https://www.mizan-price.com/rent
+
+## R4. WhatsApp (building / community groups)
+> Handy free site if your rent's up for renewal — *Mizan* tells you the max your landlord can
+> legally raise it (Dubai RERA rules) + typical rents by area. https://www.mizan-price.com/rent
