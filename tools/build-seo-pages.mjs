@@ -173,7 +173,7 @@ const fontsLink = (extra) => `<link rel="preconnect" href="https://fonts.googlea
 
 function alternates(enPath, arPath) {
   return `<link rel="alternate" hreflang="en" href="${ORIGIN}${enPath}">` +
-         `<link rel="alternate" hreflang="ar" href="${ORIGIN}${arPath}">` +
+         (arPath ? `<link rel="alternate" hreflang="ar" href="${ORIGIN}${arPath}">` : '') +
          `<link rel="alternate" hreflang="x-default" href="${ORIGIN}${enPath}">`;
 }
 function head(L, title, desc, canonPath, enPath, arPath, jsonld) {
@@ -191,7 +191,8 @@ function nav(L, altPath, altLabel) {
   const brand = L.lang === 'ar'
     ? `<a class="brand" href="${L.base}/">${SCALE}<span class="ar" style="opacity:1;font-size:22px">ميزان</span></a>`
     : `<a class="brand" href="/">${SCALE}<span class="w">Mizan</span><span class="ar">ميزان</span></a>`;
-  return `<header class="nav"><div class="nav-in">${brand}<div class="nav-r"><a href="${altPath}">${altLabel}</a><a href="${L.lang === 'ar' ? '/ar/' : '/'}">${L.navCta}</a></div></div></header>`;
+  const alt = altPath ? `<a href="${altPath}">${altLabel}</a>` : '';
+  return `<header class="nav"><div class="nav-in">${brand}<div class="nav-r">${alt}<a href="${L.lang === 'ar' ? '/ar/' : '/'}">${L.navCta}</a></div></div></header>`;
 }
 function footer(L) {
   return `<footer><div class="foot-in">${L.foot} ${L.footLinks(ORIGIN === '' ? '' : '')}</div></footer></body></html>`;
@@ -264,6 +265,78 @@ function arApp() {
   return h;
 }
 
+// ===== RENT guides (English) — per-community pages from rent/index.html data =====
+const rentHtml = fs.readFileSync(path.join(ROOT, 'rent', 'index.html'), 'utf8');
+const RTYPES = eval(rentHtml.match(/const RTYPES=(\[[\s\S]*?\n\]);/)[1]);
+const RAREAS = eval(rentHtml.match(/const RAREAS=(\[[\s\S]*?\n\]);/)[1]);
+const slugify = s => s.toLowerCase().replace(/[()'".]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+const rentRangeOf = (area, t) => { const v = area.r[t]; return v ? v.map(x => x * 1000) : null; }; // data is in thousands
+
+const RENT_T = {
+  guides: 'Rent by area',
+  title: a => `${a} rent prices 2026 — studio to villa | Mizan`,
+  desc: a => `What it costs to rent in ${a}: typical annual asking rent for studios, 1, 2 & 3-bedroom apartments and villas, plus Dubai's legal rent-increase cap and what tenants actually pay.`,
+  h1: a => `Rent prices in ${a}`,
+  lede: a => `Typical annual asking rents in <strong>${a}</strong>, by property type. Landlords advertise high and negotiate, so tenants often sign below these figures — check your number against the range, and see whether a renewal increase is even legal.`,
+  rangeH: a => `Average rent in ${a} by property type`, thType: 'Property type', thRange: 'Asking rent / year',
+  estNote: 'Asking-rent estimates for 2026, in AED per year. Actual signed rents vary with the building, floor, view, furnishing and number of cheques.',
+  legalH: 'Is your rent increase legal?',
+  legalP: a => `In ${a}, as across Dubai, a renewal increase is capped by Decree 43 of 2013 — nothing if your rent is within 10% of the market average, rising in steps to a maximum of 20% if it sits far below, with 90 days' written notice required. Check your exact case with the calculator.`,
+  fairH: 'What is a fair rent here?',
+  fairP: a => `A fair rent in ${a} is at or below the typical asking figure for that property type. Compare a few listings and check what tenants report actually signing — the gap between asking and signed is your room to negotiate.`,
+  ctaP: a => `Renting in ${a}? Check if your rent is fair — or whether an increase is legal.`, ctaBtn: 'Open the rent checker',
+  relatedH: 'Rent in nearby areas',
+  faqs: (a, lo, hi) => [
+    { q: `How much is rent for a 1-bedroom in ${a}?`, a: `A 1-bedroom apartment in ${a} is typically advertised around ${lo} to ${hi} per year in 2026. Tenants often sign below the top of that range.` },
+    { q: `Can my landlord raise my rent in ${a}?`, a: `Only within Dubai's RERA cap (Decree 43/2013): no increase if your rent is within 10% of the market average, and 5–20% if it sits further below — with 90 days' written notice.` },
+    { q: `What do tenants actually pay vs the asking rent in ${a}?`, a: `Asking rents are what landlords advertise; signed rents are usually lower. Mizan shows the asking range next to what residents report actually paying so you can negotiate.` },
+  ],
+  hubTitle: 'UAE rent prices by community (2026) | Mizan',
+  hubDesc: "Browse typical rents across UAE communities — studio to villa — plus Dubai's legal rent-increase calculator. See what tenants actually pay.",
+  hubH1: 'Rent prices by community',
+  hubLede: 'What it really costs to rent across the UAE, community by community — typical asking rents by property type, with Dubai\'s legal rent-increase calculator. Or <a href="/rent">open the rent checker</a>.',
+};
+
+function rentGuidePage(area) {
+  const L = LOC.en, RT = RENT_T, name = area.name, slug = slugify(name);
+  const enPath = `/rent/${slug}`, canonPath = enPath;
+  const rows = RTYPES.filter(t => rentRangeOf(area, t.id)).map(t => { const r = rentRangeOf(area, t.id); return `<tr><td>${esc(t.label)}</td><td class="r">${L.range(r[0], r[2])}</td></tr>`; }).join('');
+  const one = rentRangeOf(area, '1br') || rentRangeOf(area, 'studio');
+  const faqs = RT.faqs(name, L.cur(one[0]), L.cur(one[2]));
+  const related = RAREAS.filter(o => o.emirate === area.emirate && o.name !== name).slice(0, 4).map(o => `<a href="/rent/${slugify(o.name)}">${esc(o.name)}</a>`).join('');
+  const jsonld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "BreadcrumbList", "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": L.home, "item": `${ORIGIN}/` },
+      { "@type": "ListItem", "position": 2, "name": RT.guides, "item": `${ORIGIN}/rent/areas` },
+      { "@type": "ListItem", "position": 3, "name": name, "item": `${ORIGIN}${canonPath}` }] },
+    { "@type": "FAQPage", "inLanguage": "en", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) }
+  ] };
+  return head(L, RT.title(name), RT.desc(name), canonPath, enPath, null, jsonld) + nav(L, null, null) + `<main>
+<div class="crumb"><a href="/">${L.home}</a> / <a href="/rent/areas">${esc(RT.guides)}</a> / ${esc(name)}</div>
+<h1>${esc(RT.h1(name))}</h1>
+<p class="lede">${RT.lede(esc(name))}</p>
+<h2>${esc(RT.rangeH(name))}</h2>
+<table><thead><tr><th>${esc(RT.thType)}</th><th class="ra">${esc(RT.thRange)}</th></tr></thead><tbody>${rows}</tbody></table>
+<p class="note">${esc(RT.estNote)}</p>
+<h2>${esc(RT.legalH)}</h2><p>${RT.legalP(esc(name))}</p>
+<h2>${esc(RT.fairH)}</h2><p>${RT.fairP(esc(name))}</p>
+<div class="ctabox"><p>${esc(RT.ctaP(name))}</p><a class="btn" href="/rent?area=${encodeURIComponent(name)}">${esc(RT.ctaBtn)} ${L.arrow}</a></div>
+<h2>${esc(L.faqH)}</h2>
+${faqs.map(f => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n')}
+${related ? `<h2>${esc(RT.relatedH)}</h2><div class="related">${related}</div>` : ''}
+</main>` + footer(L);
+}
+
+function rentHub() {
+  const L = LOC.en, RT = RENT_T, enPath = '/rent/areas', canonPath = enPath;
+  const byEm = []; RAREAS.forEach(a => { let g = byEm.find(x => x.k === a.emirate); if (!g) { g = { k: a.emirate, items: [] }; byEm.push(g); } g.items.push(a); });
+  const body = byEm.map(g => `<div class="idxgroup"><h3>${esc(g.k)}</h3><div class="idxgrid">${g.items.map(a => `<a href="/rent/${slugify(a.name)}">${esc(a.name)}</a>`).join('')}</div></div>`).join('');
+  const jsonld = { "@context": "https://schema.org", "@type": "CollectionPage", "name": RT.hubTitle, "url": `${ORIGIN}${canonPath}`, "inLanguage": "en", "description": RT.hubDesc };
+  return head(L, RT.hubTitle, RT.hubDesc, canonPath, enPath, null, jsonld) + nav(L, null, null) + `<main>
+<div class="crumb"><a href="/">${L.home}</a> / ${esc(RT.guides)}</div>
+<h1>${esc(RT.hubH1)}</h1><p class="lede">${RT.hubLede}</p>${body}</main>` + footer(L);
+}
+
 // ---- write everything ----
 const pricesDir = path.join(ROOT, 'prices');
 fs.mkdirSync(pricesDir, { recursive: true });
@@ -284,10 +357,16 @@ for (const key of ['en', 'ar']) {
 fs.mkdirSync(path.join(ROOT, 'ar'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'ar', 'index.html'), arApp()); pages++;
 
+// rent guides (English) — per-community pages + hub
+fs.mkdirSync(path.join(ROOT, 'rent', 'areas'), { recursive: true });
+fs.writeFileSync(path.join(ROOT, 'rent', 'areas', 'index.html'), rentHub()); pages++;
+RAREAS.forEach(a => { const d = path.join(ROOT, 'rent', slugify(a.name)); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, 'index.html'), rentGuidePage(a)); pages++; });
+
 // ---- sitemap (en + ar) ----
 const enUrls = [ORIGIN + '/', ORIGIN + '/rent', ORIGIN + '/prices/', ...services.map(s => `${ORIGIN}/prices/${s.slug}`)];
+const rentUrls = [ORIGIN + '/rent/areas', ...RAREAS.map(a => `${ORIGIN}/rent/${slugify(a.name)}`)];
 const arUrls = [ORIGIN + '/ar/', ORIGIN + '/ar/prices/', ...services.map(s => `${ORIGIN}/ar/prices/${s.slug}`)];
-const all = [...enUrls, ...arUrls];
+const all = [...enUrls, ...rentUrls, ...arUrls];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
   all.map(u => `  <url><loc>${u}</loc><changefreq>weekly</changefreq><priority>${u === ORIGIN + '/' ? '1.0' : '0.7'}</priority></url>`).join('\n') +
   `\n</urlset>\n`;
