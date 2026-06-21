@@ -124,6 +124,16 @@
   .hero h1 em{font-style:italic;color:var(--teal)}
   .hero p{font-size:17px;line-height:1.55;color:#65615A;margin:0;max-width:60ch}
 
+  /* mode switch (Services / Rent) — prominent primary toggle */
+  .modeswitch{display:flex;width:fit-content;max-width:100%;gap:6px;background:var(--surface);border:1px solid var(--line);
+    border-radius:16px;padding:6px;margin-bottom:22px;box-shadow:var(--shadow-card)}
+  .mode{display:inline-flex;align-items:center;gap:9px;font-size:15px;font-weight:600;color:var(--muted);
+    text-decoration:none;padding:11px 22px;border-radius:11px;transition:background .15s,color .15s}
+  .mode svg{width:18px;height:18px;flex-shrink:0}
+  .mode.active{background:var(--teal);color:var(--on-teal)}
+  .mode:not(.active):hover{background:var(--surface-2);color:var(--ink)}
+  .mode:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(20,83,77,.25)}
+
   /* segmented tabs */
   .seg{display:inline-flex;gap:4px;background:#EEEAE0;border-radius:13px;padding:4px;margin-bottom:22px}
   .seg-btn{border:none;background:transparent;font-size:14px;font-weight:600;color:var(--muted);
@@ -303,6 +313,11 @@
     <h1>Is your rent <em>fair</em> — and is the increase <em>legal?</em></h1>
     <p>What tenants actually pay across UAE communities, plus a calculator for the maximum rent increase your landlord can legally charge under Dubai's RERA rules.</p>
   </div>
+
+  <nav class="modeswitch" aria-label="Choose tool">
+    <a class="mode" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0l-6.2-6.2a2 2 0 0 1-.6-1.4V5a2 2 0 0 1 2-2h7a2 2 0 0 1 1.4.6l6.4 6.4a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span class="mlabel">Services</span></a>
+    <a class="mode active" href="/rent" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/></svg><span class="mlabel">Rent</span></a>
+  </nav>
 
   <div class="seg" role="tablist" aria-label="Rent tools">
     <button class="seg-btn active" id="tabFair" role="tab" aria-selected="true">Is my rent fair?</button>
