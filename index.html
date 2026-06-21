@@ -1182,6 +1182,8 @@ function applyStaticI18n(){
   document.title=L.docTitle;
   set('.nav-meta', L.tagline);
   set('#modeServices .mlabel', L.navServices); set('#modeRent .mlabel', L.navRent);
+  const mS=document.getElementById('modeServices'); if(mS) mS.setAttribute('href','/ar/');
+  const mR=document.getElementById('modeRent'); if(mR) mR.setAttribute('href','/ar/rent');
   const ll=document.getElementById('langLink');
   if(ll){ ll.textContent=L.langLink; ll.setAttribute('href',L.langHref); const other=(LANG==='ar'?'en':'ar');
     ll.setAttribute('lang',other); ll.setAttribute('hreflang',other); ll.setAttribute('aria-label',L.langLink); }
