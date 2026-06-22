@@ -415,7 +415,7 @@ for (const key of ['en', 'ar']) {
 fs.writeFileSync(path.join(ROOT, 'ar', 'rent', 'index.html'), arRentApp()); pages++;
 
 // ---- sitemap (en + ar) ----
-const enUrls = [ORIGIN + '/', ORIGIN + '/rent', ORIGIN + '/prices/', ...services.map(s => `${ORIGIN}/prices/${s.slug}`)];
+const enUrls = [ORIGIN + '/', ORIGIN + '/rent', ORIGIN + '/motor', ORIGIN + '/prices/', ...services.map(s => `${ORIGIN}/prices/${s.slug}`)];
 const rentUrls = [ORIGIN + '/rent/areas', ...RAREAS.map(a => `${ORIGIN}/rent/${slugify(a.name)}`)];
 const arRentUrls = [ORIGIN + '/ar/rent', ORIGIN + '/ar/rent/areas', ...RAREAS.map(a => `${ORIGIN}/ar/rent/${slugify(a.name)}`)];
 const arUrls = [ORIGIN + '/ar/', ORIGIN + '/ar/prices/', ...services.map(s => `${ORIGIN}/ar/prices/${s.slug}`)];

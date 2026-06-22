@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://www.mizan-price.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://www.mizan-price.com/rent</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.mizan-price.com/motor</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.mizan-price.com/prices/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.mizan-price.com/prices/ac-cleaning</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.mizan-price.com/prices/home-deep-cleaning</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
