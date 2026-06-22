@@ -184,7 +184,7 @@ function head(L, title, desc, canonPath, enPath, arPath, jsonld) {
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="article"><meta property="og:site_name" content="Mizan"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${ORIGIN}${canonPath}"><meta property="og:image" content="${ORIGIN}/og.png"><meta property="og:locale" content="${L.lang === 'ar' ? 'ar_AE' : 'en_AE'}">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:image" content="${ORIGIN}/og.png">
-${THEME}${fontsLink(L.font)}<link rel="stylesheet" href="/prices/page.css">
+${THEME}${fontsLink(L.font)}<link rel="stylesheet" href="/prices/page.css"><script defer src="/_vercel/insights/script.js"></script>
 <script type="application/ld+json">${JSON.stringify(jsonld)}</script></head><body>`;
 }
 function nav(L, altPath, altLabel) {
