@@ -122,3 +122,50 @@ Guide links by area: `/rent/dubai-marina`, `/rent/jlt`, `/rent/downtown-dubai`, 
 ## R4. WhatsApp (building / community groups)
 > Handy free site if your rent's up for renewal — *Mizan* tells you the max your landlord can
 > legally raise it (Dubai RERA rules) + typical rents by area. https://www.mizan-price.com/rent
+
+---
+
+# Motor posts (link the new car-repair guides)
+
+r/dubai gets "is this garage quote a rip-off?" and "how much should [clutch/AC/service] cost?"
+threads *constantly* — those are the highest-intent place to drop the motor tool + a specific guide.
+
+## M1. Reply — "is my garage / dealer quote fair?" (highest-value)
+Drop on any "garage quoted me X / is the dealer ripping me off?" thread:
+> Quotes here vary wildly for the same job — dealers sit way above independents, and the same
+> repair costs more on a German/luxury car than a Japanese one. I built a free tool: pick the job
+> + your car (make + body type) and it shows the typical UAE range next to what other drivers
+> report paying, so you can tell if a quote's steep: https://www.mizan-price.com/motor — mine, no ads.
+
+## M2. Reply — "how much should a [clutch / AC / service] cost?"
+Swap the job + numbers to match (grab them from the guide):
+> For a clutch you're typically looking at ~AED 1,080–2,250 on a Japanese/economy car, climbing to
+> ~AED 2,050–4,275 on a German one (and more at a dealer). Here's a free breakdown by car brand:
+> https://www.mizan-price.com/motor/clutch-replacement (mine, no ads). Get 2–3 quotes and ask
+> genuine vs aftermarket parts.
+
+Guide links by job: `/motor/oil-change`, `/motor/minor-service-oil-check`,
+`/motor/major-service-30k-60k-km`, `/motor/brake-pads-front`, `/motor/clutch-replacement`,
+`/motor/ac-compressor`, `/motor/ac-re-gas`, `/motor/timing-belt-chain`, `/motor/battery-replacement`,
+`/motor/tyres-set-of-4`, `/motor/denting-painting`, `/motor/window-tinting`, `/motor/ceramic-coating`.
+(Full list at `/motor/jobs`.)
+
+## M3. Reply — "dealer vs independent garage?" / "best garage for my [car]?"
+> Independents are usually a lot cheaper than the dealer for out-of-warranty work — the real
+> question is whether a quote is *fair*, not just cheap. Free checker that shows the typical range
+> for the exact job on your car, next to what drivers actually pay: https://www.mizan-price.com/motor
+
+## M4. Facebook (Dubai expat / car enthusiast / community groups)
+> Free tool for anyone who's wondered if a garage quote is a rip-off: pick the repair + your car and
+> it shows the typical UAE price by brand, next to what other drivers paid. Service, brakes, clutch,
+> AC, tyres, denting… No ads, no sign-up 👉 https://www.mizan-price.com/motor
+
+## M5. WhatsApp (building / car-pool / community groups)
+> Before you say yes to a garage — *Mizan* shows the typical UAE price for the job on your specific
+> car + what drivers actually pay. https://www.mizan-price.com/motor
+
+---
+
+**Now bilingual — post in Arabic groups too.** The whole site is Arabic + RTL: share the `/ar/`
+links in Arabic-first groups — `https://www.mizan-price.com/ar/motor`,
+`…/ar/rent`, `…/ar/`. Same tools, Arabic interface.
