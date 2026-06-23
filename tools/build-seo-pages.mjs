@@ -385,6 +385,81 @@ function arRentApp() {
   return h;
 }
 
+// ===== MOTOR repair-cost guides (English) — per-job pages from motor/index.html data =====
+const motorHtml = fs.readFileSync(path.join(ROOT, 'motor', 'index.html'), 'utf8');
+const MCATS = eval(motorHtml.match(/const CATS=(\[[\s\S]*?\n\]);/)[1]);
+const M_TIER_MULT = eval('(' + motorHtml.match(/const TIER_MULT=(\{[^;]*\});/)[1] + ')');
+const M_TIER_LABEL = eval('(' + motorHtml.match(/const TIER_LABEL=(\{[^;]*\});/)[1] + ')');
+const M_BODY = eval(motorHtml.match(/const BODY=(\[[^;]*\]);/)[1]);
+const mSlug = c => slugify(c.label);
+const MOTOR_T = {
+  guides: 'Car repair costs', tool: '/motor', hub: '/motor/jobs',
+  title: n => `${cap(n)} cost in the UAE (2026) — by car brand | Mizan`,
+  desc: n => `What does ${n.toLowerCase()} cost in the UAE? Typical garage prices by car brand — economy to German & luxury — plus what drivers actually pay. Check if your quote is fair.`,
+  h1: n => `How much does ${n.toLowerCase()} cost in the UAE?`,
+  lede: n => `What ${n.toLowerCase()} typically costs at UAE garages, by car-brand tier. German and luxury cars (and large 4×4s) sit at the top; Japanese/economy cars and independent garages at the bottom — quotes vary a lot, so check yours against the range.`,
+  tableTierH: n => `${cap(n)} cost by car brand`, tableBodyH: n => `${cap(n)} cost by body type`,
+  thTier: 'Car brand', thBody: 'Body type', thRange: 'Typical range',
+  estNote: 'Typical 2026 estimates in AED for a standard job. Actual price depends on the exact model, genuine vs aftermarket parts, and the garage — dealers charge more than independents.',
+  fairH: 'How to avoid overpaying', fairP: n => `Quotes for ${n.toLowerCase()} vary widely between garages. Get two or three quotes, ask whether parts are genuine or aftermarket, and check your number against the range above and what other drivers report paying.`,
+  ctaP: n => `Got a quote for ${n.toLowerCase()}? Check if it's fair in seconds.`, ctaBtn: 'Check your quote',
+  relatedH: 'Other car jobs', faqH: 'Common questions',
+  faqs: (n, lo, hi) => [
+    { q: `How much does ${n.toLowerCase()} cost in Dubai?`, a: `${cap(n)} typically runs around AED ${lo} to ${hi} in the UAE — toward the lower end for Japanese/economy cars at an independent garage, higher for German or luxury brands and at dealers.` },
+    { q: `Why does ${n.toLowerCase()} vary so much between garages?`, a: `It depends on your car's make (parts cost), whether parts are genuine or aftermarket, labour rates, and dealer vs independent garage. That's why Mizan shows the typical range next to what drivers actually pay.` },
+    { q: `Is a dealer or an independent garage cheaper?`, a: `For ${n.toLowerCase()}, independent garages are usually cheaper than dealers — often noticeably — but check reviews and ask about parts and any warranty.` },
+  ],
+  hubTitle: 'Car service & repair costs in the UAE (2026) | Mizan',
+  hubDesc: 'What car service and repairs really cost in the UAE — oil change, brakes, clutch, AC, denting & painting and more — by car brand, next to what drivers actually pay.',
+  hubH1: 'Car repair & service costs', hubLede: 'What everyday car jobs cost across the UAE, by brand tier, with what drivers actually report paying. Pick a job, or <a href="/motor">check a specific quote</a>.',
+};
+
+function motorGuidePage(job) {
+  const L = LOC.en, RT = MOTOR_T, name = job.label, slug = mSlug(job), sizeOnly = !!job.sizeOnly;
+  const enPath = `/motor/${slug}`, canonPath = enPath;
+  let rows, tableH, thFirst;
+  if (sizeOnly) {
+    thFirst = RT.thBody; tableH = RT.tableBodyH(name);
+    rows = M_BODY.map(b => { const lo = round5(job.base * b.m * 0.72), hi = round5(job.base * b.m * 1.5); return `<tr><td>${esc(b.label)}</td><td class="r">${L.range(lo, hi)}</td></tr>`; }).join('');
+  } else {
+    thFirst = RT.thTier; tableH = RT.tableTierH(name);
+    rows = ['economy', 'american', 'euro', 'german', 'luxury'].map(t => { const m = M_TIER_MULT[t]; const lo = round5(job.base * m * 0.72), hi = round5(job.base * m * 1.5); return `<tr><td>${esc(M_TIER_LABEL[t])}</td><td class="r">${L.range(lo, hi)}</td></tr>`; }).join('');
+  }
+  const faqLo = fmt(job.base * 0.72), faqHi = fmt(job.base * (sizeOnly ? 1.4 : 1.9) * 1.5);
+  const faqs = RT.faqs(name, faqLo, faqHi);
+  const related = MCATS.filter(o => o.group === job.group && o.id !== job.id).slice(0, 4).map(o => `<a href="/motor/${mSlug(o)}">${esc(cap(o.label))}</a>`).join('');
+  const jsonld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "BreadcrumbList", "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": L.home, "item": `${ORIGIN}/` },
+      { "@type": "ListItem", "position": 2, "name": RT.guides, "item": `${ORIGIN}${RT.hub}` },
+      { "@type": "ListItem", "position": 3, "name": cap(name), "item": `${ORIGIN}${canonPath}` }] },
+    { "@type": "FAQPage", "inLanguage": "en", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) }
+  ] };
+  return head(L, RT.title(name), RT.desc(name), canonPath, enPath, null, jsonld) + nav(L, null, null) + `<main>
+<div class="crumb"><a href="/">${L.home}</a> / <a href="${RT.hub}">${esc(RT.guides)}</a> / ${esc(cap(name))}</div>
+<h1>${esc(RT.h1(name))}</h1>
+<p class="lede">${RT.lede(esc(name))}</p>
+<h2>${esc(tableH)}</h2>
+<table><thead><tr><th>${esc(thFirst)}</th><th class="ra">${esc(RT.thRange)}</th></tr></thead><tbody>${rows}</tbody></table>
+<p class="note">${esc(RT.estNote)}</p>
+<h2>${esc(RT.fairH)}</h2><p>${RT.fairP(esc(name))}</p>
+<div class="ctabox"><p>${esc(RT.ctaP(name))}</p><a class="btn" href="/motor?job=${job.id}">${esc(RT.ctaBtn)} ${L.arrow}</a></div>
+<h2>${esc(RT.faqH)}</h2>
+${faqs.map(f => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n')}
+${related ? `<h2>${esc(RT.relatedH)}</h2><div class="related">${related}</div>` : ''}
+</main>` + footer(L);
+}
+
+function motorHub() {
+  const L = LOC.en, RT = MOTOR_T, enPath = '/motor/jobs', canonPath = enPath;
+  const groups = []; MCATS.forEach(c => { let g = groups.find(x => x.k === c.group); if (!g) { g = { k: c.group, items: [] }; groups.push(g); } g.items.push(c); });
+  const body = groups.map(g => `<div class="idxgroup"><h3>${esc(g.k)}</h3><div class="idxgrid">${g.items.map(c => `<a href="/motor/${mSlug(c)}">${esc(cap(c.label))}</a>`).join('')}</div></div>`).join('');
+  const jsonld = { "@context": "https://schema.org", "@type": "CollectionPage", "name": RT.hubTitle, "url": `${ORIGIN}${canonPath}`, "inLanguage": "en", "description": RT.hubDesc };
+  return head(L, RT.hubTitle, RT.hubDesc, canonPath, enPath, null, jsonld) + nav(L, null, null) + `<main>
+<div class="crumb"><a href="/">${L.home}</a> / ${esc(RT.guides)}</div>
+<h1>${esc(RT.hubH1)}</h1><p class="lede">${RT.hubLede}</p>${body}</main>` + footer(L);
+}
+
 // ---- write everything ----
 const pricesDir = path.join(ROOT, 'prices');
 fs.mkdirSync(pricesDir, { recursive: true });
@@ -414,12 +489,18 @@ for (const key of ['en', 'ar']) {
 }
 fs.writeFileSync(path.join(ROOT, 'ar', 'rent', 'index.html'), arRentApp()); pages++;
 
+// motor repair-cost guides (English) — per-job pages + hub
+fs.mkdirSync(path.join(ROOT, 'motor', 'jobs'), { recursive: true });
+fs.writeFileSync(path.join(ROOT, 'motor', 'jobs', 'index.html'), motorHub()); pages++;
+MCATS.forEach(j => { const d = path.join(ROOT, 'motor', mSlug(j)); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, 'index.html'), motorGuidePage(j)); pages++; });
+
 // ---- sitemap (en + ar) ----
 const enUrls = [ORIGIN + '/', ORIGIN + '/rent', ORIGIN + '/motor', ORIGIN + '/prices/', ...services.map(s => `${ORIGIN}/prices/${s.slug}`)];
 const rentUrls = [ORIGIN + '/rent/areas', ...RAREAS.map(a => `${ORIGIN}/rent/${slugify(a.name)}`)];
+const motorUrls = [ORIGIN + '/motor/jobs', ...MCATS.map(j => `${ORIGIN}/motor/${mSlug(j)}`)];
 const arRentUrls = [ORIGIN + '/ar/rent', ORIGIN + '/ar/rent/areas', ...RAREAS.map(a => `${ORIGIN}/ar/rent/${slugify(a.name)}`)];
 const arUrls = [ORIGIN + '/ar/', ORIGIN + '/ar/prices/', ...services.map(s => `${ORIGIN}/ar/prices/${s.slug}`)];
-const all = [...enUrls, ...rentUrls, ...arRentUrls, ...arUrls];
+const all = [...enUrls, ...rentUrls, ...motorUrls, ...arRentUrls, ...arUrls];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
   all.map(u => `  <url><loc>${u}</loc><changefreq>weekly</changefreq><priority>${u === ORIGIN + '/' ? '1.0' : '0.7'}</priority></url>`).join('\n') +
   `\n</urlset>\n`;
