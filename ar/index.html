@@ -446,7 +446,7 @@
     <details><summary>Where do the prices come from?</summary><p>Market estimates are advertised list prices from the web; the paid range comes from residents reporting what they actually paid, with outlier trimming so one odd price cannot skew the result.</p></details>
   </section>
 
-  <p class="footnote">Mizan shows two layers: <b>market estimates</b> are advertised list prices harvested from the web; the <b>paid range</b> comes from residents reporting what they actually paid. Reports are shared anonymously — no name or contact is attached. <a href="/prices/" style="color:var(--teal);font-weight:600">Browse price guides for every service →</a></p>
+  <p class="footnote">Mizan shows two layers: <b>market estimates</b> are advertised list prices harvested from the web; the <b>paid range</b> comes from residents reporting what they actually paid. Reports are shared anonymously — no name or contact is attached. <a href="/prices/" style="color:var(--teal);font-weight:600">Service prices →</a> · <a href="/rent/areas" style="color:var(--teal);font-weight:600">Rent by area →</a> · <a href="/motor/jobs" style="color:var(--teal);font-weight:600">Car repair costs →</a></p>
 </main>
 
 <div class="overlay hidden" id="modal">
@@ -535,7 +535,7 @@ const T = {
     feedEmpty:'No real prices yet — be the first. Add what you paid and it shows up here for the next person.',
     faqTitle:'Common questions',
     foot:'Mizan shows two layers: <b>market estimates</b> are advertised list prices harvested from the web; the <b>paid range</b> comes from residents reporting what they actually paid. Reports are shared anonymously — no name or contact is attached. ',
-    footLink:'Browse price guides for every service →', footHref:'/prices/',
+    footPrices:'Service prices →', footRent:'Rent by area →', footMotor:'Car repair costs →',
     tEnter:'Enter a price first', tHigh:'That price looks too high', tEnough:'Thanks — you’ve added enough here for today',
     tDup:'You already added that exact price', tLot:'That’s a lot of prices today — try again tomorrow',
     tLocal:'Saved on this device only', tUnlocked:'Unlocked, thank you', tAdded:'Added, thank you',
@@ -578,7 +578,7 @@ const T = {
     feedEmpty:'لا أسعار حقيقية بعد، كن أول من يضيف. أضف ما دفعته وسيظهر هنا للشخص التالي.',
     faqTitle:'الأسئلة الشائعة',
     foot:'يعرض ميزان طبقتين: <b>تقديرات السوق</b> هي الأسعار المُعلنة على الإنترنت؛ و<b>النطاق المدفوع</b> يأتي من بلاغات السكان عمّا دفعوه فعلاً. البلاغات مجهولة، بدون اسم أو وسيلة تواصل. ',
-    footLink:'تصفّح أدلة الأسعار لكل خدمة ←', footHref:'/ar/prices/',
+    footPrices:'أسعار الخدمات ←', footRent:'الإيجار حسب المنطقة ←', footMotor:'أسعار إصلاح السيارات ←',
     tEnter:'أدخل سعراً أولاً', tHigh:'هذا السعر يبدو مرتفعاً جداً', tEnough:'شكراً، أضفت ما يكفي هنا اليوم',
     tDup:'أضفت هذا السعر نفسه من قبل', tLot:'أضفت أسعاراً كثيرة اليوم، حاول غداً',
     tLocal:'حُفظ على هذا الجهاز فقط', tUnlocked:'فُتح، شكراً لك', tAdded:'أُضيف، شكراً لك',
@@ -1212,7 +1212,7 @@ function applyStaticI18n(){
   const faqEl=$('faq'); if(faqEl && L.faqs) faqEl.innerHTML=`<h2>${esc(L.faqTitle)}</h2>`+
     L.faqs.map(qa=>`<details><summary>${esc(qa[0])}</summary><p>${esc(qa[1])}</p></details>`).join('');
   // footer (L.foot contains trusted <b> markup)
-  const fn=document.querySelector('.footnote'); if(fn) fn.innerHTML=`${L.foot}<a href="${L.footHref}" style="color:var(--teal);font-weight:600">${esc(L.footLink)}</a>`;
+  const fn=document.querySelector('.footnote'); if(fn){ const b=(LANG==='ar'?'/ar':''); const fl=(h,t)=>`<a href="${b}${h}" style="color:var(--teal);font-weight:600">${esc(t)}</a>`; fn.innerHTML=`${L.foot}${fl('/prices/',L.footPrices)} · ${fl('/rent/areas',L.footRent)} · ${fl('/motor/jobs',L.footMotor)}`; }
 }
 
 (async function(){
