@@ -126,6 +126,12 @@
   .seg-btn.active{background:var(--surface);color:var(--teal);box-shadow:0 1px 3px rgba(40,34,20,.12)}
   .seg-btn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(20,83,77,.2)}
   .panel{display:flex;flex-wrap:wrap;align-items:stretch}
+  .hint{margin:10px 0 0;font-size:12px;line-height:1.5;color:var(--faint-2)}
+  .calc-empty{padding:30px 0;text-align:center;color:var(--muted);font-size:14.5px;line-height:1.6}
+  .ucbox{border-radius:18px;padding:24px;animation:mz-fade .3s both}
+  .ucbox .big{font-family:var(--mono);font-size:40px;font-weight:600;line-height:1;margin-top:4px}
+  .ucbox .line{margin:14px 0 0;font-size:14px;line-height:1.55;color:#4D4A43}
+  :root[data-theme="dark"] .ucbox .line{color:#CBC6BB}
   .form-col{flex:1 1 360px;max-width:430px;min-width:0;padding:30px;border-right:1px solid var(--line-3)}
   .result-col{flex:1.45 1 460px;padding:30px 32px;min-width:0;display:flex;flex-direction:column;justify-content:center}
   .flabel{display:block;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin:0 0 12px}
@@ -281,6 +287,7 @@
     <div class="cardhead"><div class="seg" role="tablist" aria-label="Motor tools">
       <button class="seg-btn active" id="tabRepair" role="tab" aria-selected="true">Service &amp; repair</button>
       <button class="seg-btn" id="tabRental" role="tab" aria-selected="false">Car rental</button>
+      <button class="seg-btn" id="tabUsed" role="tab" aria-selected="false">Used-car value</button>
     </div></div>
 
     <section class="panel" id="panelRepair">
@@ -319,6 +326,21 @@
       </div>
     </div>
     <div class="result-col"><div id="rresult" class="loading">Loading…</div></div>
+    </section>
+
+    <section class="panel hidden" id="panelUsed">
+    <div class="form-col">
+      <label class="flabel" for="ucPrice">Price when bought new</label>
+      <div class="quote-input"><span class="cur">AED</span><input type="text" inputmode="numeric" id="ucPrice" placeholder="0" aria-label="New price in AED"></div>
+      <div style="height:18px"></div>
+      <label class="flabel" for="ucAge">Age</label>
+      <div class="quote-input"><input type="text" inputmode="numeric" id="ucAge" placeholder="0" aria-label="Age in years"><span class="unit">years old</span></div>
+      <div style="height:18px"></div>
+      <label class="flabel" for="ucKm">Mileage</label>
+      <div class="quote-input"><input type="text" inputmode="numeric" id="ucKm" placeholder="0" aria-label="Mileage in km"><span class="unit">km</span></div>
+      <p class="hint">A rule-of-thumb estimate from typical UAE depreciation. Actual value depends on the make, condition, service history &amp; demand — premium/luxury brands lose value faster.</p>
+    </div>
+    <div class="result-col"><div id="uresult" class="calc-empty">Enter the new price and age to estimate a fair used value.</div></div>
     </section>
   </div>
 
@@ -652,12 +674,40 @@ function renderRental(){
       <div class="actions"><button type="button" class="btn-ghost" id="shareBtnR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share</button></div></div>`;
   const sb=$('shareBtnR'); if(sb) sb.onclick=()=>{ if(navigator.share){navigator.share({title:'Mizan',text:shareMsgR,url:shareUrlR}).catch(()=>{})}else{window.open('https://wa.me/?text='+encodeURIComponent(shareMsgR+' '+shareUrlR),'_blank','noopener')} };
 }
+/* ===== USED-CAR VALUE (honest depreciation estimator; no fabricated per-model DB) ===== */
+function retain(age){ if(age<=0)return 1; let r=0.80; for(let y=2;y<=age;y++){ r*=(y<=5?0.87:0.91); } return Math.max(r,0.12); }
+function renderUsed(){
+  const price=parseFloat($('ucPrice').value), age=parseFloat($('ucAge').value), km=parseFloat($('ucKm').value);
+  if(!(price>0)||isNaN(age)||age<0){ $('uresult').className='calc-empty'; $('uresult').innerHTML='Enter the new price and age to estimate a fair used value.'; return; }
+  const ret=retain(age), retPct=Math.round(ret*100);
+  const expected=age*18000, kmN=(km>0?km:expected);
+  let adj=-0.03*((kmN-expected)/10000); adj=Math.max(-0.25,Math.min(0.15,adj));
+  const fair=round5(price*ret*(1+adj)), lo=round5(fair*0.9), hi=round5(fair*1.1);
+  const tone=TONES.going;
+  const kmNote = km>0 ? (Math.abs(adj)<0.01?', at about average mileage':(adj<0?', and higher-than-average mileage trims it further':', and low mileage adds a little')) : '';
+  $('uresult').className='';
+  $('uresult').innerHTML=`
+    <div class="result-head"><span class="svc">Fair used value</span><span class="rin">·</span><span class="rar">${age} yr${age==1?'':'s'} old</span></div>
+    <div class="ucbox" style="background:${tone.bg};border:1px solid ${tone.c}22">
+      <div class="kicker" style="color:${tone.c}">Estimated fair value</div>
+      <div class="big" style="color:${tone.c}">AED ${aed(fair)}</div>
+      <p class="line">A ${age}-year-old car keeps roughly <strong>${retPct}%</strong> of its AED ${aed(price)} new price${kmNote}. Expect a fair asking range of <strong>AED ${aed(lo)} – ${aed(hi)}</strong>.</p>
+    </div>
+    <div class="breakdown">
+      <div class="brow"><span class="k">New price</span><span class="v">AED ${aed(price)}</span></div>
+      <div class="brow"><span class="k">Retained after ${age} yr${age==1?'':'s'}</span><span class="v">${retPct}%</span></div>
+      ${km>0?`<div class="brow"><span class="k">Mileage</span><span class="v">${aed(km)} km</span></div>`:''}
+      <div class="brow alt"><span class="k">Fair value range</span><span class="v strong">AED ${aed(lo)} – ${aed(hi)}</span></div>
+    </div>
+    <p class="hint" style="margin-top:16px">Estimate only — check live listings for your exact model on <a href="https://uae.dubizzle.com/motors/used-cars/" target="_blank" rel="noopener">dubizzle</a>; premium/luxury brands depreciate faster than this average.</p>`;
+}
 function showTab(which){
-  const rep=which==='repair';
-  $('panelRepair').classList.toggle('hidden',!rep); $('panelRental').classList.toggle('hidden',rep);
-  $('tabRepair').classList.toggle('active',rep); $('tabRental').classList.toggle('active',!rep);
-  $('tabRepair').setAttribute('aria-selected',rep); $('tabRental').setAttribute('aria-selected',!rep);
-  if(rep) render(); else renderRental();
+  ['repair','rental','used'].forEach(t=>{
+    const C=t.charAt(0).toUpperCase()+t.slice(1), p=$('panel'+C), b=$('tab'+C);
+    if(p) p.classList.toggle('hidden',t!==which);
+    if(b){ b.classList.toggle('active',t===which); b.setAttribute('aria-selected',t===which); }
+  });
+  if(which==='repair')render(); else if(which==='rental')renderRental(); else renderUsed();
 }
 
 let lastFocus=null;
@@ -708,13 +758,14 @@ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show')
   $('rclass').addEventListener('change',renderRental);
   $('rperiod').addEventListener('change',renderRental);
   $('rquoted').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.]/g,'');renderRental()});
-  $('tabRepair').onclick=()=>showTab('repair'); $('tabRental').onclick=()=>showTab('rental');
+  ['ucPrice','ucAge','ucKm'].forEach(id=>$(id).addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.]/g,'');renderUsed()}));
+  $('tabRepair').onclick=()=>showTab('repair'); $('tabRental').onclick=()=>showTab('rental'); $('tabUsed').onclick=()=>showTab('used');
   const tt=$('themeToggle'); if(tt) tt.onclick=()=>{const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);try{localStorage.setItem('mizan:theme',next)}catch(e){}};
   $('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
   $('modalSubmit').onclick=submitModal; $('modalDone').onclick=closeModal;
   $('modalPrice').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.]/g,'');updateModalBtn()});
-  render(); renderRental();
-  if(p.get('tab')==='rental') showTab('rental');
+  render(); renderRental(); renderUsed();
+  const tab=p.get('tab'); if(tab==='rental'||tab==='used') showTab(tab);
 })();
 </script>
 </body>
