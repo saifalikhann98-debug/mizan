@@ -271,6 +271,12 @@
 
   <div class="workspace">
     <div class="form-col">
+      <label class="flabel" id="lbl-make">Car make</label>
+      <div class="select-wrap"><select id="make" aria-labelledby="lbl-make"></select>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
+      <label class="flabel" id="lbl-body">Body type</label>
+      <div class="select-wrap"><select id="body" aria-labelledby="lbl-body"></select>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
       <label class="flabel" id="lbl-job">What needs doing?</label>
       <div class="select-wrap"><select id="job" aria-labelledby="lbl-job"></select>
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
@@ -313,35 +319,48 @@ const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
 
-// Car jobs + typical UAE price ranges (AED) — [lo, typical, hi]. 2026 estimates; refine over time.
-// Crowd data is UAE-wide (you choose the garage, not your home area). Shared auto ids (carserv, oilchange,
-// carwash, tyres, carac, carbattery, tint) match the services app so reports pool together.
+// Car jobs — `base` = typical price for an ECONOMY SEDAN (Toyota-class). The make tier + body type
+// multipliers below scale it (a clutch on a BMW ≠ on a Sunny). sizeOnly = brand doesn't move the price
+// (cosmetic/size-driven jobs use only the body multiplier). 2026 estimates; refine over time.
 const CATS=[
-  {id:'oilchange',   label:'Oil change',                    lo:150, hi:500,  typical:280,  unit:'/service', group:'Service & maintenance'},
-  {id:'carserv',     label:'Minor service (oil + check)',   lo:200, hi:700,  typical:400,  unit:'/service', group:'Service & maintenance'},
-  {id:'majorservice',label:'Major service (30k/60k km)',    lo:600, hi:2500, typical:1200, unit:'/service', group:'Service & maintenance'},
-  {id:'wheelalign',  label:'Wheel alignment & balancing',   lo:80,  hi:350,  typical:160,  unit:'/service', group:'Service & maintenance'},
-  {id:'sparkplugs',  label:'Spark plugs',                   lo:200, hi:900,  typical:450,  unit:'/set',     group:'Service & maintenance'},
-  {id:'carac',       label:'AC re-gas',                     lo:150, hi:500,  typical:280,  unit:'/service', group:'Service & maintenance'},
-  {id:'carbattery',  label:'Battery replacement',           lo:250, hi:900,  typical:500,  unit:'/service', group:'Service & maintenance'},
-  {id:'tyres',       label:'Tyres (set of 4)',              lo:600, hi:3000, typical:1400, unit:'/set',     group:'Service & maintenance'},
-  {id:'brakepads',   label:'Brake pads (front)',            lo:250, hi:1000, typical:500,  unit:'/axle',    group:'Repairs'},
-  {id:'brakejob',    label:'Brake pads + discs (front)',    lo:600, hi:2200, typical:1200, unit:'/axle',    group:'Repairs'},
-  {id:'clutch',      label:'Clutch replacement',            lo:1200,hi:5000, typical:2500, unit:'/job',     group:'Repairs'},
-  {id:'accompressor',label:'AC compressor',                 lo:800, hi:3500, typical:1800, unit:'/job',     group:'Repairs'},
-  {id:'timingbelt',  label:'Timing belt / chain',           lo:800, hi:3500, typical:1800, unit:'/job',     group:'Repairs'},
-  {id:'alternator',  label:'Alternator',                    lo:700, hi:2500, typical:1400, unit:'/job',     group:'Repairs'},
-  {id:'starter',     label:'Starter motor',                 lo:600, hi:2000, typical:1100, unit:'/job',     group:'Repairs'},
-  {id:'suspension',  label:'Suspension / shocks (pair)',    lo:400, hi:2200, typical:1000, unit:'/pair',    group:'Repairs'},
-  {id:'radiator',    label:'Radiator replacement',          lo:600, hi:2500, typical:1300, unit:'/job',     group:'Repairs'},
-  {id:'dentpaint',   label:'Denting & painting',            lo:300, hi:1500, typical:700,  unit:'/panel',   group:'Body & glass'},
-  {id:'windshield',  label:'Windshield replacement',        lo:500, hi:2500, typical:1200, unit:'/job',     group:'Body & glass'},
-  {id:'tint',        label:'Window tinting',                lo:300, hi:1500, typical:700,  unit:'/car',     group:'Body & glass'},
-  {id:'carwash',     label:'Wash & detailing',              lo:30,  hi:600,  typical:150,  unit:'/service', group:'Care'},
-  {id:'ceramic',     label:'Ceramic coating',               lo:800, hi:4000, typical:1800, unit:'/car',     group:'Care'},
+  {id:'oilchange',   label:'Oil change',                  base:180,  unit:'/service', group:'Service & maintenance'},
+  {id:'carserv',     label:'Minor service (oil + check)', base:300,  unit:'/service', group:'Service & maintenance'},
+  {id:'majorservice',label:'Major service (30k/60k km)',  base:650,  unit:'/service', group:'Service & maintenance'},
+  {id:'wheelalign',  label:'Wheel alignment & balancing', base:140,  unit:'/service', group:'Service & maintenance', sizeOnly:true},
+  {id:'sparkplugs',  label:'Spark plugs',                 base:300,  unit:'/set',     group:'Service & maintenance'},
+  {id:'carac',       label:'AC re-gas',                   base:230,  unit:'/service', group:'Service & maintenance'},
+  {id:'carbattery',  label:'Battery replacement',         base:320,  unit:'/service', group:'Service & maintenance'},
+  {id:'tyres',       label:'Tyres (set of 4)',            base:900,  unit:'/set',     group:'Service & maintenance'},
+  {id:'brakepads',   label:'Brake pads (front)',          base:350,  unit:'/axle',    group:'Repairs'},
+  {id:'brakejob',    label:'Brake pads + discs (front)',  base:800,  unit:'/axle',    group:'Repairs'},
+  {id:'clutch',      label:'Clutch replacement',          base:1500, unit:'/job',     group:'Repairs'},
+  {id:'accompressor',label:'AC compressor',               base:1200, unit:'/job',     group:'Repairs'},
+  {id:'timingbelt',  label:'Timing belt / chain',         base:1200, unit:'/job',     group:'Repairs'},
+  {id:'alternator',  label:'Alternator',                  base:850,  unit:'/job',     group:'Repairs'},
+  {id:'starter',     label:'Starter motor',               base:650,  unit:'/job',     group:'Repairs'},
+  {id:'suspension',  label:'Suspension / shocks (pair)',  base:700,  unit:'/pair',    group:'Repairs'},
+  {id:'radiator',    label:'Radiator replacement',        base:750,  unit:'/job',     group:'Repairs'},
+  {id:'dentpaint',   label:'Denting & painting',          base:450,  unit:'/panel',   group:'Body & glass'},
+  {id:'windshield',  label:'Windshield replacement',      base:600,  unit:'/job',     group:'Body & glass'},
+  {id:'tint',        label:'Window tinting',              base:550,  unit:'/car',     group:'Body & glass', sizeOnly:true},
+  {id:'carwash',     label:'Wash & detailing',            base:150,  unit:'/service', group:'Care', sizeOnly:true},
+  {id:'ceramic',     label:'Ceramic coating',             base:1300, unit:'/car',     group:'Care', sizeOnly:true},
 ];
-const AREA='UAE';   // motor crowd data is nationwide (single bucket per job)
+// Make → parts/labour cost tier; body → size factor. Estimate = base × tierMult × bodyMult.
+const TIER_MULT={economy:1.0, american:1.25, euro:1.45, german:1.9, luxury:2.7};
+const TIER_LABEL={economy:'Japanese · Korean · economy', american:'American', euro:'European', german:'German · premium', luxury:'Luxury · exotic'};
+const MAKES=[
+  {n:'Toyota',t:'economy'},{n:'Nissan',t:'economy'},{n:'Honda',t:'economy'},{n:'Hyundai',t:'economy'},{n:'Kia',t:'economy'},{n:'Mitsubishi',t:'economy'},{n:'Mazda',t:'economy'},{n:'Suzuki',t:'economy'},{n:'Isuzu',t:'economy'},{n:'MG',t:'economy'},{n:'Geely',t:'economy'},{n:'Chery',t:'economy'},{n:'Changan',t:'economy'},
+  {n:'Ford',t:'american'},{n:'Chevrolet',t:'american'},{n:'GMC',t:'american'},{n:'Dodge',t:'american'},{n:'Jeep',t:'american'},{n:'Chrysler',t:'american'},{n:'Cadillac',t:'american'},{n:'Lincoln',t:'american'},
+  {n:'Volkswagen',t:'euro'},{n:'Peugeot',t:'euro'},{n:'Renault',t:'euro'},{n:'Škoda',t:'euro'},{n:'SEAT',t:'euro'},{n:'Fiat',t:'euro'},{n:'Opel',t:'euro'},
+  {n:'BMW',t:'german'},{n:'Mercedes-Benz',t:'german'},{n:'Audi',t:'german'},{n:'MINI',t:'german'},{n:'Volvo',t:'german'},{n:'Lexus',t:'german'},{n:'Infiniti',t:'german'},
+  {n:'Land Rover / Range Rover',t:'luxury'},{n:'Porsche',t:'luxury'},{n:'Jaguar',t:'luxury'},{n:'Maserati',t:'luxury'},{n:'Bentley',t:'luxury'},{n:'Tesla',t:'luxury'},
+];
+const BODY=[ {id:'sedan',label:'Sedan / hatchback',m:1.0}, {id:'suv',label:'SUV / crossover',m:1.18}, {id:'4x4',label:'Large 4×4',m:1.4}, {id:'pickup',label:'Pickup',m:1.25} ];
+const AREA='UAE';   // motor crowd data is nationwide (per job, all cars)
 const catById=id=>CATS.find(c=>c.id===id);
+const makeByName=n=>MAKES.find(m=>m.n===n)||MAKES[0];
+const bodyById=id=>BODY.find(b=>b.id===id)||BODY[0];
 
 /* ---- persistence (shared submissions table; category = motor-<id>, area = UAE) ---- */
 const adapters={
@@ -449,6 +468,15 @@ function fillJobs(){
   CATS.forEach(c=>{let g=groups.find(x=>x.name===c.group);if(!g){g={name:c.group,items:[]};groups.push(g)}g.items.push(c)});
   $('job').innerHTML=groups.map(g=>`<optgroup label="${escapeHTML(g.name)}">`+g.items.map(c=>`<option value="${c.id}">${escapeHTML(c.label)}</option>`).join('')+`</optgroup>`).join('');
 }
+function fillMakes(){
+  const tiers=['economy','american','euro','german','luxury'];
+  $('make').innerHTML=tiers.map(t=>`<optgroup label="${escapeHTML(TIER_LABEL[t])}">`+MAKES.filter(m=>m.t===t).map(m=>`<option value="${escapeHTML(m.n)}">${escapeHTML(m.n)}</option>`).join('')+`</optgroup>`).join('');
+  $('make').value='Toyota';
+}
+function fillBody(){
+  $('body').innerHTML=BODY.map(b=>`<option value="${b.id}">${escapeHTML(b.label)}</option>`).join('');
+  $('body').value='sedan';
+}
 
 let shareMsg='', shareUrl='';
 function render(){
@@ -457,7 +485,10 @@ function render(){
   $('quoteUnit').textContent=cat.unit||'';
   const s=paidStats('motor-'+cat.id);
   const hasPaid=s.count>=5, paidVisible=hasPaid&&UNLOCKED;
-  const lo=cat.lo, hi=cat.hi, typ=cat.typical;
+  const make=makeByName($('make').value), body=bodyById($('body').value);
+  const tierMult=cat.sizeOnly?1:(TIER_MULT[make.t]||1);
+  const adjTyp=round5(cat.base*tierMult*body.m);
+  const lo=round5(adjTyp*0.72), hi=round5(adjTyp*1.5), typ=adjTyp;
   const pLo=paidVisible?round5(s.p25):null, pHi=paidVisible?round5(s.p75):null, pMid=paidVisible?round5(s.p50):null;
 
   let tier,word,kicker,line,statBig='',statSub='',hasStat=false,roomLabel,roomValue;
@@ -487,8 +518,8 @@ function render(){
   else if(hasPaid) metaText=`${s.count} drivers reported · add yours to reveal the range`;
   else metaText=`${s.count} report${s.count>1?'s':''} so far · ${5-s.count} more to unlock`;
 
-  shareMsg=`${cat.label} in the UAE: ${paidVisible?'drivers pay':'typically'} ${paidVisible?`AED ${aed(pLo)} – ${aed(pHi)}`:`AED ${aed(lo)} – ${aed(hi)}`}. Is your garage quote fair? Check on Mizan:`;
-  shareUrl=location.origin+'/motor?job='+cat.id;
+  shareMsg=`${cat.label} for a ${make.n} (${body.label}) in the UAE: ${paidVisible?'drivers pay':'typically'} ${paidVisible?`AED ${aed(pLo)} – ${aed(pHi)}`:`AED ${aed(lo)} – ${aed(hi)}`}. Is your garage quote fair? Check on Mizan:`;
+  shareUrl=location.origin+'/motor?job='+cat.id+'&make='+encodeURIComponent(make.n)+'&body='+body.id;
 
   // scale
   const loB=paidVisible?Math.min(pLo,lo):lo, hiB=hi;
@@ -502,7 +533,7 @@ function render(){
   const qHTML = hasQuote ? `<div class="qmark" style="left:${pos(q)}%;background:${tone.c}"><div class="qlabel" style="background:${tone.c}">AED ${aed(q)}</div><div class="qtri" style="border-top:5px solid ${tone.c}"></div></div>` : '';
 
   $('result').innerHTML=`
-    <div class="result-head"><span class="svc">${escapeHTML(cat.label)}</span><span class="rin">in the</span><span class="rar">UAE</span></div>
+    <div class="result-head"><span class="svc">${escapeHTML(cat.label)}</span><span class="rin">·</span><span class="rar">${escapeHTML(make.n+' · '+body.label)}</span></div>
     <div class="verdict" style="background:${tone.bg};border:1px solid ${tone.c}22">
       <div class="verdict-top"><div><div class="kicker" style="color:${tone.c}">${kicker}</div><div class="verdict-word" style="color:${tone.c}">${word}</div></div>
       ${hasStat?`<div class="verdict-stat"><div class="big" style="color:${tone.c}">${statBig}</div><div class="sub">${statSub}</div></div>`:''}</div>
@@ -568,11 +599,16 @@ let toastTimer;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
 
 (async function(){
-  fillJobs();
+  fillJobs(); fillMakes(); fillBody();
   const p=new URLSearchParams(location.search);
   const j=p.get('job'); if(j&&catById(j))$('job').value=j;
+  const mk=p.get('make'); if(mk&&MAKES.some(m=>m.n===mk))$('make').value=mk;
+  const bd=p.get('body'); if(bd&&BODY.some(b=>b.id===bd))$('body').value=bd;
   await loadState();
+  makeCombobox($('make'),{placeholder:'Search makes…',labelledBy:'lbl-make'});
   makeCombobox($('job'),{placeholder:'Search car jobs…',labelledBy:'lbl-job'});
+  $('make').addEventListener('change',render);
+  $('body').addEventListener('change',render);
   $('job').addEventListener('change',render);
   $('quoted').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.]/g,'');render()});
   const tt=$('themeToggle'); if(tt) tt.onclick=()=>{const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);try{localStorage.setItem('mizan:theme',next)}catch(e){}};
