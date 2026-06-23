@@ -385,15 +385,42 @@ function arRentApp() {
   return h;
 }
 
-// ===== MOTOR repair-cost guides (English) — per-job pages from motor/index.html data =====
+// Arabic interactive Motor tool at /ar/motor — the live app (motor/index.html) with its <head>
+// rewritten for Arabic SEO. The app's own JS detects the /ar path and renders UI in Arabic + RTL.
+function arMotorApp() {
+  let h = motorHtml;
+  h = h.replace('<html lang="en">', '<html lang="ar" dir="rtl">');
+  h = h.replace(/<title>[\s\S]*?<\/title>/, '<title>أسعار صيانة وإصلاح السيارات في الإمارات — تحقّق من عدالة السعر | ميزان</title>');
+  h = h.replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="هل عرض ورشتك عادل؟ شاهد أسعار الإمارات المعتادة لصيانة السيارة والفرامل والقابض والمكيّف والبطارية والإطارات والسمكرة والدهان وغيرها — إلى جانب ما يدفعه السائقون فعلاً.">');
+  h = h.replace('<link rel="canonical" href="https://www.mizan-price.com/motor">', '<link rel="canonical" href="https://www.mizan-price.com/ar/motor">');
+  h = h.replace('<link rel="alternate" hreflang="x-default" href="https://www.mizan-price.com/motor">', '<link rel="alternate" hreflang="ar" href="https://www.mizan-price.com/ar/motor"><link rel="alternate" hreflang="x-default" href="https://www.mizan-price.com/motor">');
+  h = h.replace('<meta property="og:url" content="https://www.mizan-price.com/motor">', '<meta property="og:url" content="https://www.mizan-price.com/ar/motor">');
+  h = h.replace('<meta property="og:locale" content="en_AE">', '<meta property="og:locale" content="ar_AE">');
+  h = h.replace(/<meta property="og:title" content="[^"]*">/, '<meta property="og:title" content="أسعار صيانة وإصلاح السيارات في الإمارات — تحقّق من عدالة السعر">');
+  h = h.replace(/<meta property="og:description" content="[^"]*">/, '<meta property="og:description" content="هل عرض ورشتك عادل؟ أسعار الإمارات المعتادة للصيانة والفرامل والقابض والمكيّف وغيرها، إلى جانب ما يدفعه السائقون فعلاً.">');
+  h = h.replace(/<meta name="twitter:title" content="[^"]*">/, '<meta name="twitter:title" content="أسعار صيانة وإصلاح السيارات في الإمارات — ميزان">');
+  h = h.replace(/<meta name="twitter:description" content="[^"]*">/, '<meta name="twitter:description" content="هل عرض ورشتك عادل؟ شاهد ما يدفعه السائقون فعلاً عبر الإمارات.">');
+  return h;
+}
+
+// ===== MOTOR repair-cost guides (EN + AR) — per-job pages from motor/index.html data =====
 const motorHtml = fs.readFileSync(path.join(ROOT, 'motor', 'index.html'), 'utf8');
 const MCATS = eval(motorHtml.match(/const CATS=(\[[\s\S]*?\n\]);/)[1]);
 const M_TIER_MULT = eval('(' + motorHtml.match(/const TIER_MULT=(\{[^;]*\});/)[1] + ')');
 const M_TIER_LABEL = eval('(' + motorHtml.match(/const TIER_LABEL=(\{[^;]*\});/)[1] + ')');
 const M_BODY = eval(motorHtml.match(/const BODY=(\[[^;]*\]);/)[1]);
 const mSlug = c => slugify(c.label);
+const M_JOB_AR = eval('(' + motorHtml.match(/const JOB_AR=(\{[^;]*\});/)[1] + ')');
+const M_GROUP_AR = eval('(' + motorHtml.match(/const GROUP_AR=(\{[^;]*\});/)[1] + ')');
+const M_TIER_LABEL_AR = eval('(' + motorHtml.match(/const TIER_LABEL_AR=(\{[^;]*\});/)[1] + ')');
+const M_BODY_AR = eval('(' + motorHtml.match(/const BODY_AR=(\{[^;]*\});/)[1] + ')');
+const mJobName = (lang, c) => lang === 'ar' ? (M_JOB_AR[c.id] || c.label) : c.label;
+const mGroupName = (lang, k) => lang === 'ar' ? (M_GROUP_AR[k] || k) : k;
+const mTierName = (lang, t) => lang === 'ar' ? (M_TIER_LABEL_AR[t] || M_TIER_LABEL[t]) : M_TIER_LABEL[t];
+const mBodyName = (lang, b) => lang === 'ar' ? (M_BODY_AR[b.id] || b.label) : b.label;
 const MOTOR_T = {
-  guides: 'Car repair costs', tool: '/motor', hub: '/motor/jobs',
+  en: {
+  base: '', guides: 'Car repair costs', tool: '/motor', hub: '/motor/jobs',
   title: n => `${cap(n)} cost in the UAE (2026) — by car brand | Mizan`,
   desc: n => `What does ${n.toLowerCase()} cost in the UAE? Typical garage prices by car brand — economy to German & luxury — plus what drivers actually pay. Check if your quote is fair.`,
   h1: n => `How much does ${n.toLowerCase()} cost in the UAE?`,
@@ -412,51 +439,77 @@ const MOTOR_T = {
   hubTitle: 'Car service & repair costs in the UAE (2026) | Mizan',
   hubDesc: 'What car service and repairs really cost in the UAE — oil change, brakes, clutch, AC, denting & painting and more — by car brand, next to what drivers actually pay.',
   hubH1: 'Car repair & service costs', hubLede: 'What everyday car jobs cost across the UAE, by brand tier, with what drivers actually report paying. Pick a job, or <a href="/motor">check a specific quote</a>.',
+  },
+  ar: {
+    base: '/ar', guides: 'أسعار إصلاح السيارات', tool: '/ar/motor', hub: '/ar/motor/jobs',
+    title: n => `تكلفة ${n} في الإمارات (2026) — حسب ماركة السيارة | ميزان`,
+    desc: n => `كم تكلفة ${n} في الإمارات؟ أسعار الورش المعتادة حسب ماركة السيارة — من الاقتصادية إلى الألمانية والفاخرة — إضافةً إلى ما يدفعه السائقون فعلاً. تحقّق إن كان سعرك عادلاً.`,
+    h1: n => `كم تكلفة ${n} في الإمارات؟`,
+    lede: n => `كم تكلّف ${n} عادةً في ورش الإمارات، حسب فئة ماركة السيارة. السيارات الألمانية والفاخرة (والدفع الرباعي الكبير) في الأعلى؛ السيارات اليابانية والاقتصادية والورش المستقلة في الأسفل — الأسعار تتفاوت كثيراً، فقارن سعرك بالنطاق.`,
+    tableTierH: n => `تكلفة ${n} حسب ماركة السيارة`, tableBodyH: n => `تكلفة ${n} حسب نوع الهيكل`,
+    thTier: 'ماركة السيارة', thBody: 'نوع الهيكل', thRange: 'النطاق المعتاد',
+    estNote: 'تقديرات 2026 المعتادة بالدرهم لخدمة قياسية. السعر الفعلي يعتمد على الطراز بالضبط، والقطع الأصلية مقابل التجارية، والورشة — الوكالات أغلى من الورش المستقلة.',
+    fairH: 'كيف تتجنّب الدفع الزائد', fairP: n => `تتفاوت أسعار ${n} كثيراً بين الورش. احصل على عرضين أو ثلاثة، واسأل إن كانت القطع أصلية أم تجارية، وقارن رقمك بالنطاق أعلاه وبما يبلّغ السائقون عن دفعه.`,
+    ctaP: n => `حصلت على عرض لـ${n}؟ تحقّق إن كان عادلاً في ثوانٍ.`, ctaBtn: 'تحقّق من سعرك',
+    relatedH: 'خدمات سيارات أخرى', faqH: 'أسئلة شائعة',
+    faqs: (n, lo, hi) => [
+      { q: `كم تكلفة ${n} في دبي؟`, a: `تتراوح تكلفة ${n} عادةً بين ${lo} و${hi} درهم في الإمارات — نحو الحد الأدنى للسيارات اليابانية والاقتصادية في ورشة مستقلة، وأعلى للماركات الألمانية أو الفاخرة وفي الوكالات.` },
+      { q: `لماذا تتفاوت تكلفة ${n} كثيراً بين الورش؟`, a: `تعتمد على ماركة سيارتك (تكلفة القطع)، وما إن كانت القطع أصلية أم تجارية، وأجور العمل، والوكالة مقابل الورشة المستقلة. لذلك يعرض ميزان النطاق المعتاد إلى جانب ما يدفعه السائقون فعلاً.` },
+      { q: `الوكالة أم الورشة المستقلة أرخص؟`, a: `بالنسبة لـ${n}، الورش المستقلة عادةً أرخص من الوكالات — غالباً بفارق ملحوظ — لكن تحقّق من التقييمات واسأل عن القطع والضمان.` },
+    ],
+    hubTitle: 'تكاليف صيانة وإصلاح السيارات في الإمارات (2026) | ميزان',
+    hubDesc: 'كم تكلّف صيانة وإصلاح السيارات فعلاً في الإمارات — تغيير الزيت والفرامل والقابض والمكيّف والسمكرة والدهان وغيرها — حسب ماركة السيارة، إلى جانب ما يدفعه السائقون فعلاً.',
+    hubH1: 'تكاليف إصلاح وصيانة السيارات', hubLede: 'كم تكلّف خدمات السيارات اليومية عبر الإمارات، حسب فئة الماركة، مع ما يبلّغ السائقون عن دفعه. اختر خدمة، أو <a href="/ar/motor">تحقّق من عرض محدّد</a>.',
+  },
 };
 
-function motorGuidePage(job) {
-  const L = LOC.en, RT = MOTOR_T, name = job.label, slug = mSlug(job), sizeOnly = !!job.sizeOnly;
-  const enPath = `/motor/${slug}`, canonPath = enPath;
+function motorGuidePage(lang, job) {
+  const L = LOC[lang], RT = MOTOR_T[lang], name = mJobName(lang, job), slug = mSlug(job), sizeOnly = !!job.sizeOnly;
+  const base = RT.base;
+  const enPath = `/motor/${slug}`, arPath = `/ar/motor/${slug}`, canonPath = `${base}/motor/${slug}`;
   let rows, tableH, thFirst;
   if (sizeOnly) {
     thFirst = RT.thBody; tableH = RT.tableBodyH(name);
-    rows = M_BODY.map(b => { const lo = round5(job.base * b.m * 0.72), hi = round5(job.base * b.m * 1.5); return `<tr><td>${esc(b.label)}</td><td class="r">${L.range(lo, hi)}</td></tr>`; }).join('');
+    rows = M_BODY.map(b => { const lo = round5(job.base * b.m * 0.72), hi = round5(job.base * b.m * 1.5); return `<tr><td>${esc(mBodyName(lang, b))}</td><td class="r">${L.range(lo, hi)}</td></tr>`; }).join('');
   } else {
     thFirst = RT.thTier; tableH = RT.tableTierH(name);
-    rows = ['economy', 'american', 'euro', 'german', 'luxury'].map(t => { const m = M_TIER_MULT[t]; const lo = round5(job.base * m * 0.72), hi = round5(job.base * m * 1.5); return `<tr><td>${esc(M_TIER_LABEL[t])}</td><td class="r">${L.range(lo, hi)}</td></tr>`; }).join('');
+    rows = ['economy', 'american', 'euro', 'german', 'luxury'].map(t => { const m = M_TIER_MULT[t]; const lo = round5(job.base * m * 0.72), hi = round5(job.base * m * 1.5); return `<tr><td>${esc(mTierName(lang, t))}</td><td class="r">${L.range(lo, hi)}</td></tr>`; }).join('');
   }
   const faqLo = fmt(job.base * 0.72), faqHi = fmt(job.base * (sizeOnly ? 1.4 : 1.9) * 1.5);
   const faqs = RT.faqs(name, faqLo, faqHi);
-  const related = MCATS.filter(o => o.group === job.group && o.id !== job.id).slice(0, 4).map(o => `<a href="/motor/${mSlug(o)}">${esc(cap(o.label))}</a>`).join('');
+  const related = MCATS.filter(o => o.group === job.group && o.id !== job.id).slice(0, 4).map(o => `<a href="${base}/motor/${mSlug(o)}">${esc(mJobName(lang, o))}</a>`).join('');
   const jsonld = { "@context": "https://schema.org", "@graph": [
     { "@type": "BreadcrumbList", "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": L.home, "item": `${ORIGIN}/` },
+      { "@type": "ListItem", "position": 1, "name": L.home, "item": `${ORIGIN}${base}/` },
       { "@type": "ListItem", "position": 2, "name": RT.guides, "item": `${ORIGIN}${RT.hub}` },
-      { "@type": "ListItem", "position": 3, "name": cap(name), "item": `${ORIGIN}${canonPath}` }] },
-    { "@type": "FAQPage", "inLanguage": "en", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) }
+      { "@type": "ListItem", "position": 3, "name": name, "item": `${ORIGIN}${canonPath}` }] },
+    { "@type": "FAQPage", "inLanguage": lang, "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) }
   ] };
-  return head(L, RT.title(name), RT.desc(name), canonPath, enPath, null, jsonld) + nav(L, null, null) + `<main>
-<div class="crumb"><a href="/">${L.home}</a> / <a href="${RT.hub}">${esc(RT.guides)}</a> / ${esc(cap(name))}</div>
+  const altPath = lang === 'ar' ? enPath : arPath, altLabel = lang === 'ar' ? 'English' : 'عربي';
+  return head(L, RT.title(name), RT.desc(name), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
+<div class="crumb"><a href="${base}/">${L.home}</a> / <a href="${RT.hub}">${esc(RT.guides)}</a> / ${esc(name)}</div>
 <h1>${esc(RT.h1(name))}</h1>
 <p class="lede">${RT.lede(esc(name))}</p>
 <h2>${esc(tableH)}</h2>
 <table><thead><tr><th>${esc(thFirst)}</th><th class="ra">${esc(RT.thRange)}</th></tr></thead><tbody>${rows}</tbody></table>
 <p class="note">${esc(RT.estNote)}</p>
 <h2>${esc(RT.fairH)}</h2><p>${RT.fairP(esc(name))}</p>
-<div class="ctabox"><p>${esc(RT.ctaP(name))}</p><a class="btn" href="/motor?job=${job.id}">${esc(RT.ctaBtn)} ${L.arrow}</a></div>
+<div class="ctabox"><p>${esc(RT.ctaP(name))}</p><a class="btn" href="${RT.tool}?job=${job.id}">${esc(RT.ctaBtn)} ${L.arrow}</a></div>
 <h2>${esc(RT.faqH)}</h2>
 ${faqs.map(f => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n')}
 ${related ? `<h2>${esc(RT.relatedH)}</h2><div class="related">${related}</div>` : ''}
 </main>` + footer(L);
 }
 
-function motorHub() {
-  const L = LOC.en, RT = MOTOR_T, enPath = '/motor/jobs', canonPath = enPath;
+function motorHub(lang) {
+  const L = LOC[lang], RT = MOTOR_T[lang], base = RT.base;
+  const enPath = '/motor/jobs', arPath = '/ar/motor/jobs', canonPath = `${base}/motor/jobs`;
   const groups = []; MCATS.forEach(c => { let g = groups.find(x => x.k === c.group); if (!g) { g = { k: c.group, items: [] }; groups.push(g); } g.items.push(c); });
-  const body = groups.map(g => `<div class="idxgroup"><h3>${esc(g.k)}</h3><div class="idxgrid">${g.items.map(c => `<a href="/motor/${mSlug(c)}">${esc(cap(c.label))}</a>`).join('')}</div></div>`).join('');
-  const jsonld = { "@context": "https://schema.org", "@type": "CollectionPage", "name": RT.hubTitle, "url": `${ORIGIN}${canonPath}`, "inLanguage": "en", "description": RT.hubDesc };
-  return head(L, RT.hubTitle, RT.hubDesc, canonPath, enPath, null, jsonld) + nav(L, null, null) + `<main>
-<div class="crumb"><a href="/">${L.home}</a> / ${esc(RT.guides)}</div>
+  const body = groups.map(g => `<div class="idxgroup"><h3>${esc(mGroupName(lang, g.k))}</h3><div class="idxgrid">${g.items.map(c => `<a href="${base}/motor/${mSlug(c)}">${esc(mJobName(lang, c))}</a>`).join('')}</div></div>`).join('');
+  const jsonld = { "@context": "https://schema.org", "@type": "CollectionPage", "name": RT.hubTitle, "url": `${ORIGIN}${canonPath}`, "inLanguage": lang, "description": RT.hubDesc };
+  const altPath = lang === 'ar' ? enPath : arPath, altLabel = lang === 'ar' ? 'English' : 'عربي';
+  return head(L, RT.hubTitle, RT.hubDesc, canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
+<div class="crumb"><a href="${base}/">${L.home}</a> / ${esc(RT.guides)}</div>
 <h1>${esc(RT.hubH1)}</h1><p class="lede">${RT.hubLede}</p>${body}</main>` + footer(L);
 }
 
@@ -489,18 +542,23 @@ for (const key of ['en', 'ar']) {
 }
 fs.writeFileSync(path.join(ROOT, 'ar', 'rent', 'index.html'), arRentApp()); pages++;
 
-// motor repair-cost guides (English) — per-job pages + hub
-fs.mkdirSync(path.join(ROOT, 'motor', 'jobs'), { recursive: true });
-fs.writeFileSync(path.join(ROOT, 'motor', 'jobs', 'index.html'), motorHub()); pages++;
-MCATS.forEach(j => { const d = path.join(ROOT, 'motor', mSlug(j)); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, 'index.html'), motorGuidePage(j)); pages++; });
+// motor repair-cost guides (EN + AR) — per-job pages + hub, plus the Arabic motor app
+for (const key of ['en', 'ar']) {
+  const baseDir = key === 'ar' ? path.join(ROOT, 'ar', 'motor') : path.join(ROOT, 'motor');
+  fs.mkdirSync(path.join(baseDir, 'jobs'), { recursive: true });
+  fs.writeFileSync(path.join(baseDir, 'jobs', 'index.html'), motorHub(key)); pages++;
+  MCATS.forEach(j => { const d = path.join(baseDir, mSlug(j)); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, 'index.html'), motorGuidePage(key, j)); pages++; });
+}
+fs.writeFileSync(path.join(ROOT, 'ar', 'motor', 'index.html'), arMotorApp()); pages++;
 
 // ---- sitemap (en + ar) ----
 const enUrls = [ORIGIN + '/', ORIGIN + '/rent', ORIGIN + '/motor', ORIGIN + '/prices/', ...services.map(s => `${ORIGIN}/prices/${s.slug}`)];
 const rentUrls = [ORIGIN + '/rent/areas', ...RAREAS.map(a => `${ORIGIN}/rent/${slugify(a.name)}`)];
 const motorUrls = [ORIGIN + '/motor/jobs', ...MCATS.map(j => `${ORIGIN}/motor/${mSlug(j)}`)];
 const arRentUrls = [ORIGIN + '/ar/rent', ORIGIN + '/ar/rent/areas', ...RAREAS.map(a => `${ORIGIN}/ar/rent/${slugify(a.name)}`)];
+const arMotorUrls = [ORIGIN + '/ar/motor', ORIGIN + '/ar/motor/jobs', ...MCATS.map(j => `${ORIGIN}/ar/motor/${mSlug(j)}`)];
 const arUrls = [ORIGIN + '/ar/', ORIGIN + '/ar/prices/', ...services.map(s => `${ORIGIN}/ar/prices/${s.slug}`)];
-const all = [...enUrls, ...rentUrls, ...motorUrls, ...arRentUrls, ...arUrls];
+const all = [...enUrls, ...rentUrls, ...motorUrls, ...arRentUrls, ...arMotorUrls, ...arUrls];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
   all.map(u => `  <url><loc>${u}</loc><changefreq>weekly</changefreq><priority>${u === ORIGIN + '/' ? '1.0' : '0.7'}</priority></url>`).join('\n') +
   `\n</urlset>\n`;

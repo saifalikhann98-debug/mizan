@@ -934,7 +934,7 @@ function applyStaticI18n(){
   const modes=document.querySelectorAll('.modeswitch .mode');
   if(modes[0]){ modes[0].setAttribute('href', L.servicesHref); const m=modes[0].querySelector('.mlabel'); if(m) m.textContent=L.modeServices; }
   if(modes[1]){ modes[1].setAttribute('href', LANG==='ar'?'/ar/rent':'/rent'); const m=modes[1].querySelector('.mlabel'); if(m) m.textContent=L.modeRent; }
-  if(modes[2]){ const m=modes[2].querySelector('.mlabel'); if(m) m.textContent=L.modeMotor; }
+  if(modes[2]){ modes[2].setAttribute('href', LANG==='ar'?'/ar/motor':'/motor'); const m=modes[2].querySelector('.mlabel'); if(m) m.textContent=L.modeMotor; }
   const ll=document.getElementById('langLink'); if(ll){ ll.textContent=L.langLink; ll.setAttribute('href',L.langHref); const o=(LANG==='ar'?'en':'ar'); ll.setAttribute('lang',o); ll.setAttribute('hreflang',o); ll.setAttribute('aria-label',L.langLink); }
   set('#tabFair', L.tabFair); set('#tabLegal', L.tabLegal);
   set('#lbl-type', L.lblType); set('#lbl-area', L.lblArea); set('#lbl-ctype', L.lblType); set('#lbl-carea', L.lblArea);
