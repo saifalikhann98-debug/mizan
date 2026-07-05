@@ -176,14 +176,15 @@ function alternates(enPath, arPath) {
          (arPath ? `<link rel="alternate" hreflang="ar" href="${ORIGIN}${arPath}">` : '') +
          `<link rel="alternate" hreflang="x-default" href="${ORIGIN}${enPath}">`;
 }
-function head(L, title, desc, canonPath, enPath, arPath, jsonld) {
+function head(L, title, desc, canonPath, enPath, arPath, jsonld, ogImg) {
+  if (!ogImg) ogImg = /\/motor/.test(canonPath) ? '/og-motor.png' : /\/rent/.test(canonPath) ? '/og-rent.png' : /\/prices/.test(canonPath) ? '/og-services.png' : '/og.png';
   return `<!DOCTYPE html><html lang="${L.lang}" dir="${L.dir}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${ORIGIN}${canonPath}">${alternates(enPath, arPath)}<meta name="robots" content="index,follow">
 <meta name="theme-color" content="#EEF2F1" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#16201E" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<meta property="og:type" content="article"><meta property="og:site_name" content="Mizan"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${ORIGIN}${canonPath}"><meta property="og:image" content="${ORIGIN}/og.png"><meta property="og:locale" content="${L.lang === 'ar' ? 'ar_AE' : 'en_AE'}">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:image" content="${ORIGIN}/og.png">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Mizan"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${ORIGIN}${canonPath}"><meta property="og:image" content="${ORIGIN}${ogImg}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="${L.lang === 'ar' ? 'ar_AE' : 'en_AE'}">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:image" content="${ORIGIN}${ogImg}">
 ${THEME}${fontsLink(L.font)}<link rel="stylesheet" href="/prices/page.css"><script defer src="/_vercel/insights/script.js"></script>
 <script type="application/ld+json">${JSON.stringify(jsonld)}</script></head><body>`;
 }
