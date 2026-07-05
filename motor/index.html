@@ -710,7 +710,12 @@ function render(){
   else if(hasPaid) metaText=tr(`${s.count} drivers reported · add yours to reveal the range`,`${s.count} سائق أبلغوا · أضف بلاغك لكشف النطاق`);
   else metaText=tr(`${s.count} report${s.count>1?'s':''} so far · ${5-s.count} more to unlock`,`${s.count} بلاغ حتى الآن · ${5-s.count} أخرى للفتح`);
 
-  shareMsg=tr(`${cat.label} for a ${make.n} (${body.label}) in the UAE: ${paidVisible?'drivers pay':'typically'} ${paidVisible?moneyRange(pLo,pHi):moneyRange(lo,hi)}. Is your garage quote fair? Check on Mizan:`,`${jobLabel(cat)} لسيارة ${make.n} (${bodyLabel(body)}) في الإمارات: ${paidVisible?'يدفع السائقون':'عادةً'} ${paidVisible?moneyRange(pLo,pHi):moneyRange(lo,hi)}. هل سعر ورشتك عادل؟ تحقّق على ميزان:`);
+  const svEN={fair:'fair',going:'about the going rate',steep:'steep',walk:'too high'}[tier]||'worth checking';
+  const svAR={fair:'عادل',going:'قريب من المعتاد',steep:'مرتفع',walk:'مرتفع جداً'}[tier]||'يستحق التحقق';
+  const shRange=paidVisible?moneyRange(pLo,pHi):moneyRange(lo,hi);
+  shareMsg = hasQuote
+    ? tr(`I was quoted ${money(q)} for ${jobLow(cat)} (${make.n}) — Mizan says that's ${svEN} (most pay ${shRange}). Check your quote on Mizan:`,`عُرض عليّ ${money(q)} مقابل ${jobLabel(cat)} (${make.n}) — ميزان يقول إنه ${svAR} (المعتاد ${shRange}). تحقّق من سعرك على ميزان:`)
+    : tr(`Typical ${jobLow(cat)} for a ${make.n} in the UAE is ${shRange}. Is your garage quote fair? Check on Mizan:`,`المعتاد لـ${jobLabel(cat)} لسيارة ${make.n} في الإمارات ${shRange}. هل سعر ورشتك عادل؟ تحقّق على ميزان:`);
   shareUrl=location.origin+(LANG==='ar'?'/ar/motor':'/motor')+'?job='+cat.id+'&make='+encodeURIComponent(make.n)+'&body='+body.id;
 
   // scale

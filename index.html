@@ -1039,7 +1039,13 @@ function render(){
 
   // ---- share message (built from the current result; consumed by the Share button) ----
   const shareRange = paidVisible ? moneyRange(pLow,pHigh) : moneyRange(mLow,mHigh);
-  shareMsg = `${svcLabel(cat)} ${L.rin} ${areaL}: ${paidVisible?L.shareResidents:L.shareTypical} ${shareRange}. ${L.shareCheck}`;
+  const svEN={fair:'fair',going:'about the going rate',steep:'steep',walk:'too high'}[tier]||'worth checking';
+  const svAR={fair:'عادل',going:'قريب من المعتاد',steep:'مرتفع',walk:'مرتفع جداً'}[tier]||'يستحق التحقق';
+  shareMsg = hasQuote
+    ? (LANG==='ar'
+        ? `عُرض عليّ ${money(q)} مقابل ${svcLabel(cat)} في ${areaL} — ميزان يقول إنه ${svAR} (المعتاد ${shareRange}). تحقّق من سعرك على ميزان:`
+        : `I was quoted ${money(q)} for ${svcLabel(cat)} in ${areaL} — Mizan says it's ${svEN} (most pay ${shareRange}). Check yours on Mizan:`)
+    : `${svcLabel(cat)} ${L.rin} ${areaL}: ${paidVisible?L.shareResidents:L.shareTypical} ${shareRange}. ${L.shareCheck}`;
   shareUrl = location.origin + (LANG==='ar'?'/ar/':'/') + '?service=' + cat.id + '&area=' + encodeURIComponent(area);
 
   // ---- scale geometry ----

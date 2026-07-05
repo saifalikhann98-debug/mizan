@@ -794,7 +794,13 @@ function renderFair(){
   else if(hasPaid) metaText=L.metaLocked(s.count);
   else metaText=L.metaThin(s.count, 5-s.count);
 
-  shareMsg=L.shareMsg(typeLabel(type), areaL, paidVisible?L.shareSigned:L.shareAsking, moneyRange(refLo,refHi));
+  const svEN={fair:'fair',steep:'on the high side',walk:'above market'}[tier]||'worth checking';
+  const svAR={fair:'عادل',steep:'مرتفع بعض الشيء',walk:'أعلى من السوق'}[tier]||'يستحق التحقق';
+  shareMsg = hasQuote
+    ? (LANG==='ar'
+        ? `إيجاري ${money(q)}${perYr} لـ${typeLabel(type)} في ${areaL} — ميزان يقول إنه ${svAR} (المُعلن ${moneyRange(refLo,refHi)}). تحقّق من إيجارك على ميزان:`
+        : `My rent is ${money(q)}${perYr} for a ${typeLabel(type)} in ${areaL} — Mizan says that's ${svEN} (asking ${moneyRange(refLo,refHi)}). Check yours on Mizan:`)
+    : L.shareMsg(typeLabel(type), areaL, paidVisible?L.shareSigned:L.shareAsking, moneyRange(refLo,refHi));
   shareUrl=location.origin+(LANG==='ar'?'/ar/rent':'/rent')+'?type='+typeId+'&area='+encodeURIComponent(area);
 
   // scale geometry — asking band + (revealed) signed band + your-rent marker
