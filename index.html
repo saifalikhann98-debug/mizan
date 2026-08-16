@@ -10,8 +10,8 @@
 <link rel="alternate" hreflang="ar" href="https://www.mizan-price.com/ar/">
 <link rel="alternate" hreflang="x-default" href="https://www.mizan-price.com/">
 <meta name="robots" content="index,follow">
-<meta name="theme-color" content="#1E5A44" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#143D2E" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#173F35" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F2B24" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mizan">
@@ -51,8 +51,8 @@
     --faint:#8A8579; --faint-2:#8E8779; --faint-3:#9A9488; --eyebrow:#6A6350;
     --surface:#FFFFFF; --surface-2:#FCFBF8;
     --line:#E8E4DA; --line-2:#E3DED2; --line-3:#EEEAE0; --line-4:#E4DECF; --line-5:#F1EDE4;
-    --teal:#1E5A44; --teal-deep:#174734; --teal-bg:#E8F1EC; --pill-text:#EAF3EE; --on-teal:#F6F4EC;
-    --band:#1E5A44; --on-band:#F6F4EC; --on-band-2:rgba(246,244,236,.72); --band-line:rgba(246,244,236,.28); --mint:#9AD3B3;
+    --teal:#173F35; --teal-deep:#102E27; --teal-bg:#E7EFEC; --pill-text:#EAF3EE; --on-teal:#F6F4EC;
+    --band:#173F35; --on-band:#F6F4EC; --on-band-2:rgba(246,244,236,.72); --band-line:rgba(246,244,236,.28); --mint:#8FCDB1;
     --fair:#2F7D54; --fair-bg:#EBF2EC; --success-bg:#E7F1EA;
     --steep:#B5781F; --steep-bg:#F7EFDD;
     --walk:#B5402F; --walk-bg:#F8ECE8;
@@ -70,8 +70,8 @@
     --faint:#8F8A7E; --faint-2:#8E8779; --faint-3:#7E796E; --eyebrow:#9C9274;
     --surface:#1B1F1D; --surface-2:#222724;
     --line:#2F3531; --line-2:#363C38; --line-3:#2A302C; --line-4:#333935; --line-5:#282D2A;
-    --teal:#63C596; --teal-deep:#7DD3AB; --teal-bg:#15261E; --pill-text:#0E1A17; --on-teal:#0E1A17;
-    --band:#143D2E; --on-band:#EEF3F0; --on-band-2:rgba(238,243,240,.68); --band-line:rgba(238,243,240,.22); --mint:#9CDBB8;
+    --teal:#5EC091; --teal-deep:#79CFA6; --teal-bg:#13241D; --pill-text:#0E1A17; --on-teal:#0E1A17;
+    --band:#0F2B24; --on-band:#EEF3F0; --on-band-2:rgba(238,243,240,.68); --band-line:rgba(238,243,240,.22); --mint:#96D6B4;
     --fair:#5FB985; --fair-bg:#16271D; --success-bg:#16271D;
     --steep:#D7A24A; --steep-bg:#292214;
     --walk:#E2705A; --walk-bg:#2C1915;
@@ -135,7 +135,7 @@
   .mode.active{background:var(--on-band);color:var(--band);opacity:1}
   .mode:not(.active):hover{background:rgba(255,255,255,.1);opacity:1}
   .mode:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
-  :root[data-theme="dark"] .mode.active{color:#143D2E}
+  :root[data-theme="dark"] .mode.active{color:#0F2B24}
 
   /* ---- layout ---- */
   main{max-width:1140px;margin:-72px auto 0;padding:0 clamp(18px,5vw,32px) 70px;position:relative;z-index:1}
@@ -145,7 +145,7 @@
   .form-col{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:14px;padding:22px 24px;border-bottom:1px solid var(--line-3)}
   .form-col>.howto{display:none}
   .field{border:1px solid var(--line-2);border-radius:14px;background:var(--surface-2);padding:10px 14px 9px;position:relative;transition:border-color .15s,box-shadow .15s}
-  .field:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(30,90,68,.14)}
+  .field:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.14)}
   .flabel{display:block;font-size:10.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 3px}
   .flabel .opt{text-transform:none;letter-spacing:0;font-weight:400;color:var(--faint-3)}
   .select-wrap{position:relative;margin:0}
@@ -237,11 +237,11 @@
   .meta .dot{width:6px;height:6px;border-radius:50%;background:var(--feed-dot);flex-shrink:0}
   .btn-primary{font-size:13.5px;font-weight:500;color:var(--on-teal);background:var(--teal);border:none;border-radius:999px;padding:11px 18px;cursor:pointer;transition:background .15s}
   .btn-primary:hover{background:var(--teal-deep)}
-  .btn-primary:focus-visible{box-shadow:0 0 0 3px rgba(30,90,68,.3)}
+  .btn-primary:focus-visible{box-shadow:0 0 0 3px rgba(23,63,53,.3)}
   .actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
   .btn-ghost{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:500;color:var(--teal);background:transparent;border:1px solid var(--line-2);border-radius:999px;padding:10px 16px;cursor:pointer;transition:background .15s,border-color .15s}
   .btn-ghost:hover{background:var(--teal-bg);border-color:var(--teal)}
-  .btn-ghost:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(30,90,68,.25)}
+  .btn-ghost:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(23,63,53,.25)}
   .btn-ghost svg{width:15px;height:15px;flex-shrink:0}
 
   /* feed — a panel of the latest real reports; rows deep-link, older rows fade */
@@ -285,15 +285,15 @@
   .dialog .dsub{margin:0 0 20px;font-size:13.5px;color:var(--muted);line-height:1.5}
   .dialog .dsub strong{color:var(--ink-2);font-weight:500}
   .modal-input{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:14px;padding:0 16px;height:56px;margin-bottom:12px}
-  .modal-input:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(30,90,68,.15)}
+  .modal-input:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
   .modal-input .cur{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--teal)}
   .modal-input input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ink)}
   .note-input{width:100%;border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface-2);margin-bottom:16px;outline:none}
-  .note-input:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(30,90,68,.15)}
+  .note-input:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
   .btn-submit{width:100%;height:52px;border:none;border-radius:999px;font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;color:var(--on-teal);background:var(--teal);transition:background .2s ease}
   .btn-submit:hover:not(:disabled){background:var(--teal-deep)}
   .btn-submit:disabled{background:#C8C2B4;cursor:not-allowed}
-  .btn-submit:focus-visible{box-shadow:0 0 0 3px rgba(30,90,68,.3)}
+  .btn-submit:focus-visible{box-shadow:0 0 0 3px rgba(23,63,53,.3)}
   .modal-success{text-align:center;padding:8px 0}
   .modal-success .check{width:54px;height:54px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
   .modal-success h3{font-weight:500;font-size:26px;letter-spacing:-.02em;margin:0 0 8px}
@@ -380,7 +380,7 @@
 <header class="nav">
   <div class="nav-in">
     <div class="brand">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#1E5A44" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#173F35" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 3v17"/><path d="M5 20h14"/><path d="M4 7h16"/>
         <path d="M4 7l-2.5 5a3 3 0 0 0 5 0z"/><path d="M20 7l-2.5 5a3 3 0 0 0 5 0z"/>
       </svg>

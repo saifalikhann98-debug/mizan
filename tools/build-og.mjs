@@ -19,13 +19,13 @@ function card({ eyebrow, h1, h1em, h1tail, sub }) {
 <style>
 *{box-sizing:border-box;margin:0}
 html,body{width:1200px;height:630px;overflow:hidden}
-body{background:#1E5A44;color:#F6F4EC;font-family:Outfit,system-ui,sans-serif;-webkit-font-smoothing:antialiased;position:relative}
+body{background:#173F35;color:#F6F4EC;font-family:Outfit,system-ui,sans-serif;-webkit-font-smoothing:antialiased;position:relative}
 .wm{position:absolute;left:84px;top:64px;display:flex;align-items:center;gap:14px;font-size:34px;font-weight:500}
-.wm svg{width:34px;height:34px}.wm .ar{color:#9AD3B3;font-weight:400;font-size:30px;font-family:'Geeza Pro','IBM Plex Sans Arabic',system-ui}
+.wm svg{width:34px;height:34px}.wm .ar{color:#8FCDB1;font-weight:400;font-size:30px;font-family:'Geeza Pro','IBM Plex Sans Arabic',system-ui}
 .eyebrow{position:absolute;left:86px;top:178px;font-size:19px;letter-spacing:.18em;text-transform:uppercase;color:rgba(246,244,236,.62);font-weight:500}
 .hd{position:absolute;left:82px;top:212px;width:1000px}
 h1{font-size:96px;font-weight:300;line-height:1.02;letter-spacing:-.03em}
-h1 em{font-style:normal;font-weight:500;color:#9AD3B3}
+h1 em{font-style:normal;font-weight:500;color:#8FCDB1}
 .sub{margin:26px 0 0 4px;font-size:29px;color:rgba(246,244,236,.74);width:900px;line-height:1.35}
 .chips{position:absolute;left:86px;top:530px;display:flex;gap:12px}
 .chip{border-radius:999px;padding:9px 20px;font-size:19px;font-weight:500;background:rgba(246,244,236,.12);border:1px solid rgba(246,244,236,.28)}

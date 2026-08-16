@@ -51,11 +51,11 @@ module.exports = async (req, res) => {
   }).sort((x, y) => y.n - x.n);
   const live = rank.filter(o => o.n >= 5), close = rank.filter(o => o.n >= 3 && o.n < 5), early = rank.filter(o => o.n < 3);
 
-  const row = o => `<tr><td style="padding:4px 10px 4px 0;font-weight:700;color:#1E5A44;white-space:nowrap">${o.n}/5</td><td style="padding:4px 12px 4px 0">${esc(o.c)} <span style="color:#8A857B">@ ${esc(o.a)}</span></td><td style="padding:4px 0;color:#55514A;white-space:nowrap">~AED ${o.med}</td></tr>`;
+  const row = o => `<tr><td style="padding:4px 10px 4px 0;font-weight:700;color:#173F35;white-space:nowrap">${o.n}/5</td><td style="padding:4px 12px 4px 0">${esc(o.c)} <span style="color:#8A857B">@ ${esc(o.a)}</span></td><td style="padding:4px 0;color:#55514A;white-space:nowrap">~AED ${o.med}</td></tr>`;
   const section = (title, list, empty) => `<h3 style="margin:22px 0 6px;font-size:15px;color:#1C1A15">${title}</h3>` +
     (list.length ? `<table style="border-collapse:collapse;font-size:14px;width:100%">${list.map(row).join('')}</table>` : `<div style="color:#8A857B;font-size:14px">${empty}</div>`);
   const seed = close.filter(o => !o.c.startsWith('motor-')).map(o =>
-    `<div style="font-size:13px;margin:4px 0"><a href="https://www.mizan-price.com/?service=${encodeURIComponent(o.c)}&amp;area=${encodeURIComponent(o.a)}" style="color:#1E5A44;font-weight:600">${esc(o.c)} @ ${esc(o.a)}</a> — needs ${5 - o.n} more to flip</div>`).join('');
+    `<div style="font-size:13px;margin:4px 0"><a href="https://www.mizan-price.com/?service=${encodeURIComponent(o.c)}&amp;area=${encodeURIComponent(o.a)}" style="color:#173F35;font-weight:600">${esc(o.c)} @ ${esc(o.a)}</a> — needs ${5 - o.n} more to flip</div>`).join('');
 
   const headline = new7 > 0
     ? `${new7} new price${new7 > 1 ? 's' : ''} this week — nice, keep it going.`
