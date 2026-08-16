@@ -11,7 +11,7 @@ const OUT = process.argv[2] || '/Users/saif/mizan';
 const BROWSER = process.argv[3] || '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser';
 
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const SCALE = `<svg viewBox="0 0 32 32" fill="none" stroke="#F6F4EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5v22M9 27h14M6 11h20"/><path d="M6 11l-3.4 6.8a3.8 3.8 0 0 0 6.8 0z"/><path d="M26 11l-3.4 6.8a3.8 3.8 0 0 0 6.8 0z"/></svg>`;
+const SCALE = `<svg viewBox="0 0 32 32" fill="none" stroke="#1C1A15" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5v22M9 27h14M6 11h20"/><path d="M6 11l-3.4 6.8a3.8 3.8 0 0 0 6.8 0z"/><path d="M26 11l-3.4 6.8a3.8 3.8 0 0 0 6.8 0z"/></svg>`;
 
 function card({ eyebrow, h1, h1em, h1tail, sub }) {
   return `<!doctype html><html><head><meta charset="utf-8">
@@ -19,19 +19,19 @@ function card({ eyebrow, h1, h1em, h1tail, sub }) {
 <style>
 *{box-sizing:border-box;margin:0}
 html,body{width:1200px;height:630px;overflow:hidden}
-body{background:#173F35;color:#F6F4EC;font-family:Outfit,system-ui,sans-serif;-webkit-font-smoothing:antialiased;position:relative}
+body{background:#FBFAF6;color:#1C1A15;background-image:radial-gradient(circle,rgba(28,26,21,.14) 1px,transparent 1.5px);background-size:22px 22px;font-family:Outfit,system-ui,sans-serif;-webkit-font-smoothing:antialiased;position:relative}
 .wm{position:absolute;left:84px;top:64px;display:flex;align-items:center;gap:14px;font-size:34px;font-weight:500}
-.wm svg{width:34px;height:34px}.wm .ar{color:#8FCDB1;font-weight:400;font-size:30px;font-family:'Geeza Pro','IBM Plex Sans Arabic',system-ui}
-.eyebrow{position:absolute;left:86px;top:178px;font-size:19px;letter-spacing:.18em;text-transform:uppercase;color:rgba(246,244,236,.62);font-weight:500}
+.wm svg{width:34px;height:34px}.wm .ar{color:#726D63;font-weight:400;font-size:30px;font-family:'Geeza Pro','IBM Plex Sans Arabic',system-ui}
+.eyebrow{position:absolute;left:86px;top:178px;font-size:19px;letter-spacing:.18em;text-transform:uppercase;color:#8A8579;font-weight:500}
 .hd{position:absolute;left:82px;top:212px;width:1000px}
-h1{font-size:96px;font-weight:300;line-height:1.02;letter-spacing:-.03em}
-h1 em{font-style:normal;font-weight:500;color:#8FCDB1}
-.sub{margin:26px 0 0 4px;font-size:29px;color:rgba(246,244,236,.74);width:900px;line-height:1.35}
+h1{font-size:96px;font-weight:400;line-height:1.08;letter-spacing:-.035em}
+h1 em{font-style:normal;font-weight:500;color:#111;background:#E4F222;padding:0 .14em;border-radius:.16em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.sub{margin:26px 0 0 4px;font-size:29px;color:#726D63;width:900px;line-height:1.35}
 .chips{position:absolute;left:86px;top:530px;display:flex;gap:12px}
-.chip{border-radius:999px;padding:9px 20px;font-size:19px;font-weight:500;background:rgba(246,244,236,.12);border:1px solid rgba(246,244,236,.28)}
-.chip.f{color:#BFE3CE}.chip.s{color:#F0D493}.chip.w{color:#F4B7A9}
-.url{position:absolute;right:86px;top:539px;font-size:23px;font-weight:500;color:rgba(246,244,236,.9)}
-.url span{color:rgba(246,244,236,.55);font-weight:400}
+.chip{border-radius:999px;padding:9px 20px;font-size:19px;font-weight:500;background:#fff;border:1px solid #DEDAD0}
+.chip.f{color:#2F7D54}.chip.s{color:#B5781F}.chip.w{color:#B5402F}
+.url{position:absolute;right:86px;top:533px;font-size:21px;font-weight:500;color:#111;background:#E4F222;padding:10px 18px;border-radius:999px}
+.url span{color:#3F3C35;font-weight:400}
 </style></head><body>
 <div class="wm">${SCALE}<span>Mizan</span><span class="ar">ميزان</span></div>
 <div class="eyebrow">${esc(eyebrow)}</div>
