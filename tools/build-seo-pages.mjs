@@ -132,13 +132,13 @@ a{color:var(--teal);text-decoration:none}a:hover{text-decoration:underline}
 /* teal band: nav + title live on the flat brand field; the range card straddles its bottom edge */
 .topband{background:var(--band);color:var(--on-band);padding-bottom:64px}
 @keyframes mz-drift{from{background-position:11px 11px}to{background-position:33px 33px}}
-  /* light sweep: a second, brighter dot layer revealed through a soft moving spotlight */
+  /* twinkle: a sparse layer (every 3rd dot) that breathes in and out, hopping to a different subset each cycle */
 .topband::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
-  background-image:radial-gradient(circle,rgba(246,244,236,.46) 1px,transparent 1.6px);background-size:22px 22px;background-position:11px 11px;
-  -webkit-mask-image:radial-gradient(closest-side,#000 0%,rgba(0,0,0,.6) 40%,transparent 100%);mask-image:radial-gradient(closest-side,#000 0%,rgba(0,0,0,.6) 40%,transparent 100%);
-  -webkit-mask-size:640px 640px;mask-size:640px 640px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-  animation:mz-drift 12s linear infinite,mz-sweep 16s ease-in-out infinite alternate}
-@keyframes mz-sweep{from{-webkit-mask-position:-15% 30%;mask-position:-15% 30%}to{-webkit-mask-position:115% 55%;mask-position:115% 55%}}
+  background-image:radial-gradient(circle,rgba(246,244,236,.6) 1.1px,transparent 1.8px);background-size:66px 66px;background-position:11px 11px;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.5) 60%,transparent 100%);mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.5) 60%,transparent 100%);
+  opacity:0;animation:mz-twinkle 4.5s ease-in-out infinite,mz-hop 27s steps(6,jump-none) infinite}
+@keyframes mz-twinkle{0%,100%{opacity:0}50%{opacity:1}}
+@keyframes mz-hop{from{background-position:11px 11px}to{background-position:121px 55px}}
 .topband{position:relative;overflow:hidden}
 .topband>*{position:relative;z-index:1}
   /* quiet texture: a fine dot grid that fades toward the card, plus one thin ring off to the side */
