@@ -52,9 +52,8 @@ headline, ONE brand accent). Still a single self-contained file per app (`index.
 `motor/index.html`), CSS custom properties in `:root` — no framework/build. `/ar/*` app copies are generated.
 - Fonts: **Outfit** everywhere (Regular 400 hero, Medium 500 UI/verdict word); **Geist Mono** for all
   prices / AED / scale labels; IBM Plex Sans Arabic for `lang="ar"`.
-- Palette: **lime `--brand #E4F222`** is the primary — used ONLY as a fill with black text (primary buttons,
-  active switcher pill, highlight behind the headline emphasis, accent dots); **black/ink is the secondary**
-  (`--teal` now resolves to ink: secondary buttons, links, 'Residents paid' label, paid band, pill). Never lime as text on light; page/`--band` `#FBFAF6` (light) / `#121615` (dark) with
+- Palette: brand **pine `--teal #173F35`** (primary buttons, paid band, headline emphasis via `--mint`,
+  active switcher pill, links) — the single accent; page/`--band` `#FBFAF6` (light) / `#121615` (dark) with
   a faint ink dot grid (`--dot`) fading toward the card; ink `#1C1A15`; card `#FFFFFF`; hairlines
   `#E8E4DA`–`#F1EDE4`; verdict tones `--fair #2F7D54` / `--steep #B5781F` / `--walk #B5402F` (+ tints);
   hatch `#DDD8CB`/`#F0ECE3`. Cards get one whisper shadow; everything else hairlines. No gradients.
@@ -71,7 +70,7 @@ headline, ONE brand accent). Still a single self-contained file per app (`index.
   persists to localStorage. Respect `prefers-reduced-motion`. `:focus-visible` states. Modal focus-trap.
 - One bold element (the verdict word); keep everything else quiet. Verdict meaning never by colour alone.
 - Guides share the system (CSS in `tools/build-seo-pages.mjs` → `/prices/page.css`; `G()` lifts crumb +
-  h1 + lede into `.topband`). OG cards (`node tools/build-og.mjs`) use the same light system (lime highlight + lime url pill).
+  h1 + lede into `.topband`). OG cards (`node tools/build-og.mjs`) intentionally stay on the pine field.
 
 ## Prioritized backlog
 **First real task — make it persist for real (required before launch):**
