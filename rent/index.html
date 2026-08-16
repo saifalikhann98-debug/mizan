@@ -412,7 +412,7 @@
 </div></header>
   <div class="hero">
     <div class="eyebrow">Rent · UAE</div>
-    <h1>Is your rent <em>fair</em> — and is the increase <em>legal?</em></h1>
+    <h1>Is your rent <em>fair</em> —<br>and is the increase <em>legal?</em></h1>
     <p>What tenants actually pay across UAE communities, plus a calculator for the maximum rent increase your landlord can legally charge under Dubai's RERA rules.</p>
   </div>
 
@@ -1036,7 +1036,7 @@ function applyStaticI18n(){
   document.documentElement.lang=LANG; document.documentElement.dir=(LANG==='ar'?'rtl':'ltr');
   document.title=L.docTitle;
   set('.eyebrow', L.eyebrow);
-  const h1=document.querySelector('.hero h1'); if(h1) h1.innerHTML=`${esc(L.h1a)}<em>${esc(L.h1em1)}</em>${esc(L.h1mid)}<em>${esc(L.h1em2)}</em>`;
+  const h1=document.querySelector('.hero h1'); if(h1) h1.innerHTML=`${esc(L.h1a)}<em>${esc(L.h1em1)}</em>${esc(L.h1mid).replace(' — ',' —<br>')}<em>${esc(L.h1em2)}</em>`;
   set('.hero p', L.subhead);
   const modes=document.querySelectorAll('.modeswitch .mode');
   if(modes[0]){ modes[0].setAttribute('href', L.servicesHref); const m=modes[0].querySelector('.mlabel'); if(m) m.textContent=L.modeServices; }
