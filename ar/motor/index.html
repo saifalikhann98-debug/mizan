@@ -253,7 +253,35 @@
     .hero p{font-size:15px}
     .form-col{border-right:none;border-bottom:1px solid var(--line-3);max-width:none;padding:22px}
     .result-col{padding:22px}
+    /* mode switch fills the width — three equal thirds, nothing clips */
+    .modeswitch{width:100%;gap:4px;padding:5px;margin-bottom:18px}
+    .mode{flex:1 1 0;justify-content:center;gap:7px;padding:11px 6px;font-size:14px}
+    .verdict{padding:18px}
+    .verdict-word{font-size:36px}
+    .verdict-stat .big{font-size:28px}
+    .dialog{padding:24px}
+    .dialog h3,.modal-success h3{font-size:26px}
   }
+  /* mobile verdict strip (desktop never shows it — the verdict is always beside the form) */
+  .vstrip{display:none;position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:45;
+    align-items:center;gap:12px;padding:12px 14px 12px 16px;border-radius:16px;text-decoration:none;
+    background:var(--surface);border:1px solid var(--line);box-shadow:0 10px 30px -8px rgba(28,26,21,.35);
+    transform:translateY(calc(100% + 24px));opacity:0;transition:transform .32s var(--ease),opacity .25s;
+    pointer-events:none}
+  .vstrip.on{transform:none;opacity:1;pointer-events:auto}
+  .vstrip .vs-bar{width:4px;align-self:stretch;border-radius:2px;flex-shrink:0}
+  .vstrip .vs-main{flex:1;min-width:0}
+  .vstrip .vs-k{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);line-height:1}
+  .vstrip .vs-word{font-family:var(--serif);font-weight:500;font-size:24px;line-height:1.05;margin-top:3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .vstrip .vs-stat{font-family:var(--mono);font-size:20px;font-weight:600;flex-shrink:0;line-height:1}
+  .vstrip .vs-cta{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;color:var(--muted)}
+  .vstrip .vs-cta svg{width:16px;height:16px}
+  html[lang="ar"] .vstrip .vs-word{font-family:'IBM Plex Sans Arabic',sans-serif;font-weight:600}
+  html[lang="ar"] .vstrip .vs-k{letter-spacing:0}
+  html[lang="ar"] .vstrip .vs-stat{direction:ltr}
+  @media (max-width:760px){ .vstrip{display:flex} body.has-vstrip .toast{bottom:88px} }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
   /* ---- Arabic / RTL ---- (Newsreader/Geist have no Arabic glyphs; prices stay Geist Mono + LTR) */
@@ -377,6 +405,12 @@
     </div>
   </div>
 </div>
+<a class="vstrip" id="vstrip" href="#result" aria-live="polite" aria-label="Jump to verdict">
+  <span class="vs-bar" id="vsBar"></span>
+  <span class="vs-main"><span class="vs-k" id="vsK">Verdict</span><span class="vs-word" id="vsWord" style="display:block"></span></span>
+  <span class="vs-stat" id="vsStat"></span>
+  <span class="vs-cta" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>
+</a>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -413,7 +447,8 @@ const T={
     mTitle:'What did you actually pay?', mAdd:'Add my price', mDone:'Done', mDoneTitle:'Added.',
     mNotePh:'Optional note — e.g. genuine parts, Pajero, Satwa garage',
     mSubA:'For ', mSubB:' in the UAE. Shared anonymously — no name, no contact.',
-    mThanksA:'Thank you — the next driver checking ', mThanksB:' gets a sharper picture because of you.',
+    mThanksA:'Thank you — the next driver checking ', mThanksB:' gets a sharper picture because of you.', egPh:n=>'e.g. '+n,
+    mVs:(pct,typ)=>pct<=-3?`You paid ${-pct}% under the typical garage price (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical garage price (${typ}) — your report helps the next driver push back.`:`That's right around the typical garage price (${typ}).`,
     mTooHigh:'That price looks too high', mSavedLocal:'Saved on this device only',
     gDup:'You already added that exact price', gBucket:'Thanks — you’ve added enough here for today', gDay:'That’s a lot of prices today — try again tomorrow',
     kVerdict:'Verdict', kGoing:'Going rate', kEstimate:'Estimate', kTypical:'Typical rate',
@@ -456,7 +491,8 @@ const T={
     mTitle:'كم دفعت فعلاً؟', mAdd:'أضف سعري', mDone:'تم', mDoneTitle:'تمت الإضافة.',
     mNotePh:'ملاحظة اختيارية — مثال: قطع أصلية، باجيرو، ورشة السطوة',
     mSubA:'لخدمة ', mSubB:' في الإمارات. تُشارَك بشكل مجهول — بلا اسم ولا بيانات تواصل.',
-    mThanksA:'شكراً لك — السائق التالي الذي يتحقق من ', mThanksB:' سيحصل على صورة أوضح بفضلك.',
+    mThanksA:'شكراً لك — السائق التالي الذي يتحقق من ', mThanksB:' سيحصل على صورة أوضح بفضلك.', egPh:n=>'مثلاً '+n,
+    mVs:(pct,typ)=>pct<=-3?`دفعت أقل بنسبة ${-pct}% من سعر الورشة المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من سعر الورشة المعتاد (${typ}) — بلاغك يساعد السائق التالي على التفاوض.`:`هذا قريب من سعر الورشة المعتاد (${typ}).`,
     mTooHigh:'هذا السعر يبدو مرتفعاً جداً', mSavedLocal:'حُفِظ على هذا الجهاز فقط',
     gDup:'لقد أضفت هذا السعر بالضبط من قبل', gBucket:'شكراً — لقد أضفت ما يكفي هنا اليوم', gDay:'هذا عدد كبير من الأسعار اليوم — حاول غداً',
     kVerdict:'الحكم', kGoing:'السعر السائد', kEstimate:'تقدير', kTypical:'السعر المعتاد',
@@ -671,6 +707,26 @@ function fillRental(){
 }
 
 let shareMsg='', shareUrl='';
+let CUR_TYP=0;   // typical garage price of the current pick (for the post-submit comparison)
+
+// ===== mobile verdict strip — mirrors the verdict (read from the DOM) while the card is scrolled out
+// of view. Only shown once a quote is typed; on phones the form sits above the result, so the user
+// otherwise gets no feedback while typing. Tap = jump to the full verdict.
+let stripIO=null, verdictSeen=true, stripOn=false;
+function updateStrip(sel, hasQuote){
+  const el=$('vstrip'); if(!el) return;
+  const c=document.querySelector(sel), v=c&&c.querySelector('.verdict');
+  const w=v&&v.querySelector('.verdict-word'), k=v&&v.querySelector('.kicker'), st=v&&v.querySelector('.verdict-stat .big');
+  stripOn=!!(hasQuote&&w);
+  if(w){ const col=w.style.color; $('vsWord').textContent=w.textContent; $('vsWord').style.color=col;
+    $('vsK').textContent=k?k.textContent:''; $('vsStat').textContent=st?st.textContent:''; $('vsStat').style.color=col; $('vsBar').style.background=col; }
+  if(stripIO) stripIO.disconnect();
+  if(v&&'IntersectionObserver' in window){ stripIO=new IntersectionObserver(es=>{verdictSeen=es[0].isIntersecting;syncStrip()},{threshold:0.35}); stripIO.observe(v); }
+  syncStrip();
+  el.onclick=e=>{ e.preventDefault(); if(v) v.scrollIntoView({behavior:'smooth',block:'center'}); };
+}
+function syncStrip(){ const el=$('vstrip'); if(!el) return; const on=stripOn&&!verdictSeen&&$('modal').classList.contains('hidden'); el.classList.toggle('on',on); document.body.classList.toggle('has-vstrip',on); }
+
 function render(){
   const cat=catById($('job').value);
   const qRaw=parseFloat($('quoted').value), q=(!isNaN(qRaw)&&qRaw>0)?qRaw:0, hasQuote=q>0;
@@ -681,6 +737,7 @@ function render(){
   const tierMult=cat.sizeOnly?1:(TIER_MULT[make.t]||1);
   const adjTyp=round5(cat.base*tierMult*body.m);
   const lo=round5(adjTyp*0.72), hi=round5(adjTyp*1.5), typ=adjTyp;
+  $('quoted').placeholder=L.egPh(aed(typ)); CUR_TYP=typ;
   const pLo=paidVisible?round5(s.p25):null, pHi=paidVisible?round5(s.p75):null, pMid=paidVisible?round5(s.p50):null;
 
   let tier,word,kicker,line,statBig='',statSub='',hasStat=false,roomLabel,roomValue;
@@ -757,6 +814,7 @@ function render(){
     </div>`;
   const rb=$('reportBtn'); if(rb) rb.onclick=openModal;
   const sb=$('shareBtn'); if(sb) sb.onclick=shareResult;
+  updateStrip('#result', hasQuote);
 }
 function shareResult(){
   if(!shareMsg)return;
@@ -773,6 +831,7 @@ function renderRental(){
   const periodWord=period==='daily'?tr('per day','يومياً'):period==='weekly'?tr('per week','أسبوعياً'):tr('per month','شهرياً');
   $('rquoteUnit').textContent=unit;
   const [lo,typ,hi]=rentRate(c.id,period);
+  $('rquoted').placeholder=L.egPh(aed(typ));
   const qRaw=parseFloat($('rquoted').value), q=(!isNaN(qRaw)&&qRaw>0)?qRaw:0, hasQuote=q>0;
   let tier,word,kicker=hasQuote?L.kVerdict:L.kTypical,line,statBig='',statSub='',hasStat=false;
   if(!hasQuote){ tier='going'; word=L.wTypical; line=tr(`Here’s what ${rclassLabel(c).toLowerCase()} typically rents for ${periodWord} in the UAE. Enter a rate to check it.`,`إليك كم تُؤجَّر فئة ${rclassLabel(c)} عادةً ${periodWord} في الإمارات. أدخل سعراً للتحقق منه.`); }
@@ -799,6 +858,7 @@ function renderRental(){
     <div class="breakdown"><div class="brow"><span class="k">${L.bdUaeRange}</span><span class="v">${moneyRange(lo,hi)}${unit}</span></div>${quoteRow}<div class="brow alt"><span class="k">${L.rmTypical}</span><span class="v strong">${money(typ)}${unit}</span></div></div>
     <div class="meta-row"><div class="meta"><span class="dot"></span>${L.rentMeta}</div>
       <div class="actions"><button type="button" class="btn-ghost" id="shareBtnR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>${tr('Share','مشاركة')}</button></div></div>`;
+  updateStrip('#rresult', hasQuote);
   const sb=$('shareBtnR'); if(sb) sb.onclick=()=>{ if(navigator.share){navigator.share({title:'Mizan',text:shareMsgR,url:shareUrlR}).catch(()=>{})}else{window.open('https://wa.me/?text='+encodeURIComponent(shareMsgR+' '+shareUrlR),'_blank','noopener')} };
 }
 /* ===== USED-CAR VALUE (honest depreciation estimator; no fabricated per-model DB) ===== */
@@ -835,7 +895,7 @@ function showTab(which){
     if(p) p.classList.toggle('hidden',t!==which);
     if(b){ b.classList.toggle('active',t===which); b.setAttribute('aria-selected',t===which); }
   });
-  if(which==='repair')render(); else if(which==='rental')renderRental(); else renderUsed();
+  if(which==='repair')render(); else if(which==='rental')renderRental(); else { renderUsed(); updateStrip('#uresult', false); }
 }
 
 let lastFocus=null;
@@ -843,11 +903,12 @@ function openModal(){
   const cat=catById($('job').value);
   $('modalSub').innerHTML=`${L.mSubA}<strong>${escapeHTML(jobLabel(cat))}</strong>${L.mSubB}`;
   $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
-  $('modalPrice').value=''; $('modalNote').value=''; updateModalBtn();
-  $('modal').classList.remove('hidden'); lastFocus=document.activeElement;
+  const qv=parseFloat($('quoted').value);
+  $('modalPrice').value=(qv>0&&qv<1000000)?String(Math.round(qv)):''; $('modalNote').value=''; updateModalBtn();
+  $('modal').classList.remove('hidden'); syncStrip(); lastFocus=document.activeElement;
   document.addEventListener('keydown',onModalKey); setTimeout(()=>$('modalPrice').focus(),30);
 }
-function closeModal(){$('modal').classList.add('hidden');document.removeEventListener('keydown',onModalKey);if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+function closeModal(){$('modal').classList.add('hidden');syncStrip();document.removeEventListener('keydown',onModalKey);if(lastFocus&&lastFocus.focus)lastFocus.focus()}
 function onModalKey(e){if(e.key==='Escape'){closeModal()}else if(e.key==='Tab'){trapFocus(e)}}
 function trapFocus(e){const f=[...$('modal').querySelectorAll('button,input')].filter(el=>el.offsetParent!==null&&!el.disabled);if(!f.length)return;const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
 function updateModalBtn(){const v=parseFloat($('modalPrice').value);$('modalSubmit').disabled=!(v>0)}
@@ -860,7 +921,8 @@ async function submitModal(){
   let synced=true;
   try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
-  $('modalSuccessText').textContent=`${L.mThanksA}${jobLow(cat)}${L.mThanksB}`;
+  const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
+  $('modalSuccessText').textContent=`${L.mThanksA}${jobLow(cat)}${L.mThanksB}`+vsTxt;
   $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
   setTimeout(()=>{const d=$('modalDone');if(d)d.focus()},30);
   render(); if(!synced) toast(L.mSavedLocal);

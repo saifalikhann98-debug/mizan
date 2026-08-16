@@ -344,8 +344,44 @@
     .form-col .select-wrap{margin-bottom:16px}
     .form-col .howto{display:none}      /* moved below the result on mobile (see .howto-m) */
     .result-col{padding:22px}
+    .verdict{padding:18px}
+    .verdict-word{font-size:38px}
+    .verdict-stat .big{font-size:28px}
+    .dialog{padding:24px}
+    .dialog h3,.modal-success h3{font-size:26px}
     .howto-m{display:flex;flex-basis:100%;margin:0;padding:22px;border-top:1px solid var(--line-3)}
+    /* mode switch fills the width — three equal thirds, nothing clips */
+    .modeswitch{width:100%;gap:4px;padding:5px;margin-bottom:18px}
+    .mode{flex:1 1 0;justify-content:center;gap:7px;padding:11px 6px;font-size:14px}
+    /* feed: price + time on the first line, service name gets the full width below */
+    .frow{flex-wrap:wrap;gap:4px 12px;padding:16px 2px}
+    .frow .amt{width:auto;flex:1 1 auto;gap:6px}
+    .frow .amt .n{font-size:20px}
+    .frow .fwhen{order:2;font-size:12.5px}
+    .frow .fmid{order:3;flex-basis:100%}
+    .frow .fmid .fs{white-space:normal;font-size:15px}
+    .frow .fmid .fa{font-size:13px}
   }
+  /* mobile verdict strip (desktop never shows it — the verdict is always beside the form) */
+  .vstrip{display:none;position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:45;
+    align-items:center;gap:12px;padding:12px 14px 12px 16px;border-radius:16px;text-decoration:none;
+    background:var(--surface);border:1px solid var(--line);box-shadow:0 10px 30px -8px rgba(28,26,21,.35);
+    transform:translateY(calc(100% + 24px));opacity:0;transition:transform .32s var(--ease),opacity .25s;
+    pointer-events:none}
+  .vstrip.on{transform:none;opacity:1;pointer-events:auto}
+  .vstrip .vs-bar{width:4px;align-self:stretch;border-radius:2px;flex-shrink:0}
+  .vstrip .vs-main{flex:1;min-width:0}
+  .vstrip .vs-k{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);line-height:1}
+  .vstrip .vs-word{font-family:var(--serif);font-weight:500;font-size:24px;line-height:1.05;margin-top:3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .vstrip .vs-stat{font-family:var(--mono);font-size:20px;font-weight:600;flex-shrink:0;line-height:1}
+  .vstrip .vs-cta{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;color:var(--muted)}
+  .vstrip .vs-cta svg{width:16px;height:16px}
+  html[lang="ar"] .vstrip .vs-word{font-family:'IBM Plex Sans Arabic',sans-serif;font-weight:600}
+  html[lang="ar"] .vstrip .vs-k{letter-spacing:0}
+  html[lang="ar"] .vstrip .vs-stat{direction:ltr}
+  @media (max-width:760px){ .vstrip{display:flex} body.has-vstrip .toast{bottom:88px} }
   @media (prefers-reduced-motion:reduce){
     *{transition:none!important;animation:none!important}
   }
@@ -470,6 +506,12 @@
   </div>
 </div>
 
+<a class="vstrip" id="vstrip" href="#result" aria-live="polite" aria-label="Jump to verdict">
+  <span class="vs-bar" id="vsBar"></span>
+  <span class="vs-main"><span class="vs-k" id="vsK">Verdict</span><span class="vs-word" id="vsWord" style="display:block"></span></span>
+  <span class="vs-stat" id="vsStat"></span>
+  <span class="vs-cta" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>
+</a>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -501,7 +543,7 @@ const T = {
     tagline:'Crowdsourced fair prices · UAE', langLink:'عربي', langHref:'/ar/',
     eyebrow:'The gap is the point', h1a:'Know the ', h1em:'fair price', h1b:'before you pay.',
     subhead:'What UAE residents actually paid, laid over the list prices companies advertise. Pick a service and your area, the verdict updates as you go.',
-    lblCat:'What are you paying for?', lblArea:'In which area?', lblQuote:'The price you were quoted', quoteOpt:'— optional', aed:'AED',
+    lblCat:'What are you paying for?', lblArea:'In which area?', lblQuote:'The price you were quoted', quoteOpt:'— optional', aed:'AED', egPh:n=>'e.g. '+n,
     howMarketStrong:'Market estimate', howMarket:' — list prices harvested from the web. What companies advertise.',
     howPaidStrong:'Paid range', howPaid:' — what residents report actually paying. Gets sharper with every report.',
     loading:'Loading prices…', rin:'in', scaleTitle:'The price scale', residentsPaid:'RESIDENTS PAID',
@@ -531,6 +573,7 @@ const T = {
     mTitle:'What did you actually pay?', mSubA:'For ', mSubB:' in ', mSubC:'. Shared anonymously — no name, no contact.',
     mAdd:'Add my price', mNote:'Optional note — e.g. 2 split units, incl. gas',
     mDoneTitle:'Added to the scale.', mThanks:(s,a)=>`Thank you — the next person who checks ${s} in ${a} gets a sharper estimate because of you.`, mDone:'Done',
+    mVs:(pct,typ)=>pct<=-3?`You paid ${-pct}% under the typical advertised price (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical advertised price (${typ}) — your report helps the next person push back.`:`That's right around the typical advertised price (${typ}).`,
     feedTitle:'Recently paid', feedSub:'Fresh prices keep the ranges honest. Old ones fade.',
     feedEmpty:'No real prices yet — be the first. Add what you paid and it shows up here for the next person.',
     faqTitle:'Common questions',
@@ -544,7 +587,7 @@ const T = {
     tagline:'أسعار عادلة من السكان · الإمارات', langLink:'English', langHref:'/',
     eyebrow:'الفارق هو الأهم', h1a:'اعرف ', h1em:'السعر العادل', h1b:'قبل أن تدفع.',
     subhead:'ما يدفعه سكان الإمارات فعلاً، مقابل الأسعار التي تعلنها الشركات. اختر خدمة ومنطقتك، وتُحدَّث النتيجة فوراً.',
-    lblCat:'ما الخدمة التي تدفع مقابلها؟', lblArea:'في أي منطقة؟', lblQuote:'السعر الذي عُرض عليك', quoteOpt:'— اختياري', aed:'درهم',
+    lblCat:'ما الخدمة التي تدفع مقابلها؟', lblArea:'في أي منطقة؟', lblQuote:'السعر الذي عُرض عليك', quoteOpt:'— اختياري', aed:'درهم', egPh:n=>'مثلاً '+n,
     howMarketStrong:'تقدير السوق', howMarket:' — الأسعار المُعلنة على الإنترنت. ما تعلنه الشركات.',
     howPaidStrong:'النطاق المدفوع', howPaid:' — ما يبلّغ السكان أنهم دفعوه فعلاً. يصبح أدقّ مع كل بلاغ.',
     loading:'جارٍ تحميل الأسعار…', rin:'في', scaleTitle:'مقياس الأسعار', residentsPaid:'ما دفعه السكان',
@@ -574,6 +617,7 @@ const T = {
     mTitle:'كم دفعت فعلاً؟', mSubA:'عن ', mSubB:' في ', mSubC:'. يُشارَك بشكل مجهول، بدون اسم أو وسيلة تواصل.',
     mAdd:'أضف سعري', mNote:'ملاحظة اختيارية، مثلاً وحدتان سبليت، شامل تعبئة الغاز',
     mDoneTitle:'أُضيف إلى المقياس.', mThanks:(s,a)=>`شكراً لك، الشخص التالي الذي يتحقّق من ${s} في ${a} سيحصل على تقدير أدقّ بفضلك.`, mDone:'تم',
+    mVs:(pct,typ)=>pct<=-3?`دفعت أقل بنسبة ${-pct}% من السعر المعلن المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من السعر المعلن المعتاد (${typ}) — بلاغك يساعد الشخص التالي على التفاوض.`:`هذا قريب من السعر المعلن المعتاد (${typ}).`,
     feedTitle:'مدفوعات حديثة', feedSub:'الأسعار الحديثة تبقي النطاقات صادقة. القديمة تتلاشى.',
     feedEmpty:'لا أسعار حقيقية بعد، كن أول من يضيف. أضف ما دفعته وسيظهر هنا للشخص التالي.',
     faqTitle:'الأسئلة الشائعة',
@@ -941,6 +985,7 @@ const TONES={
 };
 
 let shareMsg='', shareUrl='';   // rebuilt every render(); consumed by the Share button
+let CUR_TYP=0;                  // area-adjusted typical list price of the current pick (for the post-submit comparison)
 
 // ===== live result (recomputes on every input change; no submit step) =====
 function render(){
@@ -956,6 +1001,7 @@ function render(){
   // A labelled ESTIMATE (the underlying harvest isn't measured per-area); real paid data stays per-area as reported.
   const mult=PREMIUM[area]||1;
   const mLow=round5(cat.lo*mult), mHigh=round5(cat.hi*mult), mTyp=round5(cat.typical*mult);
+  $('quoted').placeholder=L.egPh(aed(mTyp)); CUR_TYP=mTyp;
   // paid (real percentiles — only when revealed)
   let pLow=null,pHigh=null,pMid=null;
   if(paidVisible){ pLow=round5(s.p25); pHigh=round5(s.p75); pMid=round5(s.p50); }
@@ -1106,6 +1152,31 @@ function render(){
 
   const rb=$('reportBtn'); if(rb) rb.onclick=openModal;
   const sb=$('shareBtn'); if(sb) sb.onclick=shareResult;
+  updateStrip({hasQuote, word, kicker, stat:hasStat?statBig:'', color:tone.c});
+}
+
+// ===== mobile verdict strip — mirrors the verdict while the card is scrolled out of view =====
+// Only meaningful once a quote is typed (the form sits above the result on phones, so the user
+// otherwise gets no feedback while typing). Tap = jump to the full verdict.
+let stripState={hasQuote:false}, stripIO=null, verdictSeen=true;
+function updateStrip(st){
+  stripState=st;
+  const el=$('vstrip'); if(!el) return;
+  $('vsK').textContent=st.kicker; $('vsWord').textContent=st.word; $('vsWord').style.color=st.color;
+  $('vsStat').textContent=st.stat; $('vsStat').style.color=st.color; $('vsBar').style.background=st.color;
+  const v=document.querySelector('#result .verdict');
+  if(stripIO) stripIO.disconnect();
+  if(v && 'IntersectionObserver' in window){
+    stripIO=new IntersectionObserver(es=>{ verdictSeen=es[0].isIntersecting; syncStrip(); },{threshold:0.35});
+    stripIO.observe(v);
+  }
+  syncStrip();
+}
+function syncStrip(){
+  const el=$('vstrip'); if(!el) return;
+  const modalOpen=!$('modal').classList.contains('hidden');
+  const on=stripState.hasQuote && !verdictSeen && !modalOpen;
+  el.classList.toggle('on', on); document.body.classList.toggle('has-vstrip', on);
 }
 
 // Share the current result — native share sheet (mobile gives WhatsApp/Telegram/etc.) with a
@@ -1118,7 +1189,7 @@ function shareResult(){
 }
 
 function renderFeed(){
-  const recent=[...DATA].sort((a,b)=>b.t-a.t).slice(0,8);
+  const recent=DATA.filter(d=>catById(d.c)).sort((a,b)=>b.t-a.t).slice(0,8);
   if(!recent.length){
     $('feed').innerHTML=`<h2>${L.feedTitle}</h2><p class="feed-sub">${L.feedEmpty}</p>`;
     return;
@@ -1140,14 +1211,15 @@ function openModal(){
   const cat=catById($('category').value), area=$('area').value;
   $('modalSub').innerHTML=`${L.mSubA}<strong>${escapeHTML(svcLabel(cat))}</strong>${L.mSubB}<strong>${escapeHTML(areaLabel(area))}</strong>${L.mSubC}`;
   $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
-  $('modalPrice').value=''; $('modalNote').value=''; updateModalBtn();
-  $('modal').classList.remove('hidden');
+  const qv=parseFloat($('quoted').value);
+  $('modalPrice').value=(qv>0&&qv<1000000)?String(Math.round(qv)):''; $('modalNote').value=''; updateModalBtn();
+  $('modal').classList.remove('hidden'); syncStrip();
   lastFocus=document.activeElement;
   document.addEventListener('keydown',onModalKey);
   setTimeout(()=>$('modalPrice').focus(),30);
 }
 function closeModal(){
-  $('modal').classList.add('hidden');
+  $('modal').classList.add('hidden'); syncStrip();
   document.removeEventListener('keydown',onModalKey);
   if(lastFocus&&lastFocus.focus)lastFocus.focus();
 }
@@ -1173,7 +1245,8 @@ async function submitModal(){
   UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   DATA=SEED.concat(SUBMISSIONS);
   const cat=catById(sub.c);
-  $('modalSuccessText').textContent=L.mThanks(svcLabel(cat), areaLabel(sub.a));
+  const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
+  $('modalSuccessText').textContent=L.mThanks(svcLabel(cat), areaLabel(sub.a))+vsTxt;
   $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
   setTimeout(()=>{const d=$('modalDone'); if(d)d.focus()},30);
   render(); renderFeed();
@@ -1240,6 +1313,7 @@ function applyStaticI18n(){
   $('quoted').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/[^0-9.]/g,''); render(); });
   $('modal').addEventListener('click',e=>{ if(e.target===$('modal'))closeModal(); });
   $('modalSubmit').onclick=submitModal;
+  const vs=$('vstrip'); if(vs) vs.onclick=e=>{ e.preventDefault(); const v=document.querySelector('#result .verdict'); if(v) v.scrollIntoView({behavior:'smooth',block:'center'}); };
   $('modalDone').onclick=closeModal;
   $('modalPrice').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/[^0-9.]/g,''); updateModalBtn(); });
   render(); renderFeed();

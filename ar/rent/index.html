@@ -318,7 +318,35 @@
     .hero p{font-size:15px}
     .form-col{border-right:none;border-bottom:1px solid var(--line-3);max-width:none;padding:22px}
     .result-col{padding:22px}
+    /* mode switch fills the width — three equal thirds, nothing clips */
+    .modeswitch{width:100%;gap:4px;padding:5px;margin-bottom:18px}
+    .mode{flex:1 1 0;justify-content:center;gap:7px;padding:11px 6px;font-size:14px}
+    .verdict{padding:18px}
+    .verdict-word{font-size:36px}
+    .verdict-stat .big{font-size:28px}
+    .dialog{padding:24px}
+    .dialog h3,.modal-success h3{font-size:26px}
   }
+  /* mobile verdict strip (desktop never shows it — the verdict is always beside the form) */
+  .vstrip{display:none;position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:45;
+    align-items:center;gap:12px;padding:12px 14px 12px 16px;border-radius:16px;text-decoration:none;
+    background:var(--surface);border:1px solid var(--line);box-shadow:0 10px 30px -8px rgba(28,26,21,.35);
+    transform:translateY(calc(100% + 24px));opacity:0;transition:transform .32s var(--ease),opacity .25s;
+    pointer-events:none}
+  .vstrip.on{transform:none;opacity:1;pointer-events:auto}
+  .vstrip .vs-bar{width:4px;align-self:stretch;border-radius:2px;flex-shrink:0}
+  .vstrip .vs-main{flex:1;min-width:0}
+  .vstrip .vs-k{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);line-height:1}
+  .vstrip .vs-word{font-family:var(--serif);font-weight:500;font-size:24px;line-height:1.05;margin-top:3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .vstrip .vs-stat{font-family:var(--mono);font-size:20px;font-weight:600;flex-shrink:0;line-height:1}
+  .vstrip .vs-cta{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;color:var(--muted)}
+  .vstrip .vs-cta svg{width:16px;height:16px}
+  html[lang="ar"] .vstrip .vs-word{font-family:'IBM Plex Sans Arabic',sans-serif;font-weight:600}
+  html[lang="ar"] .vstrip .vs-k{letter-spacing:0}
+  html[lang="ar"] .vstrip .vs-stat{direction:ltr}
+  @media (max-width:760px){ .vstrip{display:flex} body.has-vstrip .toast{bottom:88px} }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
   /* ---- Arabic / RTL ---- (Newsreader/Geist have no Arabic glyphs; prices stay Geist Mono + LTR) */
@@ -443,6 +471,12 @@
     </div>
   </div>
 </div>
+<a class="vstrip" id="vstrip" href="#result" aria-live="polite" aria-label="Jump to verdict">
+  <span class="vs-bar" id="vsBar"></span>
+  <span class="vs-main"><span class="vs-k" id="vsK">Verdict</span><span class="vs-word" id="vsWord" style="display:block"></span></span>
+  <span class="vs-stat" id="vsStat"></span>
+  <span class="vs-cta" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>
+</a>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -462,7 +496,7 @@ const T = {
     subhead:"What tenants actually pay across UAE communities, plus a calculator for the maximum rent increase your landlord can legally charge under Dubai's RERA rules.",
     modeServices:'Services', modeRent:'Rent', modeMotor:'Motor', langLink:'عربي', langHref:'/ar/rent', servicesHref:'/',
     tabFair:'Is my rent fair?', tabLegal:'Is my increase legal?',
-    lblType:'Property type', lblArea:'Community', lblQuote:"The rent you're paying or being asked", optOptional:'— optional', aed:'AED', perYear:'/year',
+    lblType:'Property type', lblArea:'Community', lblQuote:"The rent you're paying or being asked", optOptional:'— optional', aed:'AED', perYear:'/year', egPh:n=>'e.g. '+n,
     howAskingStrong:'Asking range', howAsking:"— what's advertised for this type here. Landlords list high and negotiate.",
     howSignedStrong:'Tenants signed', howSigned:'— what residents report actually agreeing. Add yours to sharpen it.',
     lblCurRent:'Your current annual rent', lblMkt:'Average market rent for similar units', optEditable:'— editable',
@@ -503,6 +537,7 @@ const T = {
     mTitle:'What rent did you sign?', mSub:(t,a)=>`For a <strong>${t}</strong> in <strong>${a}</strong>, per year. Shared anonymously — no name, no contact.`,
     mNotePh:'Optional note — e.g. 4 cheques, unfurnished', mAdd:'Add my rent', mDoneTitle:'Added.', mDone:'Done',
     mThanks:(t,a)=>`Thank you — the next person renting a ${t} in ${a} gets a sharper picture because of you.`,
+    mVs:(pct,typ)=>pct<=-3?`You signed ${-pct}% under the typical asking rent (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical asking rent (${typ}) — your report helps the next tenant negotiate.`:`That's right around the typical asking rent (${typ}).`,
     tDup:'You already added that exact rent', tEnough:"Thanks — you've added enough here for today", tLot:"That's a lot today — try again tomorrow",
     tHigh:'That rent looks too high', tLocal:'Saved on this device only',
   },
@@ -512,7 +547,7 @@ const T = {
     subhead:'ما يدفعه المستأجرون فعلاً في مجتمعات الإمارات، إضافةً إلى حاسبة لأقصى زيادة إيجار يمكن لمالك العقار فرضها قانوناً وفق قواعد RERA في دبي.',
     modeServices:'الخدمات', modeRent:'الإيجارات', modeMotor:'السيارات', langLink:'English', langHref:'/rent', servicesHref:'/ar/',
     tabFair:'هل إيجاري عادل؟', tabLegal:'هل الزيادة قانونية؟',
-    lblType:'نوع العقار', lblArea:'المنطقة', lblQuote:'الإيجار الذي تدفعه أو المعروض عليك', optOptional:'— اختياري', aed:'درهم', perYear:'/سنة',
+    lblType:'نوع العقار', lblArea:'المنطقة', lblQuote:'الإيجار الذي تدفعه أو المعروض عليك', optOptional:'— اختياري', aed:'درهم', perYear:'/سنة', egPh:n=>'مثلاً '+n,
     howAskingStrong:'النطاق المُعلن', howAsking:'— ما يُعلَن لهذا النوع هنا. الملّاك يطلبون أعلى ثم يتفاوضون.',
     howSignedStrong:'ما وقّعه المستأجرون', howSigned:'— ما يبلّغ السكان بالاتفاق عليه فعلاً. أضف رقمك ليصبح أدقّ.',
     lblCurRent:'إيجارك السنوي الحالي', lblMkt:'متوسط إيجار السوق لوحدات مماثلة', optEditable:'— قابل للتعديل',
@@ -553,6 +588,7 @@ const T = {
     mTitle:'كم كان الإيجار الذي وقّعته؟', mSub:(t,a)=>`عن <strong>${t}</strong> في <strong>${a}</strong>، سنوياً. يُشارَك بشكل مجهول — بدون اسم أو وسيلة تواصل.`,
     mNotePh:'ملاحظة اختيارية — مثلاً 4 شيكات، غير مفروشة', mAdd:'أضف إيجاري', mDoneTitle:'أُضيف.', mDone:'تم',
     mThanks:(t,a)=>`شكراً لك — الشخص التالي الذي يستأجر ${t} في ${a} سيحصل على صورة أوضح بفضلك.`,
+    mVs:(pct,typ)=>pct<=-3?`وقّعت بأقل بنسبة ${-pct}% من الإيجار المطلوب المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من الإيجار المطلوب المعتاد (${typ}) — بلاغك يساعد المستأجر التالي على التفاوض.`:`هذا قريب من الإيجار المطلوب المعتاد (${typ}).`,
     tDup:'أضفت هذا الإيجار نفسه من قبل', tEnough:'شكراً، أضفت ما يكفي هنا اليوم', tLot:'أضفت الكثير اليوم — حاول غداً',
     tHigh:'هذا الإيجار يبدو مرتفعاً جداً', tLocal:'حُفظ على هذا الجهاز فقط',
   },
@@ -740,6 +776,26 @@ function fillSelect(sel, withTypes){
 
 /* ===== FAIR RENT ===== */
 let shareMsg='', shareUrl='';
+let CUR_TYP=0;   // typical asking rent of the current pick (for the post-submit comparison)
+
+// ===== mobile verdict strip — mirrors the verdict (read from the DOM) while the card is scrolled out
+// of view. Only shown once a quote is typed; on phones the form sits above the result, so the user
+// otherwise gets no feedback while typing. Tap = jump to the full verdict.
+let stripIO=null, verdictSeen=true, stripOn=false;
+function updateStrip(sel, hasQuote){
+  const el=$('vstrip'); if(!el) return;
+  const c=document.querySelector(sel), v=c&&c.querySelector('.verdict');
+  const w=v&&v.querySelector('.verdict-word'), k=v&&v.querySelector('.kicker'), st=v&&v.querySelector('.verdict-stat .big');
+  stripOn=!!(hasQuote&&w);
+  if(w){ const col=w.style.color; $('vsWord').textContent=w.textContent; $('vsWord').style.color=col;
+    $('vsK').textContent=k?k.textContent:''; $('vsStat').textContent=st?st.textContent:''; $('vsStat').style.color=col; $('vsBar').style.background=col; }
+  if(stripIO) stripIO.disconnect();
+  if(v&&'IntersectionObserver' in window){ stripIO=new IntersectionObserver(es=>{verdictSeen=es[0].isIntersecting;syncStrip()},{threshold:0.35}); stripIO.observe(v); }
+  syncStrip();
+  el.onclick=e=>{ e.preventDefault(); if(v) v.scrollIntoView({behavior:'smooth',block:'center'}); };
+}
+function syncStrip(){ const el=$('vstrip'); if(!el) return; const on=stripOn&&!verdictSeen&&$('modal').classList.contains('hidden'); el.classList.toggle('on',on); document.body.classList.toggle('has-vstrip',on); }
+
 function renderFair(){
   const typeId=$('rtype').value, area=$('rarea').value, type=typeById(typeId);
   const q0=num($('rquote').value), q=(q0>0?q0:0), hasQuote=q>0;
@@ -755,9 +811,11 @@ function renderFair(){
       <div class="meta-row"><div class="meta"><span class="dot"></span>${L.metaFirst}</div>
       <button type="button" class="btn-primary" id="reportBtn">${L.ctaReport}</button></div>`;
     const rb=$('reportBtn'); if(rb) rb.onclick=openModal; shareMsg=''; shareUrl=location.origin+(LANG==='ar'?'/ar/rent':'/rent');
+    CUR_TYP=0; updateStrip('#rresult', false);
     return;
   }
   const [lo,typ,hi]=range;
+  $('rquote').placeholder=L.egPh(aed(typ)); CUR_TYP=typ;
   const pLo=paidVisible?s.p25:null, pHi=paidVisible?s.p75:null, pMid=paidVisible?s.p50:null;
   const refLo=paidVisible?pLo:lo, refMid=paidVisible?pMid:typ, refHi=paidVisible?pHi:hi;
   const areaL=areaLabel(area), tLow=typeLow(type);
@@ -841,6 +899,7 @@ function renderFair(){
     </div>`;
   const rb=$('reportBtn'); if(rb) rb.onclick=openModal;
   const sb=$('shareBtn'); if(sb) sb.onclick=shareResult;
+  updateStrip('#rresult', hasQuote);
 }
 function shareResult(){
   if(!shareMsg)return;
@@ -896,11 +955,12 @@ function openModal(){
   const type=typeById($('rtype').value), area=$('rarea').value;
   $('modalSub').innerHTML=L.mSub(escapeHTML(typeLabel(type)), escapeHTML(areaLabel(area)));
   $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
-  $('modalPrice').value=''; $('modalNote').value=''; updateModalBtn();
-  $('modal').classList.remove('hidden'); lastFocus=document.activeElement;
+  const qv=num($('rquote').value);
+  $('modalPrice').value=(qv>0&&qv<100000000)?String(Math.round(qv)):''; $('modalNote').value=''; updateModalBtn();
+  $('modal').classList.remove('hidden'); syncStrip(); lastFocus=document.activeElement;
   document.addEventListener('keydown',onModalKey); setTimeout(()=>$('modalPrice').focus(),30);
 }
-function closeModal(){$('modal').classList.add('hidden');document.removeEventListener('keydown',onModalKey);if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+function closeModal(){$('modal').classList.add('hidden');syncStrip();document.removeEventListener('keydown',onModalKey);if(lastFocus&&lastFocus.focus)lastFocus.focus()}
 function onModalKey(e){if(e.key==='Escape'){closeModal()}else if(e.key==='Tab'){trapFocus(e)}}
 function trapFocus(e){const f=[...$('modal').querySelectorAll('button,input')].filter(el=>el.offsetParent!==null&&!el.disabled);if(!f.length)return;const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
 function updateModalBtn(){const v=num($('modalPrice').value);$('modalSubmit').disabled=!(v>0)}
@@ -913,7 +973,8 @@ async function submitModal(){
   try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   const type=typeById($('rtype').value);
-  $('modalSuccessText').textContent=L.mThanks(typeLow(type), areaLabel(sub.a));
+  const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
+  $('modalSuccessText').textContent=L.mThanks(typeLow(type), areaLabel(sub.a))+vsTxt;
   $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
   setTimeout(()=>{const d=$('modalDone');if(d)d.focus()},30);
   renderFair(); if(!synced) toast(L.tLocal);
@@ -927,6 +988,7 @@ function showTab(which){
   $('panelFair').classList.toggle('hidden',!fair); $('panelLegal').classList.toggle('hidden',fair);
   $('tabFair').classList.toggle('active',fair); $('tabLegal').classList.toggle('active',!fair);
   $('tabFair').setAttribute('aria-selected',fair); $('tabLegal').setAttribute('aria-selected',!fair);
+  if(fair) renderFair(); else updateStrip('#rresult', false);
 }
 
 // Localize the static chrome for Arabic (EN markup is already correct, so it's left untouched).
