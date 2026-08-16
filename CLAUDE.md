@@ -47,25 +47,32 @@ This is the growth engine: people came to take a number, so ask for one back at 
 - No dark patterns beyond the single contribute-to-unlock gate.
 
 ## Design tokens / conventions
-Redesigned Jun 2026 to the `design_handoff_mizan` system (single self-contained `index.html`,
-CSS custom properties in `:root` — no framework/build).
-- Fonts: Newsreader (serif display: hero, verdict word, section/modal headings),
-  Geist (body/UI), Geist Mono (all prices, AED prefixes, scale labels).
-- Palette: `--teal #14534D` (brand, paid band, primary buttons), verdict tones
-  `--fair #2F7D54` / `--steep #B5781F` / `--walk #B5402F` (each with a tint bg),
-  surfaces `#FFFFFF` / `#FBFAF5`, ink `#1C1A15`, hairlines `#EAE4D6`–`#F2EDE3`,
-  hatch `#DAD4C5`/`#E5E0D3` (market band). Page bg = the "mist" radial gradient (one theme constant).
-- Radii: cards 22px · verdict 18px · breakdown/inputs 14–16px · buttons 11–13px · pills 7–20px.
-- Layout: max-width 1140px; single-card two-pane workspace (form left ≤430px, result right);
-  stacks at ≤760px (nav tagline hides, form divider flips to bottom). Hero/padding via `clamp()`.
-- Result recomputes live on every input change (no submit step). Verdict tiers:
-  Fair / Steep / Walk away / Going rate (round to nearest 5; see index.html `render()`).
-- **Dual theme:** light + dark via CSS-var tokens under `:root` / `:root[data-theme="dark"]`. A no-flash
-  `<head>` script sets `data-theme` from saved choice → system preference; nav toggle persists to localStorage.
-  Light bg = the "mist" radial gradient; dark = a warm-dark green-grey gradient. Brand teal brightens in dark.
+Redesigned Aug 2026 ("Outfit / teal band" system — direction D: minimal, tool-first, brand-blocked).
+Still a single self-contained file per app (`index.html`, `rent/index.html`, `motor/index.html`),
+CSS custom properties in `:root` — no framework/build. `/ar/*` app copies are generated from these.
+- Fonts: **Outfit** for everything (Light 300 hero, Medium 500 UI/verdict word, Regular body);
+  **Geist Mono** for all prices / AED / scale labels; IBM Plex Sans Arabic for `lang="ar"`.
+- Palette: `--teal #14534D` (brand, paid band, primary buttons), `--band` (the flat teal top field;
+  `#0F3E3A` in dark) with `--on-band` warm-white text and `--mint #8FC4B0` headline emphasis; verdict
+  tones `--fair #2F7D54` / `--steep #B5781F` / `--walk #B5402F` (each with a tint bg); page bg flat
+  `#F7F6F1`, card `#FFFFFF`, ink `#1C1A15`, hairlines `#E8E4DA`–`#F1EDE4`, hatch `#DDD8CB`/`#F0ECE3`.
+  **No drop shadows** (hairlines only), no gradients — the modal/toast/strip are the only shadowed things.
+- Structure: `.topband` (nav + centred hero + segmented `.modeswitch` pill) → `<main>` pulled up
+  −72px so the white `.workspace`/`.workcard` straddles the band edge. Inside the card: inputs in ONE
+  row of `.field` boxes (label inside the box), then the result grid (verdict left, scale + breakdown
+  right, meta + actions across the bottom), then the two-layer explainer `.howto` strip. Rent/Motor keep
+  their in-card `.seg` sub-tabs (grey track, white active pill).
+- Radii: cards 22px · verdict/legal/uc boxes 18px · fields/breakdown 14px · all buttons + switchers pill (999px).
+- Layout: max-width 1140px; ≤900px inputs go 2-up; ≤760px everything stacks, band shortens, mode
+  switch fills the width, and the **mobile verdict strip** (`.vstrip`) mirrors the verdict when the card
+  is off-screen. Result recomputes live; verdict tiers Fair / Steep / Walk away / Going rate.
+- **Dual theme:** light + dark via CSS-var tokens under `:root` / `:root[data-theme="dark"]`. No-flash
+  `<head>` script; nav toggle persists to localStorage. The band stays teal in both themes.
 - Respect `prefers-reduced-motion`. Visible `:focus-visible` states. Modal: focus-trap + Esc + backdrop close.
 - One bold element (the verdict word); keep everything else quiet. Verdict meaning never by colour
-  alone — the word + stat carry it.
+  alone — the word + stat carry it. Never blur the two layers.
+- The SEO guide pages (`/prices/page.css`, generator `head()`) still use the older serif look — restyle
+  them to this system when touched next.
 
 ## Prioritized backlog
 **First real task — make it persist for real (required before launch):**
