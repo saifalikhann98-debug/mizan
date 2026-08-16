@@ -11,7 +11,7 @@
 <script>/* no-flash theme */(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#1C1A15; --muted:#55514A; --faint:#8A857B;
@@ -22,8 +22,8 @@
     --steep:#B5781F; --steep-bg:#F7EFDD;
     --bg:radial-gradient(140% 90% at 50% -10%, #EEF2F1 0%, #E3EAE8 55%, #D7E2DF 100%);
     --shadow:0 1px 2px rgba(40,34,20,.04), 0 22px 46px -34px rgba(40,34,20,.34);
-    --serif:'Newsreader',Georgia,serif; --mono:'Geist Mono',ui-monospace,monospace;
-    --sans:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --serif:'Outfit',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
+    --sans:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   }
   :root[data-theme="dark"]{
     --ink:#F0ECE2; --muted:#BFB9AD; --faint:#8F897D;
@@ -51,7 +51,7 @@
   .hero{margin:0 0 22px}
   .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600;display:flex;align-items:center;gap:7px}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--fair);box-shadow:0 0 0 3px var(--fair-bg)}
-  h1{font-family:var(--serif);font-weight:500;font-size:clamp(34px,7vw,46px);line-height:1.02;margin:8px 0 4px}
+  h1{font-family:var(--serif);font-weight:400;letter-spacing:-.02em;font-size:clamp(34px,7vw,46px);line-height:1.02;margin:8px 0 4px}
   h1 .n{font-family:var(--mono);font-weight:600}
   .sub{color:var(--muted);font-size:15.5px;margin:0}
   .sub .up{color:var(--fair);font-weight:600}

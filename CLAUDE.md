@@ -71,8 +71,8 @@ CSS custom properties in `:root` — no framework/build. `/ar/*` app copies are 
 - Respect `prefers-reduced-motion`. Visible `:focus-visible` states. Modal: focus-trap + Esc + backdrop close.
 - One bold element (the verdict word); keep everything else quiet. Verdict meaning never by colour
   alone — the word + stat carry it. Never blur the two layers.
-- The SEO guide pages (`/prices/page.css`, generator `head()`) still use the older serif look — restyle
-  them to this system when touched next.
+- SEO guide pages use the same system (CSS lives in `tools/build-seo-pages.mjs` → `/prices/page.css`;
+  `G()` lifts crumb + h1 + lede into the teal band). OG cards: `node tools/build-og.mjs` (HTML → headless Brave).
 
 ## Prioritized backlog
 **First real task — make it persist for real (required before launch):**
