@@ -117,13 +117,13 @@ const services = CATEGORIES.map(c => ({ ...c, slug: META[c.id].slug }));
 
 const CSS = `:root{--ink:#1C1A15;--ink-2:#43403A;--muted:#726D63;--faint:#8A8579;--faint-2:#A19B8F;
   --surface:#fff;--surface-2:#FCFBF8;--line:#E8E4DA;--line-2:#EEEAE0;--teal:#173F35;--teal-deep:#102E27;--teal-bg:#E7EFEC;
-  --on-teal:#F6F4EC;--band:#FBFAF6;--on-band:#1C1A15;--on-band-2:#6B675E;--band-line:#DEDAD0;--mint:#173F35;--dot:rgba(28,26,21,.11);--bg:#FBFAF6;
+  --on-teal:#F6F4EC;--band:#FBFAF6;--on-band:#1C1A15;--on-band-2:#6B675E;--band-line:#DEDAD0;--mint:#173F35;--dot:rgba(28,26,21,.16);--bg:#FBFAF6;
   --sans:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,monospace}
 :root[data-theme="dark"]{--ink:#ECE8E0;--ink-2:#CFC9BD;--muted:#A29D92;--faint:#8F8A7E;--faint-2:#8E8779;
   --surface:#1B1F1D;--surface-2:#222724;--line:#2F3531;--line-2:#2A302C;--teal:#5EC091;--teal-deep:#79CFA6;--teal-bg:#13241D;
-  --on-teal:#0E1A17;--band:#121615;--on-band:#ECE8E0;--on-band-2:#A29D92;--band-line:#343A36;--mint:#96D6B4;--dot:rgba(246,244,236,.09);--bg:#121615}
+  --on-teal:#0E1A17;--band:#121615;--on-band:#ECE8E0;--on-band-2:#A29D92;--band-line:#343A36;--mint:#96D6B4;--dot:rgba(246,244,236,.11);--bg:#121615}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
-body{background-color:var(--bg);background-image:radial-gradient(circle,var(--dot) 1px,transparent 1.5px);background-size:22px 22px;background-position:11px 11px;min-height:100vh;color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+body{background-color:var(--bg);background-image:radial-gradient(circle,var(--dot) 1px,transparent 1px);background-size:24px 24px;background-position:12px 12px;min-height:100vh;color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
 html[lang="ar"] body,html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] .brand .w{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
 html[lang="ar"] h1{font-weight:500;letter-spacing:0}html[lang="ar"] h2{font-weight:600;letter-spacing:0}
 html[lang="ar"] .big,html[lang="ar"] td.r{font-family:'Geist Mono','IBM Plex Sans Arabic',ui-monospace,monospace;direction:ltr}
