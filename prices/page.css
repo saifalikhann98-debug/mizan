@@ -1,10 +1,10 @@
 :root{--ink:#1C1A15;--ink-2:#43403A;--muted:#726D63;--faint:#8A8579;--faint-2:#A19B8F;
   --surface:#fff;--surface-2:#FCFBF8;--line:#E8E4DA;--line-2:#EEEAE0;--teal:#173F35;--teal-deep:#102E27;--teal-bg:#E7EFEC;
-  --on-teal:#F6F4EC;--band:#173F35;--on-band:#F6F4EC;--on-band-2:rgba(246,244,236,.72);--band-line:rgba(246,244,236,.28);--mint:#8FCDB1;--bg:#F7F6F1;
+  --on-teal:#F6F4EC;--band:#FBFAF6;--on-band:#1C1A15;--on-band-2:#6B675E;--band-line:#DEDAD0;--mint:#173F35;--dot:rgba(28,26,21,.14);--bg:#FBFAF6;
   --sans:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,monospace}
 :root[data-theme="dark"]{--ink:#ECE8E0;--ink-2:#CFC9BD;--muted:#A29D92;--faint:#8F8A7E;--faint-2:#8E8779;
   --surface:#1B1F1D;--surface-2:#222724;--line:#2F3531;--line-2:#2A302C;--teal:#5EC091;--teal-deep:#79CFA6;--teal-bg:#13241D;
-  --on-teal:#0E1A17;--band:#0F2B24;--on-band:#EEF3F0;--on-band-2:rgba(238,243,240,.68);--band-line:rgba(238,243,240,.22);--mint:#96D6B4;--bg:#121615}
+  --on-teal:#0E1A17;--band:#121615;--on-band:#ECE8E0;--on-band-2:#A29D92;--band-line:#343A36;--mint:#96D6B4;--dot:rgba(246,244,236,.13);--bg:#121615}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
 body{background:var(--bg);min-height:100vh;color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
 html[lang="ar"] body,html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] .brand .w{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
@@ -18,20 +18,20 @@ a{color:var(--teal);text-decoration:none}a:hover{text-decoration:underline}
 .topband>*{position:relative;z-index:1}
   /* quiet texture: a fine dot grid that fades toward the card, plus one thin ring off to the side */
 .topband::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
-  background-image:radial-gradient(circle,rgba(246,244,236,.16) 1px,transparent 1.5px);background-size:22px 22px;background-position:11px 11px;
+  background-image:radial-gradient(circle,var(--dot) 1px,transparent 1.5px);background-size:22px 22px;background-position:11px 11px;
   -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.45) 55%,transparent 100%);mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.45) 55%,transparent 100%)}
 .nav{background:transparent}
 .nav-in{max-width:760px;margin:0 auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .brand{display:flex;align-items:center;gap:9px;color:var(--on-band)}
 .brand svg{width:21px;height:21px;stroke:var(--on-band)}.brand .w{font-size:20px;font-weight:500;letter-spacing:-.01em}.brand .ar{font-size:16px;color:var(--mint)}
-.nav-r{display:flex;align-items:center;gap:18px}.nav-r a{font-size:13.5px;font-weight:500;color:var(--on-band)}
+.nav-r{display:flex;align-items:center;gap:18px}.nav-r a{font-size:13.5px;font-weight:500;color:var(--teal)}
 .gh{max-width:760px;margin:0 auto;padding:18px 24px 0}
 .crumb{font-size:12.5px;color:var(--on-band-2);margin-bottom:16px}.crumb a{color:var(--on-band-2)}
-h1{font-weight:300;font-size:clamp(30px,5.4vw,46px);line-height:1.08;letter-spacing:-.025em;margin:0 0 14px;color:var(--on-band)}
+h1{font-weight:400;font-size:clamp(30px,5.4vw,46px);line-height:1.08;letter-spacing:-.03em;margin:0 0 14px;color:var(--on-band)}
 .lede{font-size:16.5px;color:var(--on-band-2);margin:0;max-width:60ch}.lede strong{color:var(--on-band);font-weight:500}
-.lede a{color:var(--mint)}
+.lede a{color:var(--teal)}
 main{max-width:760px;margin:-40px auto 0;padding:0 24px 72px;position:relative}
-.rangecard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin:0 0 34px}
+.rangecard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin:0 0 34px;box-shadow:0 1px 2px rgba(28,26,21,.04),0 20px 50px -36px rgba(28,26,21,.3)}
 .rangecard .k{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
 .rangecard .big{font-family:var(--mono);font-size:32px;font-weight:600;color:var(--teal);margin:6px 0 2px}
 .rangecard .sub{font-size:13.5px;color:var(--muted)}

@@ -47,32 +47,30 @@ This is the growth engine: people came to take a number, so ask for one back at 
 - No dark patterns beyond the single contribute-to-unlock gate.
 
 ## Design tokens / conventions
-Redesigned Aug 2026 ("Outfit / teal band" system — direction D: minimal, tool-first, brand-blocked).
-Still a single self-contained file per app (`index.html`, `rent/index.html`, `motor/index.html`),
-CSS custom properties in `:root` — no framework/build. `/ar/*` app copies are generated from these.
-- Fonts: **Outfit** for everything (Light 300 hero, Medium 500 UI/verdict word, Regular body);
-  **Geist Mono** for all prices / AED / scale labels; IBM Plex Sans Arabic for `lang="ar"`.
-- Palette: `--teal #173F35` (brand, paid band, primary buttons), `--band` (the flat teal top field;
-  `#0F2B24` in dark) with `--on-band` warm-white text and `--mint #8FCDB1` headline emphasis; verdict
-  tones `--fair #2F7D54` / `--steep #B5781F` / `--walk #B5402F` (each with a tint bg); page bg flat
-  `#F7F6F1`, card `#FFFFFF`, ink `#1C1A15`, hairlines `#E8E4DA`–`#F1EDE4`, hatch `#DDD8CB`/`#F0ECE3`.
-  **No drop shadows** (hairlines only), no gradients — the modal/toast/strip are the only shadowed things.
-- Structure: `.topband` (nav + centred hero + segmented `.modeswitch` pill) → `<main>` pulled up
-  −72px so the white `.workspace`/`.workcard` straddles the band edge. Inside the card: inputs in ONE
-  row of `.field` boxes (label inside the box), then the result grid (verdict left, scale + breakdown
-  right, meta + actions across the bottom), then the two-layer explainer `.howto` strip. Rent/Motor keep
-  their in-card `.seg` sub-tabs (grey track, white active pill).
-- Radii: cards 22px · verdict/legal/uc boxes 18px · fields/breakdown 14px · all buttons + switchers pill (999px).
-- Layout: max-width 1140px; ≤900px inputs go 2-up; ≤760px everything stacks, band shortens, mode
-  switch fills the width, and the **mobile verdict strip** (`.vstrip`) mirrors the verdict when the card
-  is off-screen. Result recomputes live; verdict tiers Fair / Steep / Walk away / Going rate.
-- **Dual theme:** light + dark via CSS-var tokens under `:root` / `:root[data-theme="dark"]`. No-flash
-  `<head>` script; nav toggle persists to localStorage. The band stays teal in both themes.
-- Respect `prefers-reduced-motion`. Visible `:focus-visible` states. Modal: focus-trap + Esc + backdrop close.
-- One bold element (the verdict word); keep everything else quiet. Verdict meaning never by colour
-  alone — the word + stat carry it. Never blur the two layers.
-- SEO guide pages use the same system (CSS lives in `tools/build-seo-pages.mjs` → `/prices/page.css`;
-  `G()` lifts crumb + h1 + lede into the teal band). OG cards: `node tools/build-og.mjs` (HTML → headless Brave).
+Redesigned Aug 2026 ("Outfit / quiet light" system — Ramp-style: off-white page, faint dot grid, ink
+headline, ONE brand accent). Still a single self-contained file per app (`index.html`, `rent/index.html`,
+`motor/index.html`), CSS custom properties in `:root` — no framework/build. `/ar/*` app copies are generated.
+- Fonts: **Outfit** everywhere (Regular 400 hero, Medium 500 UI/verdict word); **Geist Mono** for all
+  prices / AED / scale labels; IBM Plex Sans Arabic for `lang="ar"`.
+- Palette: brand **pine `--teal #173F35`** (primary buttons, paid band, headline emphasis via `--mint`,
+  active switcher pill, links) — the single accent; page/`--band` `#FBFAF6` (light) / `#121615` (dark) with
+  a faint ink dot grid (`--dot`) fading toward the card; ink `#1C1A15`; card `#FFFFFF`; hairlines
+  `#E8E4DA`–`#F1EDE4`; verdict tones `--fair #2F7D54` / `--steep #B5781F` / `--walk #B5402F` (+ tints);
+  hatch `#DDD8CB`/`#F0ECE3`. Cards get one whisper shadow; everything else hairlines. No gradients.
+- Structure: `.topband` (nav + centred hero + segmented `.modeswitch` pill on the page colour) → `<main>`
+  pulled up so the white `.workspace`/`.workcard` overlaps the hero area. Inside the card: inputs in ONE row
+  of `.field` boxes (label inside), result grid (verdict left, scale + breakdown right, meta + actions
+  across the bottom), explainer `.howto` strip at the foot. Rent/Motor keep `.seg` sub-tabs. Below: "Recently
+  paid" panel (2-col, deep-linked rows, old rows fade) and FAQ hairline grid (3-col, index numerals).
+- Radii: cards 22px · verdict/legal/uc boxes 18px · fields/breakdown/FAQ grid 14px · buttons + switchers pill.
+- Layout: max-width 1140px; ≤900px inputs 2-up; ≤760px stacks, switcher fills width, mobile verdict strip
+  (`.vstrip`) mirrors the verdict when the card is off-screen. Result recomputes live; tiers Fair / Steep /
+  Walk away / Going rate.
+- **Dual theme** via tokens under `:root` / `:root[data-theme="dark"]`; no-flash `<head>` script; toggle
+  persists to localStorage. Respect `prefers-reduced-motion`. `:focus-visible` states. Modal focus-trap.
+- One bold element (the verdict word); keep everything else quiet. Verdict meaning never by colour alone.
+- Guides share the system (CSS in `tools/build-seo-pages.mjs` → `/prices/page.css`; `G()` lifts crumb +
+  h1 + lede into `.topband`). OG cards (`node tools/build-og.mjs`) intentionally stay on the pine field.
 
 ## Prioritized backlog
 **First real task — make it persist for real (required before launch):**
