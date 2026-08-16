@@ -266,18 +266,14 @@
 
   /* footer + faq */
   .footnote{max-width:680px;margin:28px 0 0;font-size:12px;line-height:1.6;color:var(--faint-2)}
-  .faq{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px 24px 6px;display:grid;grid-template-columns:260px 1fr;column-gap:40px}
-  .faq h2{grid-column:1;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
-  .faq .faq-sub{grid-column:1;margin:0;font-size:13.5px;color:var(--muted-2);line-height:1.5}
-  .faq details{grid-column:2;border-top:1px solid var(--line-4)}
-  .faq details:first-of-type{border-top:none}
-  .faq summary{list-style:none;cursor:pointer;padding:15px 2px;font-size:15px;font-weight:500;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:16px}
-  .faq summary::-webkit-details-marker{display:none}
-  .faq summary::after{content:"+";flex-shrink:0;width:24px;height:24px;border-radius:50%;border:1px solid var(--line-2);display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:var(--faint-2);transition:transform .2s var(--ease)}
-  .faq details[open] summary::after{content:"\2212";color:var(--teal);border-color:var(--teal)}
-  .faq summary:hover{color:var(--teal)}
-  .faq summary:focus-visible{outline:none;color:var(--teal)}
-  .faq details p{margin:0 0 16px;padding-right:40px;font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .faq{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px 24px 24px}
+  .faq-head{margin-bottom:16px}
+  .faq h2{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 4px}
+  .faq .faq-sub{margin:0;font-size:13.5px;color:var(--muted-2)}
+  .qas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .qa{background:var(--surface-2);border:1px solid var(--line-3);border-radius:14px;padding:16px 18px 18px}
+  .qa h3{margin:0 0 8px;font-size:15px;font-weight:500;line-height:1.35;color:var(--ink)}
+  .qa p{margin:0;font-size:13.5px;line-height:1.55;color:var(--muted)}
 
   /* modal */
   .overlay{position:fixed;inset:0;z-index:50;background:rgba(28,26,21,.46);display:flex;align-items:center;justify-content:center;padding:24px;animation:mz-fade .2s both}
@@ -324,6 +320,7 @@
     .form-col{grid-template-columns:1fr 1fr}
     .form-col .field:first-child{grid-column:1/-1}
     .rows{grid-template-columns:1fr}
+    .qas{grid-template-columns:1fr 1fr}
   }
   @media (max-width:760px){
     .nav-meta{display:none}
@@ -350,11 +347,8 @@
     .frow .fwhen{order:2;font-size:12.5px}
     .frow .fmid{order:3;flex-basis:100%;gap:8px}
     .frow .fmid .fs{white-space:normal}
-    .faq{grid-template-columns:1fr;column-gap:0;padding:18px 16px 4px}
-    .faq h2,.faq .faq-sub,.faq details{grid-column:1}
-    .faq .faq-sub{margin-bottom:6px}
-    .faq details:first-of-type{border-top:1px solid var(--line-4)}
-    .faq details p{padding-right:0}
+    .faq{padding:18px 16px 16px}
+    .qas{grid-template-columns:1fr;gap:10px}
     .vstrip{display:flex} body.has-vstrip .toast{bottom:88px}
   }
   @media (prefers-reduced-motion:reduce){
@@ -364,7 +358,7 @@
   /* ---- Arabic / RTL ---- (Outfit has no Arabic glyphs → IBM Plex Sans Arabic;
      prices stay in Geist Mono + forced LTR so ranges and % read correctly) */
   html[lang="ar"] body,html[lang="ar"] .hero h1,html[lang="ar"] .verdict-word,html[lang="ar"] .feed h2,
-  html[lang="ar"] .faq h2,html[lang="ar"] .dialog h3,html[lang="ar"] .modal-success h3,html[lang="ar"] .vstrip .vs-word{font-family:'IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',sans-serif}
+  html[lang="ar"] .faq h2,html[lang="ar"] .qa h3,html[lang="ar"] .dialog h3,html[lang="ar"] .modal-success h3,html[lang="ar"] .vstrip .vs-word{font-family:'IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',sans-serif}
   html[lang="ar"] .hero h1{font-weight:500;letter-spacing:0}
   html[lang="ar"] .verdict-word,html[lang="ar"] .vstrip .vs-word{font-weight:600;letter-spacing:0}
   html[lang="ar"] .eyebrow,html[lang="ar"] .kicker,html[lang="ar"] .scale-head .t,html[lang="ar"] .flabel,html[lang="ar"] .feed h2,html[lang="ar"] .faq h2,
@@ -455,14 +449,15 @@
   <section class="feed" id="feed"></section>
 
   <section class="faq" id="faq">
-    <h2>Common questions</h2>
-    <p class="faq-sub">How the two layers work, where the numbers come from, and what a fair price means here.</p>
-    <details><summary>How much should AC cleaning cost in Dubai?</summary><p>A standard split-unit AC service is usually advertised around AED 150 to 350 in Dubai. Many residents pay less than the top of that range, which is exactly the gap Mizan shows you.</p></details>
-    <details><summary>What is a fair price for a men's haircut in the UAE?</summary><p>Men's haircuts in the UAE commonly run from about AED 40 at budget barbers to AED 150 at premium salons. Mizan compares the advertised rate with what people report actually paying in your area.</p></details>
-    <details><summary>How does Mizan work?</summary><p>Pick a service and your area, optionally enter the price you were quoted, and Mizan instantly shows the advertised market range, the resident-reported paid range, and a clear verdict: fair, steep, or walk away.</p></details>
-    <details><summary>Is Mizan free to use?</summary><p>Yes, Mizan is completely free. It is built on prices reported by the community, never paid placements from businesses.</p></details>
-    <details><summary>Which services and areas does Mizan cover?</summary><p>Mizan covers dozens of everyday services, from AC cleaning, salon and gym to movers, pest control and car service, across all seven UAE emirates.</p></details>
-    <details><summary>Where do the prices come from?</summary><p>Market estimates are advertised list prices from the web; the paid range comes from residents reporting what they actually paid, with outlier trimming so one odd price cannot skew the result.</p></details>
+    <div class="faq-head"><h2>Common questions</h2><p class="faq-sub">How the two layers work, where the numbers come from, and what a fair price means here.</p></div>
+    <div class="qas">
+    <div class="qa"><h3>How much should AC cleaning cost in Dubai?</h3><p>A standard split-unit AC service is usually advertised around AED 150 to 350 in Dubai. Many residents pay less than the top of that range, which is exactly the gap Mizan shows you.</p></div>
+    <div class="qa"><h3>What is a fair price for a men's haircut in the UAE?</h3><p>Men's haircuts in the UAE commonly run from about AED 40 at budget barbers to AED 150 at premium salons. Mizan compares the advertised rate with what people report actually paying in your area.</p></div>
+    <div class="qa"><h3>How does Mizan work?</h3><p>Pick a service and your area, optionally enter the price you were quoted, and Mizan instantly shows the advertised market range, the resident-reported paid range, and a clear verdict: fair, steep, or walk away.</p></div>
+    <div class="qa"><h3>Is Mizan free to use?</h3><p>Yes, Mizan is completely free. It is built on prices reported by the community, never paid placements from businesses.</p></div>
+    <div class="qa"><h3>Which services and areas does Mizan cover?</h3><p>Mizan covers dozens of everyday services, from AC cleaning, salon and gym to movers, pest control and car service, across all seven UAE emirates.</p></div>
+    <div class="qa"><h3>Where do the prices come from?</h3><p>Market estimates are advertised list prices from the web; the paid range comes from residents reporting what they actually paid, with outlier trimming so one odd price cannot skew the result.</p></div>
+    </div>
   </section>
 
   <p class="footnote">Mizan shows two layers: <b>market estimates</b> are advertised list prices harvested from the web; the <b>paid range</b> comes from residents reporting what they actually paid. Reports are shared anonymously — no name or contact is attached. <a href="/prices/" style="color:var(--teal);font-weight:600">Service prices →</a> · <a href="/rent/areas" style="color:var(--teal);font-weight:600">Rent by area →</a> · <a href="/motor/jobs" style="color:var(--teal);font-weight:600">Car repair costs →</a></p>
@@ -1274,8 +1269,8 @@ function applyStaticI18n(){
   const msH=document.querySelector('#modalSuccess h3'); if(msH) msH.textContent=L.mDoneTitle;
   set('#modalDone', L.mDone);
   // FAQ (rebuilt from L.faqs)
-  const faqEl=$('faq'); if(faqEl && L.faqs) faqEl.innerHTML=`<h2>${esc(L.faqTitle)}</h2><p class="faq-sub">${esc(L.faqSub||'')}</p>`+
-    L.faqs.map(qa=>`<details><summary>${esc(qa[0])}</summary><p>${esc(qa[1])}</p></details>`).join('');
+  const faqEl=$('faq'); if(faqEl && L.faqs) faqEl.innerHTML=`<div class="faq-head"><h2>${esc(L.faqTitle)}</h2><p class="faq-sub">${esc(L.faqSub||'')}</p></div><div class="qas">`+
+    L.faqs.map(qa=>`<div class="qa"><h3>${esc(qa[0])}</h3><p>${esc(qa[1])}</p></div>`).join('')+`</div>`;
   // footer (L.foot contains trusted <b> markup)
   const fn=document.querySelector('.footnote'); if(fn){ const b=(LANG==='ar'?'/ar':''); const fl=(h,t)=>`<a href="${b}${h}" style="color:var(--teal);font-weight:600">${esc(t)}</a>`; fn.innerHTML=`${L.foot}${fl('/prices/',L.footPrices)} · ${fl('/rent/areas',L.footRent)} · ${fl('/motor/jobs',L.footMotor)}`; }
 }
