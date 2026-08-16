@@ -15,6 +15,13 @@ the live advertised ranges in the tool (Aug 2026) — if you change the data, re
   - rent: `https://www.mizan-price.com/rent?type=1br&area=Dubai%20Marina` · guide `/rent/dubai-marina` · calculator `/rent/increase-calculator`
   - motor: `https://www.mizan-price.com/motor?job=oilchange&make=Toyota` · guide `/motor/oil-change`
 - Arabic threads / groups: swap in `/ar/...` — same paths.
+- **Tag every link with a UTM so Vercel Analytics → UTM tab shows which channel works.** Append
+  `?utm_source=<reddit|facebook|whatsapp>&utm_medium=reply&utm_campaign=<ac|rera|rent|motor|handyman>`
+  (use `&` instead of `?` if the URL already has a `?`). Examples:
+  - `https://www.mizan-price.com/rent/increase-calculator?utm_source=reddit&utm_medium=reply&utm_campaign=rera`
+  - `https://www.mizan-price.com/?service=ac&area=Al%20Qusais&utm_source=facebook&utm_medium=reply&utm_campaign=ac`
+  - `https://www.mizan-price.com/rent/dubai-marina?utm_source=whatsapp&utm_medium=reply&utm_campaign=rent`
+  Baseline before any posting (Jul 17–Aug 16): 70 visitors / 144 views, ~1–3 a day, all organic.
 
 How to find the threads: search Reddit for `"AC cleaning" price site:reddit.com/r/dubai`, `"rent increase" legal r/dubai`,
 `"oil change" dealer r/DubaiPetrolHeads`; on Facebook, group search "how much" / "quote" / "is this fair".
