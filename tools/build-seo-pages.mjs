@@ -295,9 +295,9 @@ const rAreaName = (lang, n) => lang === 'ar' ? (RAREA_AR[n] || n) : n;
 const RENT_T = {
   en: {
     base: '', guides: 'Rent by area', tool: '/rent', areas: '/rent/areas',
-    title: (a, rng) => `${a} rent prices 2026: 1-bed ${rng}/yr, studio to villa | Mizan`,
-    desc: (a, rng) => `Rent in ${a} in 2026: a 1-bedroom is typically asked at ${rng} per year; see studio, 2 & 3-bed and villa ranges, Dubai's legal rent-increase cap, and what tenants actually sign.`,
-    h1: a => `Rent prices in ${a}`,
+    title: (a, rng, tl) => `Average rent in ${a} 2026: ${tl} ${rng}/yr (${tl === 'villa' || tl === '3-bed' ? 'villas & townhouses' : 'studio to villa'}) | Mizan`,
+    desc: (a, rng, tl) => `Average rent in ${a} in 2026: a ${tl} is typically asked at ${rng} per year; see studio, 2 & 3-bed and villa ranges, Dubai's legal rent-increase cap, and what tenants actually sign.`,
+    h1: a => `Average rent in ${a} (2026)`,
     lede: a => `Typical annual asking rents in <strong>${a}</strong>, by property type. Landlords advertise high and negotiate, so tenants often sign below these figures — check your number against the range, and see whether a renewal increase is even legal.`,
     rangeH: a => `Average rent in ${a} by property type`, thType: 'Property type', thRange: 'Asking rent / year',
     estNote: 'Asking-rent estimates for 2026, in AED per year. Actual signed rents vary with the building, floor, view, furnishing and number of cheques.',
@@ -307,8 +307,8 @@ const RENT_T = {
     fairP: a => `A fair rent in ${a} is at or below the typical asking figure for that property type. Compare a few listings and check what tenants report actually signing — the gap between asking and signed is your room to negotiate.`,
     ctaP: a => `Renting in ${a}? Check if your rent is fair — or whether an increase is legal.`, ctaBtn: 'Open the rent checker',
     relatedH: 'Rent in nearby areas',
-    faqs: (a, lo, hi) => [
-      { q: `How much is rent for a 1-bedroom in ${a}?`, a: `A 1-bedroom apartment in ${a} is typically advertised around ${lo} to ${hi} per year in 2026. Tenants often sign below the top of that range.` },
+    faqs: (a, lo, hi, tl) => [
+      { q: `How much is rent for a ${tl || '1-bedroom'} in ${a}?`, a: `A ${tl || '1-bedroom'} in ${a} is typically advertised around ${lo} to ${hi} per year in 2026. Tenants often sign below the top of that range.` },
       { q: `Can my landlord raise my rent in ${a}?`, a: `Only within Dubai's RERA cap (Decree 43/2013): no increase if your rent is within 10% of the market average, and 5–20% if it sits further below — with 90 days' written notice.` },
       { q: `What do tenants actually pay vs the asking rent in ${a}?`, a: `Asking rents are what landlords advertise; signed rents are usually lower. Mizan shows the asking range next to what residents report actually paying so you can negotiate.` },
     ],
@@ -319,9 +319,9 @@ const RENT_T = {
   },
   ar: {
     base: '/ar', guides: 'الإيجارات حسب المنطقة', tool: '/ar/rent', areas: '/ar/rent/areas',
-    title: (a, rng) => `أسعار إيجارات ${a} 2026: غرفة واحدة ${rng}/سنة | ميزان`,
+    title: (a, rng, tl) => `متوسط الإيجار في ${a} 2026: ${tl} ${rng}/سنة | ميزان`,
     desc: a => `كم تكلفة الإيجار في ${a}: متوسط الإيجار السنوي المُعلن للاستوديو والشقق بغرفة وغرفتين وثلاث غرف والفلل، إضافةً إلى سقف زيادة الإيجار القانوني في دبي وما يدفعه المستأجرون فعلاً.`,
-    h1: a => `أسعار الإيجارات في ${a}`,
+    h1: a => `متوسط الإيجارات في ${a} (2026)`,
     lede: a => `متوسط الإيجارات السنوية المُعلنة في <strong>${a}</strong>، حسب نوع العقار. يطلب الملّاك أعلى ثم يتفاوضون، لذا يوقّع المستأجرون عادةً أقل من هذه الأرقام — قارن رقمك بالنطاق، واعرف إن كانت زيادة التجديد قانونية أصلاً.`,
     rangeH: a => `متوسط الإيجار في ${a} حسب نوع العقار`, thType: 'نوع العقار', thRange: 'الإيجار السنوي المُعلن',
     estNote: 'تقديرات الإيجار المُعلن لعام 2026، بالدرهم سنوياً. تختلف الإيجارات الموقّعة فعلاً حسب المبنى والطابق والإطلالة والتأثيث وعدد الشيكات.',
@@ -347,8 +347,10 @@ function rentGuidePage(lang, area) {
   const L = LOC[lang], RT = RENT_T[lang], name = area.name, locName = rAreaName(lang, name), slug = slugify(name);
   const enPath = `/rent/${slug}`, arPath = `/ar/rent/${slug}`, canonPath = `${RT.base}/rent/${slug}`;
   const rows = RTYPES.filter(t => rentRangeOf(area, t.id)).map(t => { const r = rentRangeOf(area, t.id); return `<tr><td>${esc(rTypeName(lang, t))}</td><td class="r">${L.range(r[0], r[2])}</td></tr>`; }).join('');
-  const one = rentRangeOf(area, '1br') || rentRangeOf(area, 'studio');
-  const faqs = RT.faqs(locName, L.cur(one[0]), L.cur(one[2]));
+  const refType = ['1br', 'studio', '2br', '3br', 'villa'].find(t => rentRangeOf(area, t));
+  const one = rentRangeOf(area, refType);
+  const refLabel = lang === 'ar' ? ({ '1br': 'غرفة واحدة', studio: 'استوديو', '2br': 'غرفتان', '3br': 'ثلاث غرف', villa: 'فيلا' })[refType] : ({ '1br': '1-bed', studio: 'studio', '2br': '2-bed', '3br': '3-bed', villa: 'villa' })[refType];
+  const faqs = RT.faqs(locName, L.cur(one[0]), L.cur(one[2]), lang === 'ar' ? undefined : ({ '1br': '1-bedroom', studio: 'studio', '2br': '2-bedroom', '3br': '3-bedroom', villa: 'villa' })[refType]);
   const related = RAREAS.filter(o => o.emirate === area.emirate && o.name !== name).slice(0, 4).map(o => `<a href="${RT.base}/rent/${slugify(o.name)}">${esc(rAreaName(lang, o.name))}</a>`).join('');
   const jsonld = { "@context": "https://schema.org", "@graph": [
     { "@type": "BreadcrumbList", "itemListElement": [
@@ -359,7 +361,7 @@ function rentGuidePage(lang, area) {
   ] };
   const altPath = lang === 'ar' ? enPath : arPath, altLabel = lang === 'ar' ? 'English' : 'عربي';
   const oneRng = lang === 'ar' ? L.range(one[0], one[2]) : `AED ${fmt(one[0]).replace(/,000$/, 'k')}–${fmt(one[2]).replace(/,000$/, 'k')}`;
-  return head(L, RT.title(locName, oneRng), RT.desc.length > 1 ? RT.desc(locName, oneRng) : RT.desc(locName), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
+  return head(L, RT.title(locName, oneRng, refLabel), RT.desc.length > 1 ? RT.desc(locName, oneRng, refLabel) : RT.desc(locName), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
 <div class="crumb"><a href="${RT.base}/">${L.home}</a> / <a href="${RT.areas}">${esc(RT.guides)}</a> / ${esc(locName)}</div>
 <h1>${esc(RT.h1(locName))}</h1>
 <p class="lede">${RT.lede(esc(locName))}</p>
@@ -387,6 +389,33 @@ function rentHub(lang) {
 }
 
 // Arabic rent app at /ar/rent — copy of rent/index.html with an Arabic SEO <head> (its JS detects /ar).
+function rentCalcApp(lang) {
+  // /rent/increase-calculator — the RERA calculator's own URL (people search "rent increase calculator dubai").
+  // Same app; opens on the legal tab (see rent/index.html deep-link); its own title/description/canonical/hreflang.
+  let h = lang === 'ar' ? arRentApp() : rentHtml;
+  const en = '/rent/increase-calculator', ar = '/ar/rent/increase-calculator', me = lang === 'ar' ? ar : en;
+  const T = lang === 'ar'
+    ? { title: 'حاسبة زيادة الإيجار في دبي 2026 (ريرا) — هل زيادة المالك قانونية؟ | ميزان', desc: 'احسب أقصى زيادة إيجار قانونية في دبي وفق المرسوم 43 لسنة 2013: أدخل إيجارك الحالي ومتوسط السوق لمنطقتك لتعرف الحد الأقصى للزيادة والإيجار الجديد. مجاناً، مع رابط مؤشر دائرة الأراضي.', og: 'حاسبة زيادة الإيجار في دبي (ريرا)' }
+    : { title: 'Dubai rent increase calculator 2026 (RERA) — is your landlord\'s increase legal? | Mizan', desc: "Calculate the maximum legal rent increase in Dubai under Decree 43/2013: enter your current rent and your community's market average to see the cap (0–20%) and your maximum new rent. Free, links to the DLD index.", og: 'Dubai rent increase calculator (RERA)' };
+  h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${T.title}</title>`);
+  h = h.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${T.desc}">`);
+  h = h.replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${ORIGIN}${me}">`);
+  h = h.replace(/<link rel="alternate" hreflang="en" href="[^"]*">/, `<link rel="alternate" hreflang="en" href="${ORIGIN}${en}">`);
+  h = h.replace(/<link rel="alternate" hreflang="ar" href="[^"]*">/, `<link rel="alternate" hreflang="ar" href="${ORIGIN}${ar}">`);
+  h = h.replace(/<link rel="alternate" hreflang="x-default" href="[^"]*">/, `<link rel="alternate" hreflang="x-default" href="${ORIGIN}${en}">`);
+  h = h.replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${ORIGIN}${me}">`);
+  h = h.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${T.og}">`);
+  h = h.replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${T.og}">`);
+  h = h.replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${T.desc}">`);
+  h = h.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${T.desc}">`);
+  h = h.replace('href="/ar/rent" id="langLink"', 'href="/ar/rent/increase-calculator" id="langLink"');
+  if (lang === 'en') {
+    h = h.replace('<h1>Is your rent <em>fair</em> — and is the increase <em>legal?</em></h1>', '<h1>Dubai rent increase calculator — is your <em>increase legal?</em></h1>');
+    h = h.replace(/<div class="hero">([\s\S]*?)<p>[^<]*<\/p>/, (m, a) => `<div class="hero">${a}<p>Under Decree 43/2013 the maximum increase depends only on how far your rent sits below the RERA market average — from 0% up to 20%, with 90 days' notice. Enter your rent and community to see your cap.</p>`);
+  }
+  return h;
+}
+
 function arRentApp() {
   let h = rentHtml;
   h = h.replace('<html lang="en">', '<html lang="ar" dir="rtl">');
@@ -438,8 +467,8 @@ const mBodyName = (lang, b) => lang === 'ar' ? (M_BODY_AR[b.id] || b.label) : b.
 const MOTOR_T = {
   en: {
   base: '', guides: 'Car repair costs', tool: '/motor', hub: '/motor/jobs',
-  title: (n, lo, hi) => `${cap(n)} cost in Dubai 2026: AED ${lo}–${hi} by car brand | Mizan`,
-  desc: (n, lo, hi) => `${cap(n)} in Dubai typically costs AED ${lo}–${hi} — lower for Japanese/economy cars at independent garages, higher for German & luxury brands and dealers. Check if your quote is fair.`,
+  title: (n, lo, hi, sizeOnly) => `${cap(n)} price in Dubai 2026: AED ${lo}–${hi} (cost by ${sizeOnly ? 'car size' : 'car brand'}) | Mizan`,
+  desc: (n, lo, hi, sizeOnly) => sizeOnly ? `${cap(n)} in Dubai typically costs AED ${lo}–${hi} — small sedans at the bottom, large SUVs and 4×4s at the top. See the price by car size and what drivers actually pay. Check if your quote is fair.` : `${cap(n)} in Dubai typically costs AED ${lo}–${hi} — lower for Japanese/economy cars at independent garages, higher for German & luxury brands and dealers. Check if your quote is fair.`,
   h1: n => `How much does ${n.toLowerCase()} cost in Dubai?`,
   lede: n => `What ${n.toLowerCase()} typically costs at UAE garages, by car-brand tier. German and luxury cars (and large 4×4s) sit at the top; Japanese/economy cars and independent garages at the bottom — quotes vary a lot, so check yours against the range.`,
   tableTierH: n => `${cap(n)} cost by car brand`, tableBodyH: n => `${cap(n)} cost by body type`,
@@ -459,7 +488,7 @@ const MOTOR_T = {
   },
   ar: {
     base: '/ar', guides: 'أسعار إصلاح السيارات', tool: '/ar/motor', hub: '/ar/motor/jobs',
-    title: (n, lo, hi) => `تكلفة ${n} في دبي 2026: ${lo}–${hi} درهم حسب ماركة السيارة | ميزان`,
+    title: (n, lo, hi, sizeOnly) => `سعر ${n} في دبي 2026: ${lo}–${hi} درهم حسب ${sizeOnly ? 'حجم السيارة' : 'ماركة السيارة'} | ميزان`,
     desc: n => `كم تكلفة ${n} في الإمارات؟ أسعار الورش المعتادة حسب ماركة السيارة — من الاقتصادية إلى الألمانية والفاخرة — إضافةً إلى ما يدفعه السائقون فعلاً. تحقّق إن كان سعرك عادلاً.`,
     h1: n => `كم تكلفة ${n} في دبي؟`,
     lede: n => `كم تكلّف ${n} عادةً في ورش الإمارات، حسب فئة ماركة السيارة. السيارات الألمانية والفاخرة (والدفع الرباعي الكبير) في الأعلى؛ السيارات اليابانية والاقتصادية والورش المستقلة في الأسفل — الأسعار تتفاوت كثيراً، فقارن سعرك بالنطاق.`,
@@ -503,7 +532,7 @@ function motorGuidePage(lang, job) {
     { "@type": "FAQPage", "inLanguage": lang, "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) }
   ] };
   const altPath = lang === 'ar' ? enPath : arPath, altLabel = lang === 'ar' ? 'English' : 'عربي';
-  return head(L, RT.title(name, faqLo, faqHi), RT.desc.length > 1 ? RT.desc(name, faqLo, faqHi) : RT.desc(name), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
+  return head(L, RT.title(name, faqLo, faqHi, sizeOnly), RT.desc.length > 1 ? RT.desc(name, faqLo, faqHi, sizeOnly) : RT.desc(name), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
 <div class="crumb"><a href="${base}/">${L.home}</a> / <a href="${RT.hub}">${esc(RT.guides)}</a> / ${esc(name)}</div>
 <h1>${esc(RT.h1(name))}</h1>
 <p class="lede">${RT.lede(esc(name))}</p>
@@ -558,6 +587,7 @@ for (const key of ['en', 'ar']) {
   RAREAS.forEach(a => { const d = path.join(baseDir, slugify(a.name)); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, 'index.html'), G(rentGuidePage(key, a))); pages++; });
 }
 fs.writeFileSync(path.join(ROOT, 'ar', 'rent', 'index.html'), arRentApp()); pages++;
+for (const lang of ['en', 'ar']) { const d = path.join(ROOT, lang === 'ar' ? 'ar' : '', 'rent', 'increase-calculator'); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, 'index.html'), rentCalcApp(lang)); pages++; }
 
 // motor repair-cost guides (EN + AR) — per-job pages + hub, plus the Arabic motor app
 for (const key of ['en', 'ar']) {
@@ -570,9 +600,9 @@ fs.writeFileSync(path.join(ROOT, 'ar', 'motor', 'index.html'), arMotorApp()); pa
 
 // ---- sitemap (en + ar) ----
 const enUrls = [ORIGIN + '/', ORIGIN + '/rent', ORIGIN + '/motor', ORIGIN + '/prices/', ...services.map(s => `${ORIGIN}/prices/${s.slug}`)];
-const rentUrls = [ORIGIN + '/rent/areas', ...RAREAS.map(a => `${ORIGIN}/rent/${slugify(a.name)}`)];
+const rentUrls = [ORIGIN + '/rent/areas', ORIGIN + '/rent/increase-calculator', ...RAREAS.map(a => `${ORIGIN}/rent/${slugify(a.name)}`)];
 const motorUrls = [ORIGIN + '/motor/jobs', ...MCATS.map(j => `${ORIGIN}/motor/${mSlug(j)}`)];
-const arRentUrls = [ORIGIN + '/ar/rent', ORIGIN + '/ar/rent/areas', ...RAREAS.map(a => `${ORIGIN}/ar/rent/${slugify(a.name)}`)];
+const arRentUrls = [ORIGIN + '/ar/rent', ORIGIN + '/ar/rent/areas', ORIGIN + '/ar/rent/increase-calculator', ...RAREAS.map(a => `${ORIGIN}/ar/rent/${slugify(a.name)}`)];
 const arMotorUrls = [ORIGIN + '/ar/motor', ORIGIN + '/ar/motor/jobs', ...MCATS.map(j => `${ORIGIN}/ar/motor/${mSlug(j)}`)];
 const arUrls = [ORIGIN + '/ar/', ORIGIN + '/ar/prices/', ...services.map(s => `${ORIGIN}/ar/prices/${s.slug}`)];
 const all = [...enUrls, ...rentUrls, ...motorUrls, ...arRentUrls, ...arMotorUrls, ...arUrls];

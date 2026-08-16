@@ -12,7 +12,7 @@ the live advertised ranges in the tool (Aug 2026) — if you change the data, re
 - Deep-link to the exact answer, not the homepage. Formats:
   - services: `https://www.mizan-price.com/?service=<id>&area=<Area>`  (ids: `ac`, `handyman`, `plumber`, `pest`, `haircut`, `movers`, `maid` …)
   - services guide: `https://www.mizan-price.com/prices/<slug>` (e.g. `/prices/ac-cleaning`)
-  - rent: `https://www.mizan-price.com/rent?type=1br&area=Dubai%20Marina` · guide `/rent/dubai-marina` · calculator `/rent?tab=legal`
+  - rent: `https://www.mizan-price.com/rent?type=1br&area=Dubai%20Marina` · guide `/rent/dubai-marina` · calculator `/rent/increase-calculator`
   - motor: `https://www.mizan-price.com/motor?job=oilchange&make=Toyota` · guide `/motor/oil-change`
 - Arabic threads / groups: swap in `/ar/...` — same paths.
 
@@ -56,12 +56,12 @@ How to find the threads: search Reddit for `"AC cleaning" price site:reddit.com/
 > roughly market rate already, the legal increase is zero, full stop.
 >
 > Quick way to check: I built a free calculator that does the slab maths and prefills the market average
-> for your community — https://www.mizan-price.com/rent?tab=legal (full disclosure, mine; the official
+> for your community — https://www.mizan-price.com/rent/increase-calculator (full disclosure, mine; the official
 > number is the DLD rental index, which it links to). Worth running before you reply to the landlord.
 
 **Facebook / WhatsApp**
 > It's capped by RERA — if your rent is within 10% of the market average the legal increase is 0%, and
-> they need 90 days' notice. Free calculator that does the slabs: mizan-price.com/rent?tab=legal
+> they need 90 days' notice. Free calculator that does the slabs: mizan-price.com/rent/increase-calculator
 
 ---
 

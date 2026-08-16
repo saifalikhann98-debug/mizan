@@ -629,7 +629,7 @@ const T = {
 const L = T[LANG];
 const RTYPE_AR = {studio:'استوديو','1br':'غرفة واحدة','2br':'غرفتان','3br':'3 غرف',villa:'فيلا'};
 const EMIRATE_AR = {'Dubai':'دبي','Abu Dhabi':'أبوظبي','Sharjah':'الشارقة'};
-const AREA_AR = {'Dubai Marina':'دبي مارينا','JLT':'أبراج بحيرات الجميرا','Downtown Dubai':'وسط مدينة دبي','Business Bay':'الخليج التجاري','JVC':'قرية جميرا الدائرية','Al Barsha':'البرشاء','Dubai Silicon Oasis':'واحة دبي للسيليكون','Deira':'ديرة','Bur Dubai':'بر دبي','Al Qusais':'القصيص','International City':'المدينة العالمية','Al Reem Island':'جزيرة الريم','Khalifa City':'مدينة خليفة','Al Nahda (Sharjah)':'النهدة (الشارقة)','Al Majaz':'المجاز','Palm Jumeirah':'نخلة جميرا','JBR':'جي بي آر','Dubai Hills Estate':'دبي هيلز استيت','The Greens':'ذا جرينز','Barsha Heights':'برشا هايتس','Motor City':'موتور سيتي','Al Furjan':'الفرجان','JVT':'مثلث قرية جميرا','Arjan':'أرجان','Town Square':'تاون سكوير','Dubai Sports City':'مدينة دبي الرياضية','Discovery Gardens':'ديسكفري جاردنز','Mirdif':'مردف','Saadiyat Island':'جزيرة السعديات','Al Raha Beach':'شاطئ الراحة','Muwailih':'مويلح'};
+const AREA_AR = {'Dubai Marina':'دبي مارينا','JLT':'أبراج بحيرات الجميرا','Downtown Dubai':'وسط مدينة دبي','Business Bay':'الخليج التجاري','JVC':'قرية جميرا الدائرية','Al Barsha':'البرشاء','Dubai Silicon Oasis':'واحة دبي للسيليكون','Deira':'ديرة','Bur Dubai':'بر دبي','Al Qusais':'القصيص','International City':'المدينة العالمية','Al Reem Island':'جزيرة الريم','Khalifa City':'مدينة خليفة','Al Nahda (Sharjah)':'النهدة (الشارقة)','Al Majaz':'المجاز','Palm Jumeirah':'نخلة جميرا','JBR':'جي بي آر','Dubai Hills Estate':'دبي هيلز استيت','The Greens':'ذا جرينز','Barsha Heights':'برشا هايتس','Motor City':'موتور سيتي','Al Furjan':'الفرجان','JVT':'مثلث قرية جميرا','Arjan':'أرجان','Town Square':'تاون سكوير','Dubai Sports City':'مدينة دبي الرياضية','Discovery Gardens':'ديسكفري جاردنز','Mirdif':'مردف','Saadiyat Island':'جزيرة السعديات','Al Raha Beach':'شاطئ الراحة','Muwailih':'مويلح','Mudon':'مدن','Al Mizhar':'المزهر','Muhaisnah':'محيصنة','Yas Island':'جزيرة ياس'};
 const typeLabel = t => (LANG==='ar' && RTYPE_AR[t.id]) ? RTYPE_AR[t.id] : t.label;
 const typeLow = t => LANG==='ar' ? typeLabel(t) : t.label.toLowerCase();
 const areaLabel = n => (LANG==='ar' && AREA_AR[n]) ? AREA_AR[n] : n;
@@ -678,6 +678,11 @@ const RAREAS=[
   {emirate:'Abu Dhabi', name:'Saadiyat Island', r:{studio:[60,80,105],  '1br':[85,112,150],  '2br':[130,168,230], '3br':[190,250,350], villa:[350,490,820]}},
   {emirate:'Abu Dhabi', name:'Al Raha Beach',   r:{studio:[55,72,95],   '1br':[80,102,135],  '2br':[120,152,210], '3br':[175,225,310], villa:null}},
   {emirate:'Sharjah', name:'Muwailih',          r:{studio:[22,30,40],   '1br':[30,40,52],    '2br':[45,58,78],    '3br':[62,80,105],   villa:null}},
+  // added 2026-08-16 from Search Console demand ("average rent in …") — calibrated 2026 estimates, sanity-check
+  {emirate:'Dubai', name:'Mudon',               r:{studio:null,         '1br':null,          '2br':null,          '3br':[175,215,275],  villa:[220,280,370]}},
+  {emirate:'Dubai', name:'Al Mizhar',           r:{studio:null,         '1br':null,          '2br':null,          '3br':null,           villa:[150,190,260]}},
+  {emirate:'Dubai', name:'Muhaisnah',           r:{studio:[28,35,45],   '1br':[38,48,60],    '2br':[55,68,88],    '3br':[75,95,120],    villa:null}},
+  {emirate:'Abu Dhabi', name:'Yas Island',      r:{studio:[50,62,80],   '1br':[70,88,115],   '2br':[105,130,170], '3br':[150,190,250],  villa:[200,260,360]}},
 ];
 const areaByName=n=>RAREAS.find(a=>a.name===n);
 const typeById=id=>RTYPES.find(t=>t.id===id);
@@ -1086,7 +1091,7 @@ function applyStaticI18n(){
   $('modalSubmit').onclick=submitModal; $('modalDone').onclick=closeModal;
   $('modalPrice').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.kKmM]/g,'');updateModalBtn()});
   // if deep-linked with a type/area for the calculator, jump to it
-  if(p.get('tab')==='legal') showTab('legal');
+  if(p.get('tab')==='legal' || /increase-calculator/.test(location.pathname)) showTab('legal');   // /rent/increase-calculator is the calculator's own URL
   renderFair(); prefillMarket();
 })();
 </script>

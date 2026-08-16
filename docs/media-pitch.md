@@ -28,7 +28,7 @@ so the number is real. Don't send B early — the honesty is the story.
 > 11–20% → max 5%; up to 20% at most), with 90 days' notice.
 >
 > I built a free, no-sign-up calculator that does the slab maths and prefills the market average for
-> 31 communities: **https://www.mizan-price.com/rent?tab=legal** (Arabic: /ar/rent). It links to the
+> 31 communities: **https://www.mizan-price.com/rent/increase-calculator** (Arabic: /ar/rent). It links to the
 > official DLD index for the authoritative figure — it's a sanity check, not legal advice.
 >
 > Happy to give you a quick explainer of the slabs, a couple of worked examples (Marina 1-bed, JVC
