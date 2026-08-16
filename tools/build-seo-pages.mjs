@@ -60,8 +60,8 @@ const LOC = {
     cur:n=>`AED ${fmt(n)}`, range:(a,b)=>`AED ${fmt(a)} – ${fmt(b)}`,
     name:s=>META[s.id].en, emirate:n=>n, group:g=>g, unit:u=>UNIT_EN[u]||'',
     navCta:'Check a price', home:'Home', guides:'Price guides', arrow:'→',
-    h1:(n)=>`How much does ${n} cost in the UAE?`,
-    lede:(n,lo,hi,u,t)=>`${cap(n)} in the UAE is typically advertised between <strong>${lo}</strong> and <strong>${hi}</strong> ${u}, with most quotes around <strong>${t}</strong>. Actual prices swing with your area, the provider, and what is included, so the advertised rate is rarely the price you have to pay.`,
+    h1:(n)=>`How much does ${n} cost in Dubai?`,
+    lede:(n,lo,hi,u,t)=>`${cap(n)} in Dubai is typically advertised between <strong>${lo}</strong> and <strong>${hi}</strong> ${u}, with most quotes around <strong>${t}</strong>. Actual prices swing with your area, the provider, and what is included, so the advertised rate is rarely the price you have to pay.`,
     rangeLabel:'Typical UAE market range', mostQuotes:t=>`most quotes around ${t}`, unitTitle:u=>cap(u||'per service'),
     byEmirate:n=>`${cap(n)} prices by emirate`, thEmirate:'Emirate', thRange:'Typical advertised range',
     estNote:'Estimates: Dubai/Abu Dhabi list prices adjusted by a rough cost factor for each emirate. Residents often pay below the top of the range.',
@@ -71,7 +71,7 @@ const LOC = {
     faqH:'Common questions', relatedH:'Related guides',
     faqs:(n,loD,hiD,u,t)=>[
       {q:`How much does ${n} cost in Dubai?`,a:`In Dubai, ${n} is typically advertised around ${loD} to ${hiD} ${u}. Many residents pay less than the top of that range.`},
-      {q:`What is a fair price for ${n} in the UAE?`,a:`A fair price is usually at or below the typical advertised figure of about ${t}. Compare two or three quotes and check them against what residents report paying on Mizan.`},
+      {q:`What is a fair price for ${n} in Dubai?`,a:`A fair price is usually at or below the typical advertised figure of about ${t}. Compare two or three quotes and check them against what residents report paying on Mizan.`},
       {q:`Why do ${n} prices vary so much?`,a:`Prices move with your area, the provider's tier, and exactly what the quote includes. That is why Mizan shows the advertised range next to what people actually pay.`},
     ],
     foot:`Mizan shows advertised list prices next to what UAE residents report paying. Reports are anonymous. Prices are estimates, not quotes.`,
@@ -80,15 +80,15 @@ const LOC = {
     hubDesc:n=>`Browse fair-price guides for ${n} everyday UAE services - AC cleaning, salon, gym, movers, pest control and more. See what residents actually pay.`,
     hubH1:'UAE service price guides',
     hubLede:'What everyday services really cost across the UAE. Each guide shows the typical advertised range, a per-emirate breakdown, and what residents report actually paying. Pick a service to dig in, or <a href="/">check a specific quote</a>.',
-    title:n=>`${cap(n)} prices in the UAE (2026) | Mizan`,
-    desc:(n,lo,hi,u)=>`What does ${n} cost in the UAE? Typical market range ${lo} to ${hi} ${u}, plus what residents actually pay across Dubai, Abu Dhabi, Sharjah and more.`,
+    title:(n,rng,u)=>`${cap(n)} cost in Dubai 2026: ${rng} ${u} | Mizan`,
+    desc:(n,rng,u,t)=>`In Dubai, ${n} is typically advertised at ${rng} ${u}, most often around ${t}. See the range for every emirate and what residents actually pay — free, no ads.`,
   },
   ar: {
     dir:'rtl', lang:'ar', base:'/ar', font:'IBM+Plex+Sans+Arabic:wght@400;500;600',
     cur:n=>`${fmt(n)} درهم`, range:(a,b)=>`${fmt(a)} – ${fmt(b)} درهم`,
     name:s=>META[s.id].ar, emirate:n=>EMIRATE_AR[n]||n, group:g=>GROUP_AR[g]||g, unit:u=>UNIT_AR[u]||'',
     navCta:'تحقّق من سعر', home:'الرئيسية', guides:'أدلة الأسعار', arrow:'←',
-    h1:(n)=>`كم تكلفة ${n} في الإمارات؟`,
+    h1:(n)=>`كم تكلفة ${n} في دبي؟`,
     lede:(n,lo,hi,u,t)=>`عادةً ما يُعلَن عن ${n} في الإمارات بين <strong>${lo}</strong> و<strong>${hi}</strong> ${u}، وغالبية العروض حول <strong>${t}</strong>. تتغيّر الأسعار الفعلية حسب منطقتك ومقدّم الخدمة وما يشمله العرض، لذا نادراً ما يكون السعر المُعلن هو ما يجب أن تدفعه.`,
     rangeLabel:'النطاق السوقي المعتاد في الإمارات', mostQuotes:t=>`غالبية العروض حول ${t}`, unitTitle:u=>u||'للخدمة',
     byEmirate:n=>`أسعار ${n} حسب الإمارة`, thEmirate:'الإمارة', thRange:'النطاق المُعلن المعتاد',
@@ -108,8 +108,8 @@ const LOC = {
     hubDesc:n=>`تصفّح أدلة الأسعار العادلة لـ${n} خدمة يومية في الإمارات - تنظيف المكيفات والصالونات والنوادي والنقل ومكافحة الحشرات وغيرها. اعرف ما يدفعه السكان فعلاً.`,
     hubH1:'أدلة أسعار الخدمات في الإمارات',
     hubLede:'كم تكلّف الخدمات اليومية فعلاً في أنحاء الإمارات. يعرض كل دليل النطاق المُعلن المعتاد، وتفصيلاً لكل إمارة، وما يبلّغ عنه السكان من مبالغ مدفوعة. اختر خدمة للتعمّق، أو <a href="/">تحقّق من عرض محدّد</a>.',
-    title:n=>`أسعار ${n} في الإمارات (2026) | ميزان`,
-    desc:(n,lo,hi,u)=>`كم تكلفة ${n} في الإمارات؟ النطاق السوقي المعتاد من ${lo} إلى ${hi} ${u}، إضافةً إلى ما يدفعه السكان فعلاً في دبي وأبوظبي والشارقة وغيرها.`,
+    title:(n,rng,u)=>`تكلفة ${n} في دبي 2026: ${rng} ${u} | ميزان`,
+    desc:(n,lo,hi,u)=>`كم تكلفة ${n} في دبي؟ النطاق المُعلن المعتاد من ${lo} إلى ${hi} ${u}، إضافةً إلى ما يدفعه السكان فعلاً في دبي وأبوظبي والشارقة وغيرها.`,
   },
 };
 
@@ -234,7 +234,7 @@ function servicePage(L, s) {
   ]};
   const altPath = L.lang === 'ar' ? enPath : arPath;
   const altLabel = L.lang === 'ar' ? 'English' : 'عربي';
-  return head(L, L.title(n), L.desc(n, L.cur(s.lo), L.cur(s.hi), u), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
+  return head(L, L.title(n, L.range(s.lo, s.hi), u), L.desc.length > 4 ? L.desc(n, L.range(s.lo, s.hi), u, L.cur(s.typical)) : L.desc(n, L.cur(s.lo), L.cur(s.hi), u), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
 <div class="crumb"><a href="${L.base}/">${L.home}</a> / <a href="${L.base}/prices/">${L.guides}</a> / ${esc(N)}</div>
 <h1>${esc(L.h1(n))}</h1>
 <p class="lede">${L.lede(esc(n), L.cur(s.lo), L.cur(s.hi), esc(u), L.cur(s.typical))}</p>
@@ -295,8 +295,8 @@ const rAreaName = (lang, n) => lang === 'ar' ? (RAREA_AR[n] || n) : n;
 const RENT_T = {
   en: {
     base: '', guides: 'Rent by area', tool: '/rent', areas: '/rent/areas',
-    title: a => `${a} rent prices 2026 — studio to villa | Mizan`,
-    desc: a => `What it costs to rent in ${a}: typical annual asking rent for studios, 1, 2 & 3-bedroom apartments and villas, plus Dubai's legal rent-increase cap and what tenants actually pay.`,
+    title: (a, rng) => `${a} rent prices 2026: 1-bed ${rng}/yr, studio to villa | Mizan`,
+    desc: (a, rng) => `Rent in ${a} in 2026: a 1-bedroom is typically asked at ${rng} per year; see studio, 2 & 3-bed and villa ranges, Dubai's legal rent-increase cap, and what tenants actually sign.`,
     h1: a => `Rent prices in ${a}`,
     lede: a => `Typical annual asking rents in <strong>${a}</strong>, by property type. Landlords advertise high and negotiate, so tenants often sign below these figures — check your number against the range, and see whether a renewal increase is even legal.`,
     rangeH: a => `Average rent in ${a} by property type`, thType: 'Property type', thRange: 'Asking rent / year',
@@ -319,7 +319,7 @@ const RENT_T = {
   },
   ar: {
     base: '/ar', guides: 'الإيجارات حسب المنطقة', tool: '/ar/rent', areas: '/ar/rent/areas',
-    title: a => `أسعار إيجارات ${a} 2026 — من الاستوديو إلى الفيلا | ميزان`,
+    title: (a, rng) => `أسعار إيجارات ${a} 2026: غرفة واحدة ${rng}/سنة | ميزان`,
     desc: a => `كم تكلفة الإيجار في ${a}: متوسط الإيجار السنوي المُعلن للاستوديو والشقق بغرفة وغرفتين وثلاث غرف والفلل، إضافةً إلى سقف زيادة الإيجار القانوني في دبي وما يدفعه المستأجرون فعلاً.`,
     h1: a => `أسعار الإيجارات في ${a}`,
     lede: a => `متوسط الإيجارات السنوية المُعلنة في <strong>${a}</strong>، حسب نوع العقار. يطلب الملّاك أعلى ثم يتفاوضون، لذا يوقّع المستأجرون عادةً أقل من هذه الأرقام — قارن رقمك بالنطاق، واعرف إن كانت زيادة التجديد قانونية أصلاً.`,
@@ -358,7 +358,8 @@ function rentGuidePage(lang, area) {
     { "@type": "FAQPage", "inLanguage": lang, "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) }
   ] };
   const altPath = lang === 'ar' ? enPath : arPath, altLabel = lang === 'ar' ? 'English' : 'عربي';
-  return head(L, RT.title(locName), RT.desc(locName), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
+  const oneRng = lang === 'ar' ? L.range(one[0], one[2]) : `AED ${fmt(one[0]).replace(/,000$/, 'k')}–${fmt(one[2]).replace(/,000$/, 'k')}`;
+  return head(L, RT.title(locName, oneRng), RT.desc.length > 1 ? RT.desc(locName, oneRng) : RT.desc(locName), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
 <div class="crumb"><a href="${RT.base}/">${L.home}</a> / <a href="${RT.areas}">${esc(RT.guides)}</a> / ${esc(locName)}</div>
 <h1>${esc(RT.h1(locName))}</h1>
 <p class="lede">${RT.lede(esc(locName))}</p>
@@ -437,9 +438,9 @@ const mBodyName = (lang, b) => lang === 'ar' ? (M_BODY_AR[b.id] || b.label) : b.
 const MOTOR_T = {
   en: {
   base: '', guides: 'Car repair costs', tool: '/motor', hub: '/motor/jobs',
-  title: n => `${cap(n)} cost in the UAE (2026) — by car brand | Mizan`,
-  desc: n => `What does ${n.toLowerCase()} cost in the UAE? Typical garage prices by car brand — economy to German & luxury — plus what drivers actually pay. Check if your quote is fair.`,
-  h1: n => `How much does ${n.toLowerCase()} cost in the UAE?`,
+  title: (n, lo, hi) => `${cap(n)} cost in Dubai 2026: AED ${lo}–${hi} by car brand | Mizan`,
+  desc: (n, lo, hi) => `${cap(n)} in Dubai typically costs AED ${lo}–${hi} — lower for Japanese/economy cars at independent garages, higher for German & luxury brands and dealers. Check if your quote is fair.`,
+  h1: n => `How much does ${n.toLowerCase()} cost in Dubai?`,
   lede: n => `What ${n.toLowerCase()} typically costs at UAE garages, by car-brand tier. German and luxury cars (and large 4×4s) sit at the top; Japanese/economy cars and independent garages at the bottom — quotes vary a lot, so check yours against the range.`,
   tableTierH: n => `${cap(n)} cost by car brand`, tableBodyH: n => `${cap(n)} cost by body type`,
   thTier: 'Car brand', thBody: 'Body type', thRange: 'Typical range',
@@ -448,7 +449,7 @@ const MOTOR_T = {
   ctaP: n => `Got a quote for ${n.toLowerCase()}? Check if it's fair in seconds.`, ctaBtn: 'Check your quote',
   relatedH: 'Other car jobs', faqH: 'Common questions',
   faqs: (n, lo, hi) => [
-    { q: `How much does ${n.toLowerCase()} cost in Dubai?`, a: `${cap(n)} typically runs around AED ${lo} to ${hi} in the UAE — toward the lower end for Japanese/economy cars at an independent garage, higher for German or luxury brands and at dealers.` },
+    { q: `How much does ${n.toLowerCase()} cost in Dubai?`, a: `${cap(n)} typically runs around AED ${lo} to ${hi} in Dubai and across the UAE — toward the lower end for Japanese/economy cars at an independent garage, higher for German or luxury brands and at dealers.` },
     { q: `Why does ${n.toLowerCase()} vary so much between garages?`, a: `It depends on your car's make (parts cost), whether parts are genuine or aftermarket, labour rates, and dealer vs independent garage. That's why Mizan shows the typical range next to what drivers actually pay.` },
     { q: `Is a dealer or an independent garage cheaper?`, a: `For ${n.toLowerCase()}, independent garages are usually cheaper than dealers — often noticeably — but check reviews and ask about parts and any warranty.` },
   ],
@@ -458,9 +459,9 @@ const MOTOR_T = {
   },
   ar: {
     base: '/ar', guides: 'أسعار إصلاح السيارات', tool: '/ar/motor', hub: '/ar/motor/jobs',
-    title: n => `تكلفة ${n} في الإمارات (2026) — حسب ماركة السيارة | ميزان`,
+    title: (n, lo, hi) => `تكلفة ${n} في دبي 2026: ${lo}–${hi} درهم حسب ماركة السيارة | ميزان`,
     desc: n => `كم تكلفة ${n} في الإمارات؟ أسعار الورش المعتادة حسب ماركة السيارة — من الاقتصادية إلى الألمانية والفاخرة — إضافةً إلى ما يدفعه السائقون فعلاً. تحقّق إن كان سعرك عادلاً.`,
-    h1: n => `كم تكلفة ${n} في الإمارات؟`,
+    h1: n => `كم تكلفة ${n} في دبي؟`,
     lede: n => `كم تكلّف ${n} عادةً في ورش الإمارات، حسب فئة ماركة السيارة. السيارات الألمانية والفاخرة (والدفع الرباعي الكبير) في الأعلى؛ السيارات اليابانية والاقتصادية والورش المستقلة في الأسفل — الأسعار تتفاوت كثيراً، فقارن سعرك بالنطاق.`,
     tableTierH: n => `تكلفة ${n} حسب ماركة السيارة`, tableBodyH: n => `تكلفة ${n} حسب نوع الهيكل`,
     thTier: 'ماركة السيارة', thBody: 'نوع الهيكل', thRange: 'النطاق المعتاد',
@@ -502,7 +503,7 @@ function motorGuidePage(lang, job) {
     { "@type": "FAQPage", "inLanguage": lang, "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) }
   ] };
   const altPath = lang === 'ar' ? enPath : arPath, altLabel = lang === 'ar' ? 'English' : 'عربي';
-  return head(L, RT.title(name), RT.desc(name), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
+  return head(L, RT.title(name, faqLo, faqHi), RT.desc.length > 1 ? RT.desc(name, faqLo, faqHi) : RT.desc(name), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
 <div class="crumb"><a href="${base}/">${L.home}</a> / <a href="${RT.hub}">${esc(RT.guides)}</a> / ${esc(name)}</div>
 <h1>${esc(RT.h1(name))}</h1>
 <p class="lede">${RT.lede(esc(name))}</p>
@@ -575,8 +576,9 @@ const arRentUrls = [ORIGIN + '/ar/rent', ORIGIN + '/ar/rent/areas', ...RAREAS.ma
 const arMotorUrls = [ORIGIN + '/ar/motor', ORIGIN + '/ar/motor/jobs', ...MCATS.map(j => `${ORIGIN}/ar/motor/${mSlug(j)}`)];
 const arUrls = [ORIGIN + '/ar/', ORIGIN + '/ar/prices/', ...services.map(s => `${ORIGIN}/ar/prices/${s.slug}`)];
 const all = [...enUrls, ...rentUrls, ...motorUrls, ...arRentUrls, ...arMotorUrls, ...arUrls];
+const LASTMOD = new Date().toISOString().slice(0, 10);   // build date → nudges recrawl after content changes
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-  all.map(u => `  <url><loc>${u}</loc><changefreq>weekly</changefreq><priority>${u === ORIGIN + '/' ? '1.0' : '0.7'}</priority></url>`).join('\n') +
+  all.map(u => `  <url><loc>${u}</loc><lastmod>${LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>${u === ORIGIN + '/' ? '1.0' : '0.7'}</priority></url>`).join('\n') +
   `\n</urlset>\n`;
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
 
