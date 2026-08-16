@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mizan · Dashboard</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#EEF2F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16201E" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>/* no-flash theme */(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C1A15; --muted:#55514A; --faint:#8A857B;
+    --teal:#14534D; --teal-bg:#EAF0EE;
+    --surface:#FFFFFF; --surface-2:#FBFAF5;
+    --line:#EAE4D6; --line-2:#F2EDE3;
+    --fair:#2F7D54; --fair-bg:#EBF2EC;
+    --steep:#B5781F; --steep-bg:#F7EFDD;
+    --bg:radial-gradient(140% 90% at 50% -10%, #EEF2F1 0%, #E3EAE8 55%, #D7E2DF 100%);
+    --shadow:0 1px 2px rgba(40,34,20,.04), 0 22px 46px -34px rgba(40,34,20,.34);
+    --serif:'Newsreader',Georgia,serif; --mono:'Geist Mono',ui-monospace,monospace;
+    --sans:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  :root[data-theme="dark"]{
+    --ink:#F0ECE2; --muted:#BFB9AD; --faint:#8F897D;
+    --teal:#5FB7A8; --teal-bg:#173330;
+    --surface:#1C2422; --surface-2:#222A28;
+    --line:#2E3835; --line-2:#28312E;
+    --fair:#6FBF8F; --fair-bg:#17281E;
+    --steep:#D6A24E; --steep-bg:#2A2417;
+    --bg:radial-gradient(140% 90% at 50% -10%, #1A211F 0%, #161D1B 55%, #121917 100%);
+    --shadow:0 1px 2px rgba(0,0,0,.2), 0 22px 46px -34px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);background-attachment:fixed;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto;padding:22px 20px 60px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+  .brand svg{width:26px;height:26px}
+  .brand .w{font-weight:700;font-size:19px}
+  .brand .ar{color:var(--teal);font-size:17px;opacity:.9}
+  .brand .tag{color:var(--faint);font-size:14px;font-weight:500;border-left:1px solid var(--line);padding-left:10px;margin-left:2px}
+  .hbtns{display:flex;gap:8px}
+  button.icon{width:38px;height:38px;border:1px solid var(--line);background:var(--surface);border-radius:11px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s}
+  button.icon:hover{border-color:var(--teal);color:var(--teal)}
+  button.icon svg{width:18px;height:18px}
+  .hero{margin:0 0 22px}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600;display:flex;align-items:center;gap:7px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--fair);box-shadow:0 0 0 3px var(--fair-bg)}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(34px,7vw,46px);line-height:1.02;margin:8px 0 4px}
+  h1 .n{font-family:var(--mono);font-weight:600}
+  .sub{color:var(--muted);font-size:15.5px;margin:0}
+  .sub .up{color:var(--fair);font-weight:600}
+  .sub .flat{color:var(--steep);font-weight:600}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:6px 20px;margin:16px 0}
+  .sec-h{display:flex;align-items:center;gap:9px;padding:16px 0 4px;font-size:13px;font-weight:700;letter-spacing:.04em}
+  .pill{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px}
+  .pill.live{background:var(--fair-bg);color:var(--fair)}
+  .pill.close{background:var(--steep-bg);color:var(--steep)}
+  .pill.early{background:var(--teal-bg);color:var(--teal)}
+  .brow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line-2)}
+  .brow:first-of-type{border-top:none}
+  .cnt{font-family:var(--mono);font-weight:600;font-size:15px;min-width:34px;color:var(--teal)}
+  .nm{flex:1;font-weight:500}
+  .nm .ar{color:var(--faint);font-weight:400}
+  .med{font-family:var(--mono);color:var(--muted);font-size:14px;white-space:nowrap}
+  .seed{display:block;font-size:13px;color:var(--teal);text-decoration:none;padding:6px 0 6px 46px;font-weight:500}
+  .seed:hover{text-decoration:underline}
+  .empty{color:var(--faint);padding:12px 0 16px;font-size:14px}
+  .feed{margin-top:8px}
+  .frow{display:flex;gap:10px;font-size:13.5px;padding:8px 0;border-top:1px solid var(--line-2);color:var(--muted)}
+  .frow:first-child{border-top:none}
+  .frow .fm{font-family:var(--mono);color:var(--ink)}
+  .frow .ft{margin-left:auto;color:var(--faint);white-space:nowrap}
+  .note{color:var(--faint);font-size:12.5px;text-align:center;margin-top:26px;line-height:1.6}
+  .note a{color:var(--teal)}
+  .state{text-align:center;color:var(--muted);padding:50px 0;font-size:15px}
+  .spin{display:inline-block;width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--teal);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px;margin-right:8px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">
+      <svg viewBox="0 0 32 32" fill="none" stroke="var(--teal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 5v22M9 27h14M6 11h20"/><path d="M6 11l-3.4 6.8a3.8 3.8 0 0 0 6.8 0z"/><path d="M26 11l-3.4 6.8a3.8 3.8 0 0 0 6.8 0z"/></svg>
+      <span class="w">Mizan <span class="ar">ميزان</span></span>
+      <span class="tag">Dashboard</span>
+    </a>
+    <div class="hbtns">
+      <button class="icon" id="refresh" type="button" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg></button>
+      <button class="icon" id="theme" type="button" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    </div>
+  </header>
+
+  <div id="content"><div class="state"><span class="spin"></span>Loading your live data…</div></div>
+
+  <p class="note">Private owner view · live read-only snapshot · not indexed.<br>Bookmark this page — tap it anytime for the current picture. Data from <a href="/">mizan-price.com</a>.</p>
+</div>
+
+<script>
+const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';
+const LABELS={ac:'AC service / cleaning',ductclean:'AC duct deep-clean',acinstall:'AC installation',applrepair:'Appliance repair',carserv:'Car service (minor)',oilchange:'Oil change',handyman:'Handyman',haircut:'Men’s haircut',womenshair:'Women’s cut & color',salon:'Salon',keratin:'Keratin treatment',facial:'Facial',massage:'Massage',cleaning:'Home cleaning',deepclean:'Deep cleaning',pest:'Pest control',watertank:'Water tank clean',movers:'Movers',gym:'Gym membership',pt:'Personal trainer',tyres:'Tyres (set of 4)',carbattery:'Car battery','motor-carac':'Car AC re-gas'};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const label=cat=>LABELS[cat]||(()=>{const c=cat.replace(/^motor-/,'');return (cat.startsWith('motor-')?'Car: ':'')+c.charAt(0).toUpperCase()+c.slice(1)})();
+const seedLink=(cat,area)=>cat.startsWith('motor-')?('https://www.mizan-price.com/motor?job='+cat.replace('motor-','')):('https://www.mizan-price.com/?service='+encodeURIComponent(cat)+'&area='+encodeURIComponent(area));
+function relTime(t){const d=(Date.now()-t)/864e5;if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
+function money(n){return 'AED '+Math.round(n).toLocaleString('en-US')}
+
+function render(rows){
+  const now=Date.now(),day=864e5;
+  const total=rows.length;
+  const new7=rows.filter(x=>now-Date.parse(x.created_at)<=7*day).length;
+  const new1=rows.filter(x=>now-Date.parse(x.created_at)<=day).length;
+  const b={};rows.forEach(x=>{const k=x.category+'|'+x.area;(b[k]=b[k]||[]).push(+x.price)});
+  const rank=Object.entries(b).map(([k,v])=>{const[c,a]=k.split('|');const s=[...v].sort((x,y)=>x-y);return{c,a,n:v.length,med:s[Math.floor(s.length/2)]}}).sort((x,y)=>y.n-x.n||y.med-x.med);
+  const live=rank.filter(o=>o.n>=5),close=rank.filter(o=>o.n>=3&&o.n<5),early=rank.filter(o=>o.n<3);
+
+  const brow=(o,seed)=>`<div class="brow"><span class="cnt">${o.n}/5</span><span class="nm">${esc(label(o.c))} <span class="ar">@ ${esc(o.a)}</span></span><span class="med">~${money(o.med)}</span></div>`+
+    (seed?`<a class="seed" href="${seedLink(o.c,o.a)}" target="_blank" rel="noopener">Seed this → needs ${5-o.n} more</a>`:'');
+  const sec=(pillCls,pillTxt,title,list,seed,empty)=>`<div class="card"><div class="sec-h"><span class="pill ${pillCls}">${pillTxt}</span> ${title}</div>${list.length?list.map(o=>brow(o,seed)).join(''):`<div class="empty">${empty}</div>`}</div>`;
+
+  const headline = new7>0
+    ? `<span class="up">${new7} new this week</span>${new1?` · ${new1} today`:''} — keep it going.`
+    : `<span class="flat">0 new this week</span> — a couple of posts would restart the flow.`;
+
+  const recent=rows.slice(0,6).map(x=>`<div class="frow"><span>${esc(label(x.category))} <span style="color:var(--faint)">@ ${esc(x.area)}</span></span><span class="fm">${money(x.price)}</span><span class="ft">${relTime(Date.parse(x.created_at))}</span></div>`).join('');
+
+  document.getElementById('content').innerHTML=`
+    <div class="hero">
+      <div class="eyebrow"><span class="dot"></span>Live data · updated ${new Date().toLocaleString('en-GB',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'})}</div>
+      <h1><span class="n">${total}</span> real prices in the book</h1>
+      <p class="sub">${headline}</p>
+    </div>
+    ${sec('live','LIVE','Showing real “residents paid” (5+)',live,false,'None live yet — 5 prices in one bucket flips it.')}
+    ${sec('close','CLOSE','One or two away from flipping',close,true,'Nothing close right now.')}
+    ${sec('early','EARLY','Building up (1–2 prices)',early,false,'None.')}
+    <div class="card"><div class="sec-h">Recent activity</div><div class="feed">${recent||'<div class="empty">No submissions yet.</div>'}</div></div>`;
+}
+
+async function load(){
+  const c=document.getElementById('content');
+  c.innerHTML='<div class="state"><span class="spin"></span>Loading your live data…</div>';
+  try{
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=category,area,price,created_at&order=created_at.desc&limit=5000`,{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const rows=await r.json();
+    if(!Array.isArray(rows)) throw new Error('bad response');
+    render(rows);
+  }catch(e){
+    c.innerHTML='<div class="state">Couldn’t load the data ('+esc(e.message)+').<br>Check your connection and hit refresh.</div>';
+  }
+}
+
+document.getElementById('refresh').onclick=load;
+document.getElementById('theme').onclick=()=>{const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('mizan:theme',n)}catch(e){}};
+load();
+</script>
+</body>
+</html>
