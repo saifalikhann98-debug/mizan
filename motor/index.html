@@ -89,6 +89,7 @@
   :focus-visible{outline:none}
   @keyframes mz-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
   @keyframes mz-fade{from{opacity:0}to{opacity:1}}
+  @keyframes mz-drift{from{background-position:11px 11px}to{background-position:33px 33px}}
 
   /* ---- teal band: nav + hero + mode switch live on a flat brand field; the card straddles its bottom edge ---- */
   .topband{background:var(--band);color:var(--on-band);padding-bottom:96px}
@@ -96,7 +97,7 @@
   .topband>*{position:relative;z-index:1}
   /* quiet texture: a fine dot grid that fades toward the card, plus one thin ring off to the side */
   .topband::before{content:"";position:absolute;inset:0;pointer-events:none;
-    background-image:radial-gradient(circle,rgba(246,244,236,.16) 1px,transparent 1.5px);background-size:22px 22px;background-position:11px 11px;
+    background-image:radial-gradient(circle,rgba(246,244,236,.16) 1px,transparent 1.5px);background-size:22px 22px;background-position:11px 11px;animation:mz-drift 18s linear infinite;
     -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.45) 55%,transparent 100%);mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.45) 55%,transparent 100%)}
   .nav{position:relative;z-index:10;background:transparent}
   .nav-in{max-width:1140px;margin:0 auto;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px}
