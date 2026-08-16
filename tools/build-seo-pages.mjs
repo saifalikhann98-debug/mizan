@@ -131,6 +131,15 @@ html[lang="ar"] .big{text-align:right}html[lang="ar"] .rangecard .k,html[lang="a
 a{color:var(--teal);text-decoration:none}a:hover{text-decoration:underline}
 /* teal band: nav + title live on the flat brand field; the range card straddles its bottom edge */
 .topband{background:var(--band);color:var(--on-band);padding-bottom:64px}
+.topband{position:relative;overflow:hidden}
+.topband>*{position:relative;z-index:1}
+  /* quiet texture: a fine dot grid that fades toward the card, plus one thin ring off to the side */
+.topband::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(246,244,236,.16) 1px,transparent 1.5px);background-size:22px 22px;background-position:11px 11px;
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.45) 55%,transparent 100%);mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.45) 55%,transparent 100%)}
+.topband::after{content:"";position:absolute;pointer-events:none;width:520px;height:520px;right:-140px;top:-190px;border-radius:50%;
+  border:1px solid rgba(246,244,236,.13);outline:1px solid rgba(246,244,236,.07);outline-offset:-64px}
+  html[dir="rtl"] .topband::after{right:auto;left:-140px}
 .nav{background:transparent}
 .nav-in{max-width:760px;margin:0 auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .brand{display:flex;align-items:center;gap:9px;color:var(--on-band)}
