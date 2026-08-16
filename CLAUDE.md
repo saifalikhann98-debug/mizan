@@ -52,8 +52,8 @@ Still a single self-contained file per app (`index.html`, `rent/index.html`, `mo
 CSS custom properties in `:root` — no framework/build. `/ar/*` app copies are generated from these.
 - Fonts: **Outfit** for everything (Light 300 hero, Medium 500 UI/verdict word, Regular body);
   **Geist Mono** for all prices / AED / scale labels; IBM Plex Sans Arabic for `lang="ar"`.
-- Palette: `--teal #14534D` (brand, paid band, primary buttons), `--band` (the flat teal top field;
-  `#0F3E3A` in dark) with `--on-band` warm-white text and `--mint #8FC4B0` headline emphasis; verdict
+- Palette: `--teal #1E5A44` (brand, paid band, primary buttons), `--band` (the flat teal top field;
+  `#143D2E` in dark) with `--on-band` warm-white text and `--mint #9AD3B3` headline emphasis; verdict
   tones `--fair #2F7D54` / `--steep #B5781F` / `--walk #B5402F` (each with a tint bg); page bg flat
   `#F7F6F1`, card `#FFFFFF`, ink `#1C1A15`, hairlines `#E8E4DA`–`#F1EDE4`, hatch `#DDD8CB`/`#F0ECE3`.
   **No drop shadows** (hairlines only), no gradients — the modal/toast/strip are the only shadowed things.

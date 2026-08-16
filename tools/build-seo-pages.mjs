@@ -116,12 +116,12 @@ const LOC = {
 const services = CATEGORIES.map(c => ({ ...c, slug: META[c.id].slug }));
 
 const CSS = `:root{--ink:#1C1A15;--ink-2:#43403A;--muted:#726D63;--faint:#8A8579;--faint-2:#A19B8F;
-  --surface:#fff;--surface-2:#FCFBF8;--line:#E8E4DA;--line-2:#EEEAE0;--teal:#14534D;--teal-deep:#0F423D;--teal-bg:#E9F0EE;
-  --on-teal:#F6F4EC;--band:#14534D;--on-band:#F6F4EC;--on-band-2:rgba(246,244,236,.72);--band-line:rgba(246,244,236,.28);--mint:#8FC4B0;--bg:#F7F6F1;
+  --surface:#fff;--surface-2:#FCFBF8;--line:#E8E4DA;--line-2:#EEEAE0;--teal:#1E5A44;--teal-deep:#174734;--teal-bg:#E8F1EC;
+  --on-teal:#F6F4EC;--band:#1E5A44;--on-band:#F6F4EC;--on-band-2:rgba(246,244,236,.72);--band-line:rgba(246,244,236,.28);--mint:#9AD3B3;--bg:#F7F6F1;
   --sans:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,monospace}
 :root[data-theme="dark"]{--ink:#ECE8E0;--ink-2:#CFC9BD;--muted:#A29D92;--faint:#8F8A7E;--faint-2:#8E8779;
-  --surface:#1B1F1D;--surface-2:#222724;--line:#2F3531;--line-2:#2A302C;--teal:#5BBBA6;--teal-deep:#74CCB8;--teal-bg:#16241F;
-  --on-teal:#0E1A17;--band:#0F3E3A;--on-band:#EEF3F0;--on-band-2:rgba(238,243,240,.68);--band-line:rgba(238,243,240,.22);--mint:#8FD1BC;--bg:#121615}
+  --surface:#1B1F1D;--surface-2:#222724;--line:#2F3531;--line-2:#2A302C;--teal:#63C596;--teal-deep:#7DD3AB;--teal-bg:#15261E;
+  --on-teal:#0E1A17;--band:#143D2E;--on-band:#EEF3F0;--on-band-2:rgba(238,243,240,.68);--band-line:rgba(238,243,240,.22);--mint:#9CDBB8;--bg:#121615}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
 body{background:var(--bg);min-height:100vh;color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
 html[lang="ar"] body,html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] .brand .w{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
@@ -178,7 +178,7 @@ details[open] summary::after{content:"\\2212"}details p{padding:0 0 16px;font-si
 footer{border-top:1px solid var(--line);margin-top:48px}.foot-in{max-width:760px;margin:0 auto;padding:24px;font-size:12.5px;color:var(--faint-2)}
 @media (max-width:600px){.topband{padding-bottom:52px}main{margin-top:-32px}.gh{padding-top:8px}}`;
 
-const SCALE = `<svg viewBox="0 0 24 24" fill="none" stroke="#14534D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17"/><path d="M5 20h14"/><path d="M4 7h16"/><path d="M4 7l-2.5 5a3 3 0 0 0 5 0z"/><path d="M20 7l-2.5 5a3 3 0 0 0 5 0z"/></svg>`;
+const SCALE = `<svg viewBox="0 0 24 24" fill="none" stroke="#1E5A44" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17"/><path d="M5 20h14"/><path d="M4 7h16"/><path d="M4 7l-2.5 5a3 3 0 0 0 5 0z"/><path d="M20 7l-2.5 5a3 3 0 0 0 5 0z"/></svg>`;
 const THEME = `<script>(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>`;
 const fontsLink = (extra) => `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Geist+Mono:wght@400;500;600${extra ? '&family=' + extra : ''}&display=swap" rel="stylesheet">`;
 
@@ -192,7 +192,7 @@ function head(L, title, desc, canonPath, enPath, arPath, jsonld, ogImg) {
   return `<!DOCTYPE html><html lang="${L.lang}" dir="${L.dir}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${ORIGIN}${canonPath}">${alternates(enPath, arPath)}<meta name="robots" content="index,follow">
-<meta name="theme-color" content="#14534D" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0F3E3A" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#1E5A44" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#143D2E" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="article"><meta property="og:site_name" content="Mizan"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${ORIGIN}${canonPath}"><meta property="og:image" content="${ORIGIN}${ogImg}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="${L.lang === 'ar' ? 'ar_AE' : 'en_AE'}">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:image" content="${ORIGIN}${ogImg}">
