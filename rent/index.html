@@ -412,7 +412,7 @@
 </div></header>
   <div class="hero">
     <div class="eyebrow">Rent · UAE</div>
-    <h1>Is your rent <em>fair</em> —<br>and is the increase <em>legal?</em></h1>
+    <h1>Is your rent <em>fair</em><br>and is the increase <em>legal?</em></h1>
     <p>What tenants actually pay across UAE communities, plus a calculator for the maximum rent increase your landlord can legally charge under Dubai's RERA rules.</p>
   </div>
 
@@ -525,7 +525,7 @@ const LANG = (location.pathname.replace(/^\/+/,'').startsWith('ar') || new URLSe
 const T = {
   en:{
     docTitle:'UAE Rent — fair price & legal increase calculator | Mizan',
-    eyebrow:'Rent · UAE', h1a:'Is your rent ', h1em1:'fair', h1mid:' — and is the increase ', h1em2:'legal?',
+    eyebrow:'Rent · UAE', h1a:'Is your rent ', h1em1:'fair', h1mid:' and is the increase ', h1em2:'legal?',
     subhead:"What tenants actually pay across UAE communities, plus a calculator for the maximum rent increase your landlord can legally charge under Dubai's RERA rules.",
     modeServices:'Services', modeRent:'Rent', modeMotor:'Motor', langLink:'عربي', langHref:'/ar/rent', servicesHref:'/',
     tabFair:'Is my rent fair?', tabLegal:'Is my increase legal?',
@@ -576,7 +576,7 @@ const T = {
   },
   ar:{
     docTitle:'إيجارات الإمارات — هل الإيجار عادل وهل الزيادة قانونية؟ | ميزان',
-    eyebrow:'الإيجارات · الإمارات', h1a:'هل إيجارك ', h1em1:'عادل', h1mid:' — وهل الزيادة ', h1em2:'قانونية؟',
+    eyebrow:'الإيجارات · الإمارات', h1a:'هل إيجارك ', h1em1:'عادل', h1mid:' وهل الزيادة ', h1em2:'قانونية؟',
     subhead:'ما يدفعه المستأجرون فعلاً في مجتمعات الإمارات، إضافةً إلى حاسبة لأقصى زيادة إيجار يمكن لمالك العقار فرضها قانوناً وفق قواعد RERA في دبي.',
     modeServices:'الخدمات', modeRent:'الإيجارات', modeMotor:'السيارات', langLink:'English', langHref:'/rent', servicesHref:'/ar/',
     tabFair:'هل إيجاري عادل؟', tabLegal:'هل الزيادة قانونية؟',
@@ -1036,7 +1036,7 @@ function applyStaticI18n(){
   document.documentElement.lang=LANG; document.documentElement.dir=(LANG==='ar'?'rtl':'ltr');
   document.title=L.docTitle;
   set('.eyebrow', L.eyebrow);
-  const h1=document.querySelector('.hero h1'); if(h1) h1.innerHTML=`${esc(L.h1a)}<em>${esc(L.h1em1)}</em>${esc(L.h1mid).replace(' — ',' —<br>')}<em>${esc(L.h1em2)}</em>`;
+  const h1=document.querySelector('.hero h1'); if(h1) h1.innerHTML=`${esc(L.h1a)}<em>${esc(L.h1em1)}</em>${esc(L.h1mid).replace(/^ /,'<br>')}<em>${esc(L.h1em2)}</em>`;
   set('.hero p', L.subhead);
   const modes=document.querySelectorAll('.modeswitch .mode');
   if(modes[0]){ modes[0].setAttribute('href', L.servicesHref); const m=modes[0].querySelector('.mlabel'); if(m) m.textContent=L.modeServices; }

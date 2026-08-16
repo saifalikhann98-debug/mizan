@@ -410,7 +410,7 @@ function rentCalcApp(lang) {
   h = h.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${T.desc}">`);
   h = h.replace('href="/ar/rent" id="langLink"', 'href="/ar/rent/increase-calculator" id="langLink"');
   if (lang === 'en') {
-    h = h.replace('<h1>Is your rent <em>fair</em> —<br>and is the increase <em>legal?</em></h1>', '<h1>Dubai rent increase calculator —<br>is your <em>increase legal?</em></h1>');
+    h = h.replace('<h1>Is your rent <em>fair</em><br>and is the increase <em>legal?</em></h1>', '<h1>Dubai rent increase calculator<br>is your <em>increase legal?</em></h1>');
     h = h.replace(/<div class="hero">([\s\S]*?)<p>[^<]*<\/p>/, (m, a) => `<div class="hero">${a}<p>Under Decree 43/2013 the maximum increase depends only on how far your rent sits below the RERA market average — from 0% up to 20%, with 90 days' notice. Enter your rent and community to see your cap.</p>`);
   }
   return h;
