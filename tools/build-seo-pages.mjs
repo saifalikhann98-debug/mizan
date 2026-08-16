@@ -117,7 +117,7 @@ const services = CATEGORIES.map(c => ({ ...c, slug: META[c.id].slug }));
 
 const CSS = `:root{--ink:#1C1A15;--ink-2:#43403A;--muted:#726D63;--faint:#8A8579;--faint-2:#A19B8F;
   --surface:#fff;--surface-2:#FCFBF8;--line:#E8E4DA;--line-2:#EEEAE0;--teal:#1C1A15;--teal-deep:#000;--teal-bg:#F5F8D3;--brand:#E4F222;--brand-hover:#D6E51C;--on-brand:#111;
-  --on-teal:#F6F4EC;--band:#FFFFFF;--on-band:#1C1A15;--on-band-2:#6B675E;--band-line:#DEDAD0;--mint:#1C1A15;--dot:rgba(28,26,21,.14);--bg:#FFFFFF;
+  --on-teal:#F6F4EC;--band:#FBFAF6;--on-band:#1C1A15;--on-band-2:#6B675E;--band-line:#DEDAD0;--mint:#1C1A15;--dot:rgba(28,26,21,.14);--bg:#FBFAF6;
   --sans:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,monospace}
 :root[data-theme="dark"]{--ink:#ECE8E0;--ink-2:#CFC9BD;--muted:#A29D92;--faint:#8F8A7E;--faint-2:#8E8779;
   --surface:#1B1F1D;--surface-2:#222724;--line:#2F3531;--line-2:#2A302C;--teal:#E4F222;--teal-deep:#F0F85A;--teal-bg:#2B2F14;--brand:#E4F222;--brand-hover:#F0F85A;--on-brand:#111;
@@ -193,7 +193,7 @@ function head(L, title, desc, canonPath, enPath, arPath, jsonld, ogImg) {
   return `<!DOCTYPE html><html lang="${L.lang}" dir="${L.dir}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${ORIGIN}${canonPath}">${alternates(enPath, arPath)}<meta name="robots" content="index,follow">
-<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121615" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FBFAF6" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121615" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="article"><meta property="og:site_name" content="Mizan"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${ORIGIN}${canonPath}"><meta property="og:image" content="${ORIGIN}${ogImg}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="${L.lang === 'ar' ? 'ar_AE' : 'en_AE'}">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:image" content="${ORIGIN}${ogImg}">

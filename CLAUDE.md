@@ -54,7 +54,7 @@ headline, ONE brand accent). Still a single self-contained file per app (`index.
   prices / AED / scale labels; IBM Plex Sans Arabic for `lang="ar"`.
 - Palette: **lime `--brand #E4F222`** is the primary — used ONLY as a fill with black text (primary buttons,
   active switcher pill, highlight behind the headline emphasis, accent dots); **black/ink is the secondary**
-  (`--teal` now resolves to ink: secondary buttons, links, 'Residents paid' label, paid band, pill). Never lime as text on light; page/`--band` pure white `#FFFFFF` (light) / `#121615` (dark) with
+  (`--teal` now resolves to ink: secondary buttons, links, 'Residents paid' label, paid band, pill). Never lime as text on light; page/`--band` `#FBFAF6` (light) / `#121615` (dark) with
   a faint ink dot grid (`--dot`) fading toward the card; ink `#1C1A15`; card `#FFFFFF`; hairlines
   `#E8E4DA`–`#F1EDE4`; verdict tones `--fair #2F7D54` / `--steep #B5781F` / `--walk #B5402F` (+ tints);
   hatch `#DDD8CB`/`#F0ECE3`. Cards get one whisper shadow; everything else hairlines. No gradients.

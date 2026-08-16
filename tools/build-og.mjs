@@ -19,7 +19,7 @@ function card({ eyebrow, h1, h1em, h1tail, sub }) {
 <style>
 *{box-sizing:border-box;margin:0}
 html,body{width:1200px;height:630px;overflow:hidden}
-body{background:#FFFFFF;color:#1C1A15;background-image:radial-gradient(circle,rgba(28,26,21,.14) 1px,transparent 1.5px);background-size:22px 22px;font-family:Outfit,system-ui,sans-serif;-webkit-font-smoothing:antialiased;position:relative}
+body{background:#FBFAF6;color:#1C1A15;background-image:radial-gradient(circle,rgba(28,26,21,.14) 1px,transparent 1.5px);background-size:22px 22px;font-family:Outfit,system-ui,sans-serif;-webkit-font-smoothing:antialiased;position:relative}
 .wm{position:absolute;left:84px;top:64px;display:flex;align-items:center;gap:14px;font-size:34px;font-weight:500}
 .wm svg{width:34px;height:34px}.wm .ar{color:#726D63;font-weight:400;font-size:30px;font-family:'Geeza Pro','IBM Plex Sans Arabic',system-ui}
 .eyebrow{position:absolute;left:86px;top:178px;font-size:19px;letter-spacing:.18em;text-transform:uppercase;color:#8A8579;font-weight:500}
