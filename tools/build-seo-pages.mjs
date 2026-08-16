@@ -395,8 +395,8 @@ function rentCalcApp(lang) {
   let h = lang === 'ar' ? arRentApp() : rentHtml;
   const en = '/rent/increase-calculator', ar = '/ar/rent/increase-calculator', me = lang === 'ar' ? ar : en;
   const T = lang === 'ar'
-    ? { title: 'حاسبة زيادة الإيجار في دبي 2026 (ريرا) — هل زيادة المالك قانونية؟ | ميزان', desc: 'احسب أقصى زيادة إيجار قانونية في دبي وفق المرسوم 43 لسنة 2013: أدخل إيجارك الحالي ومتوسط السوق لمنطقتك لتعرف الحد الأقصى للزيادة والإيجار الجديد. مجاناً، مع رابط مؤشر دائرة الأراضي.', og: 'حاسبة زيادة الإيجار في دبي (ريرا)' }
-    : { title: 'Dubai rent increase calculator 2026 (RERA) — is your landlord\'s increase legal? | Mizan', desc: "Calculate the maximum legal rent increase in Dubai under Decree 43/2013: enter your current rent and your community's market average to see the cap (0–20%) and your maximum new rent. Free, links to the DLD index.", og: 'Dubai rent increase calculator (RERA)' };
+    ? { title: 'حاسبة زيادة الإيجار في دبي 2026 — الحاسبة الإيجارية (ريرا): هل زيادة المالك قانونية؟ | ميزان', desc: 'احسب أقصى زيادة إيجار قانونية في دبي وفق المرسوم 43 لسنة 2013: أدخل إيجارك الحالي ومتوسط السوق لمنطقتك لتعرف الحد الأقصى للزيادة والإيجار الجديد. مجاناً، مع رابط مؤشر دائرة الأراضي.', og: 'حاسبة زيادة الإيجار في دبي (ريرا)' }
+    : { title: 'Dubai rent increase calculator 2026 (RERA rental index) — is your landlord\'s increase legal? | Mizan', desc: "RERA rental increase calculator for Dubai: work out the maximum legal rent increase under Decree 43/2013 — enter your current rent and your community's market average to see the cap (0–20%) and your maximum new rent. Free, links to the DLD index.", og: 'Dubai rent increase calculator (RERA)' };
   h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${T.title}</title>`);
   h = h.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${T.desc}">`);
   h = h.replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${ORIGIN}${me}">`);

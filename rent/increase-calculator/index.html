@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dubai rent increase calculator 2026 (RERA) — is your landlord's increase legal? | Mizan</title>
-<meta name="description" content="Calculate the maximum legal rent increase in Dubai under Decree 43/2013: enter your current rent and your community's market average to see the cap (0–20%) and your maximum new rent. Free, links to the DLD index.">
+<title>Dubai rent increase calculator 2026 (RERA rental index) — is your landlord's increase legal? | Mizan</title>
+<meta name="description" content="RERA rental increase calculator for Dubai: work out the maximum legal rent increase under Decree 43/2013 — enter your current rent and your community's market average to see the cap (0–20%) and your maximum new rent. Free, links to the DLD index.">
 <link rel="canonical" href="https://www.mizan-price.com/rent/increase-calculator">
 <link rel="alternate" hreflang="en" href="https://www.mizan-price.com/rent/increase-calculator">
 <link rel="alternate" hreflang="ar" href="https://www.mizan-price.com/ar/rent/increase-calculator">
@@ -16,7 +16,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mizan">
 <meta property="og:title" content="Dubai rent increase calculator (RERA)">
-<meta property="og:description" content="Calculate the maximum legal rent increase in Dubai under Decree 43/2013: enter your current rent and your community's market average to see the cap (0–20%) and your maximum new rent. Free, links to the DLD index.">
+<meta property="og:description" content="RERA rental increase calculator for Dubai: work out the maximum legal rent increase under Decree 43/2013 — enter your current rent and your community's market average to see the cap (0–20%) and your maximum new rent. Free, links to the DLD index.">
 <meta property="og:url" content="https://www.mizan-price.com/rent/increase-calculator">
 <meta property="og:image" content="https://www.mizan-price.com/og-rent.png">
 <meta property="og:image:width" content="1200">
@@ -24,7 +24,7 @@
 <meta property="og:locale" content="en_AE">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Dubai rent increase calculator (RERA)">
-<meta name="twitter:description" content="Calculate the maximum legal rent increase in Dubai under Decree 43/2013: enter your current rent and your community's market average to see the cap (0–20%) and your maximum new rent. Free, links to the DLD index.">
+<meta name="twitter:description" content="RERA rental increase calculator for Dubai: work out the maximum legal rent increase under Decree 43/2013 — enter your current rent and your community's market average to see the cap (0–20%) and your maximum new rent. Free, links to the DLD index.">
 <meta name="twitter:image" content="https://www.mizan-price.com/og-rent.png">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
@@ -629,7 +629,7 @@ const T = {
 const L = T[LANG];
 const RTYPE_AR = {studio:'استوديو','1br':'غرفة واحدة','2br':'غرفتان','3br':'3 غرف',villa:'فيلا'};
 const EMIRATE_AR = {'Dubai':'دبي','Abu Dhabi':'أبوظبي','Sharjah':'الشارقة'};
-const AREA_AR = {'Dubai Marina':'دبي مارينا','JLT':'أبراج بحيرات الجميرا','Downtown Dubai':'وسط مدينة دبي','Business Bay':'الخليج التجاري','JVC':'قرية جميرا الدائرية','Al Barsha':'البرشاء','Dubai Silicon Oasis':'واحة دبي للسيليكون','Deira':'ديرة','Bur Dubai':'بر دبي','Al Qusais':'القصيص','International City':'المدينة العالمية','Al Reem Island':'جزيرة الريم','Khalifa City':'مدينة خليفة','Al Nahda (Sharjah)':'النهدة (الشارقة)','Al Majaz':'المجاز','Palm Jumeirah':'نخلة جميرا','JBR':'جي بي آر','Dubai Hills Estate':'دبي هيلز استيت','The Greens':'ذا جرينز','Barsha Heights':'برشا هايتس','Motor City':'موتور سيتي','Al Furjan':'الفرجان','JVT':'مثلث قرية جميرا','Arjan':'أرجان','Town Square':'تاون سكوير','Dubai Sports City':'مدينة دبي الرياضية','Discovery Gardens':'ديسكفري جاردنز','Mirdif':'مردف','Saadiyat Island':'جزيرة السعديات','Al Raha Beach':'شاطئ الراحة','Muwailih':'مويلح','Mudon':'مدن','Al Mizhar':'المزهر','Muhaisnah':'محيصنة','Yas Island':'جزيرة ياس'};
+const AREA_AR = {'Dubai Marina':'دبي مارينا','JLT':'أبراج بحيرات الجميرا','Downtown Dubai':'وسط مدينة دبي','Business Bay':'الخليج التجاري','JVC':'قرية جميرا الدائرية','Al Barsha':'البرشاء','Dubai Silicon Oasis':'واحة دبي للسيليكون','Deira':'ديرة','Bur Dubai':'بر دبي','Al Qusais':'القصيص','International City':'المدينة العالمية','Al Reem Island':'جزيرة الريم','Khalifa City':'مدينة خليفة','Al Nahda (Sharjah)':'النهدة (الشارقة)','Al Majaz':'المجاز','Palm Jumeirah':'نخلة جميرا','JBR':'جي بي آر','Dubai Hills Estate':'دبي هيلز استيت','The Greens':'ذا جرينز','Barsha Heights':'برشا هايتس','Motor City':'موتور سيتي','Al Furjan':'الفرجان','JVT':'مثلث قرية جميرا','Arjan':'أرجان','Town Square':'تاون سكوير','Dubai Sports City':'مدينة دبي الرياضية','Discovery Gardens':'ديسكفري جاردنز','Mirdif':'مردف','Saadiyat Island':'جزيرة السعديات','Al Raha Beach':'شاطئ الراحة','Muwailih':'مويلح','Mudon':'مدن','Al Mizhar':'المزهر','Muhaisnah':'محيصنة','Yas Island':'جزيرة ياس','Majan':'مجان'};
 const typeLabel = t => (LANG==='ar' && RTYPE_AR[t.id]) ? RTYPE_AR[t.id] : t.label;
 const typeLow = t => LANG==='ar' ? typeLabel(t) : t.label.toLowerCase();
 const areaLabel = n => (LANG==='ar' && AREA_AR[n]) ? AREA_AR[n] : n;
@@ -683,6 +683,7 @@ const RAREAS=[
   {emirate:'Dubai', name:'Al Mizhar',           r:{studio:null,         '1br':null,          '2br':null,          '3br':null,           villa:[150,190,260]}},
   {emirate:'Dubai', name:'Muhaisnah',           r:{studio:[28,35,45],   '1br':[38,48,60],    '2br':[55,68,88],    '3br':[75,95,120],    villa:null}},
   {emirate:'Abu Dhabi', name:'Yas Island',      r:{studio:[50,62,80],   '1br':[70,88,115],   '2br':[105,130,170], '3br':[150,190,250],  villa:[200,260,360]}},
+  {emirate:'Dubai', name:'Majan',               r:{studio:[32,40,52],   '1br':[45,56,72],    '2br':[65,82,105],   '3br':[90,112,145],   villa:null}},
 ];
 const areaByName=n=>RAREAS.find(a=>a.name===n);
 const typeById=id=>RTYPES.find(t=>t.id===id);
