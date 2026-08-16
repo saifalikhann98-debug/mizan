@@ -398,7 +398,7 @@
 </div></header>
   <div class="hero">
     <div class="eyebrow">Motor · UAE</div>
-    <h1>Is your car quote <em>fair</em>?</h1>
+    <h1>Is your car quote <em>fair</em> —<br>or are you overpaying?</h1>
     <p>Garage and workshop quotes vary wildly. Pick the job and see the typical UAE range next to what drivers actually paid — so you know before you say yes.</p>
   </div>
 
@@ -510,7 +510,7 @@ const tr=(en,ar)=>LANG==='ar'?ar:en;
 const T={
   en:{
     docTitle:'Car service & repair prices in the UAE — fair price check | Mizan',
-    eyebrow:'Motor · UAE', h1a:'Is your car quote ', h1em:'fair', h1z:'?',
+    eyebrow:'Motor · UAE', h1a:'Is your car quote ', h1em:'fair', h1z:' —<br>or are you overpaying?',
     subhead:'Garage and workshop quotes vary wildly. Pick the job and see the typical UAE range next to what drivers actually paid — so you know before you say yes.',
     modeServices:'Services', modeRent:'Rent', modeMotor:'Motor',
     langLink:'عربي', langHref:'/ar/motor', servicesHref:'/', rentHref:'/rent', motorHref:'/motor',
@@ -554,7 +554,7 @@ const T={
   },
   ar:{
     docTitle:'أسعار صيانة وإصلاح السيارات في الإمارات — تحقّق من عدالة السعر | ميزان',
-    eyebrow:'السيارات · الإمارات', h1a:'هل سعر سيارتك ', h1em:'عادل', h1z:'؟',
+    eyebrow:'السيارات · الإمارات', h1a:'هل سعر سيارتك ', h1em:'عادل', h1z:' —<br>أم تدفع أكثر من اللازم؟',
     subhead:'تتفاوت أسعار الورش ومراكز الصيانة بشكل كبير. اختر الخدمة وشاهد النطاق المعتاد في الإمارات إلى جانب ما يدفعه السائقون فعلاً — لتعرف قبل أن توافق.',
     modeServices:'الخدمات', modeRent:'الإيجارات', modeMotor:'السيارات',
     langLink:'English', langHref:'/motor', servicesHref:'/ar/', rentHref:'/ar/rent', motorHref:'/ar/motor',
@@ -1020,7 +1020,7 @@ function applyStaticI18n(){
   document.documentElement.lang=LANG; document.documentElement.dir=(LANG==='ar'?'rtl':'ltr');
   document.title=L.docTitle;
   set('.eyebrow', L.eyebrow);
-  const h1=document.querySelector('.hero h1'); if(h1) h1.innerHTML=`${esc(L.h1a)}<em>${esc(L.h1em)}</em>${esc(L.h1z)}`;
+  const h1=document.querySelector('.hero h1'); if(h1) h1.innerHTML=`${esc(L.h1a)}<em>${esc(L.h1em)}</em>${esc(L.h1z).replace('&lt;br&gt;','<br>')}`;
   set('.hero p', L.subhead);
   const modes=document.querySelectorAll('.modeswitch .mode');
   if(modes[0]){ modes[0].setAttribute('href',L.servicesHref); const m=modes[0].querySelector('.mlabel'); if(m)m.textContent=L.modeServices; }
