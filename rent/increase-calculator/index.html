@@ -78,6 +78,7 @@
   :root[data-theme="dark"] .scale .band.locked{background:repeating-linear-gradient(45deg,#33352E,#33352E 5px,#2A2C26 5px,#2A2C26 10px);color:var(--faint-2)}
   :root[data-theme="dark"] .modal-input,
   :root[data-theme="dark"] .note-input{background:var(--surface)}
+  :root[data-theme="dark"] .attach-btn,:root[data-theme="dark"] .attach-clear{background:var(--surface)}
   :root[data-theme="dark"] .toast{background:#0C100F;color:#ECE8E0}
   :root[data-theme="dark"] .brow.alt{background:var(--surface-2)}
   *{box-sizing:border-box}
@@ -288,6 +289,18 @@
   .modal-input input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ink)}
   .note-input{width:100%;border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface-2);margin-bottom:16px;outline:none}
   .note-input:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
+  /* optional invoice/contract photo (verified tier) — must stay lighter than the price input */
+  .attach{margin:-4px 0 16px}
+  .attach-row{display:flex;gap:8px;align-items:stretch}
+  .attach-btn{flex:1;display:flex;align-items:center;gap:9px;border:1px dashed var(--line-2);background:var(--surface-2);border-radius:12px;padding:11px 13px;font-family:inherit;font-size:13.5px;color:var(--muted);cursor:pointer;text-align:start;transition:.15s}
+  .attach-btn svg{width:16px;height:16px;flex:none}
+  .attach-btn .opt{color:var(--faint)}
+  .attach-btn:hover{border-color:var(--teal);color:var(--teal)}
+  .attach-btn:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
+  .attach-btn.on{border-style:solid;border-color:var(--fair);color:var(--fair);background:var(--fair-bg)}
+  .attach-clear{flex:none;width:42px;border:1px solid var(--line-2);background:var(--surface-2);border-radius:12px;color:var(--muted);font-size:17px;cursor:pointer;font-family:inherit}
+  .attach-clear:hover{border-color:var(--walk);color:var(--walk)}
+  .attach-hint{margin:7px 2px 0;font-size:12px;line-height:1.5;color:var(--faint)}
   .btn-submit{width:100%;height:52px;border:none;border-radius:999px;font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;color:var(--on-teal);background:var(--teal);transition:background .2s ease}
   .btn-submit:hover:not(:disabled){background:var(--teal-deep)}
   .btn-submit:disabled{background:#C8C2B4;cursor:not-allowed}
@@ -439,7 +452,7 @@
       <div class="quote-input"><span class="cur">AED</span><input type="text" inputmode="numeric" id="rquote" placeholder="0" aria-label="Annual rent in AED"><span class="unit">/year</span></div></div>
       <div class="howto">
         <div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>Asking range</strong> — what's advertised for this type here. Landlords list high and negotiate.</p></div>
-        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Tenants signed</strong> — what residents report actually agreeing. Add yours to sharpen it.</p></div>
+        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Tenants signed</strong> — what residents report actually agreeing. Add yours to sharpen it. Verified reports count double.</p></div>
       </div>
     </div>
     <div class="result-col"><div id="rresult" class="loading">Loading…</div></div>
@@ -488,6 +501,14 @@
       <p class="dsub" id="modalSub"></p>
       <div class="modal-input"><span class="cur">AED</span><input type="text" inputmode="numeric" id="modalPrice" placeholder="0" aria-label="Annual rent you signed, in AED"></div>
       <input type="text" class="note-input" id="modalNote" maxlength="60" placeholder="Optional note — e.g. 4 cheques, unfurnished" aria-label="Optional note (no personal info)">
+      <div class="attach">
+        <input type="file" id="modalInvoice" accept="image/*" hidden>
+        <div class="attach-row">
+          <button type="button" class="attach-btn" id="attachBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7.5 6.5H4a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 4 19.5h16a1.5 1.5 0 0 0 1.5-1.5V8A1.5 1.5 0 0 0 20 6.5h-3.5z"/><circle cx="12" cy="12.8" r="3.6"/></svg><span id="attachLabel">Add a photo of the contract or receipt <span class="opt">— optional</span></span></button>
+          <button type="button" class="attach-clear hidden" id="attachClear" aria-label="Remove the photo">×</button>
+        </div>
+        <p class="attach-hint" id="attachHint">Verified reports get a badge and count double. The photo is only used to check the figure — it is never shown publicly.</p>
+      </div>
       <button type="button" class="btn-submit" id="modalSubmit" disabled>Add my rent</button>
     </div>
     <div id="modalSuccess" class="modal-success hidden">
@@ -530,7 +551,7 @@ const T = {
     tabFair:'Is my rent fair?', tabLegal:'Is my increase legal?',
     lblType:'Property type', lblArea:'Community', lblQuote:"The rent you're paying or being asked", optOptional:'— optional', aed:'AED', perYear:'/year', egPh:n=>'e.g. '+n,
     howAskingStrong:'Asking range', howAsking:"— what's advertised for this type here. Landlords list high and negotiate.",
-    howSignedStrong:'Tenants signed', howSigned:'— what residents report actually agreeing. Add yours to sharpen it.',
+    howSignedStrong:'Tenants signed', howSigned:'— what residents report actually agreeing. Add yours to sharpen it. Verified reports count double.',
     lblCurRent:'Your current annual rent', lblMkt:'Average market rent for similar units', optEditable:'— editable',
     hint:'Prefilled from our estimate. For the official figure, use the ', hintLink:'DLD rental index / calculator',
     explainH:"How Dubai's rent-increase cap works",
@@ -568,6 +589,9 @@ const T = {
     bCurrent:'Current rent', bMarket:'Market average', bBelowMkt:'Below market', bMaxNew:'Max new rent',
     mTitle:'What rent did you sign?', mSub:(t,a)=>`For a <strong>${t}</strong> in <strong>${a}</strong>, per year. Shared anonymously — no name, no contact.`,
     mNotePh:'Optional note — e.g. 4 cheques, unfurnished', mAdd:'Add my rent', mDoneTitle:'Added.', mDone:'Done',
+    mAttach:'Add a photo of the contract or receipt', mAttachOpt:'— optional', mAttached:'Photo attached', mAttachRemove:'Remove the photo',
+    mAttachHint:'Verified reports get a badge and count double. The photo is only used to check the figure — it is never shown publicly.',
+    mUploading:'Adding…', tPhotoFail:'Couldn’t attach the photo — your rent was added without it', tPhotoBad:'That photo couldn’t be read — try another one',
     mThanks:(t,a)=>`Thank you — the next person renting a ${t} in ${a} gets a sharper picture because of you.`,
     mVs:(pct,typ)=>pct<=-3?`You signed ${-pct}% under the typical asking rent (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical asking rent (${typ}) — your report helps the next tenant negotiate.`:`That's right around the typical asking rent (${typ}).`,
     tDup:'You already added that exact rent', tEnough:"Thanks — you've added enough here for today", tLot:"That's a lot today — try again tomorrow",
@@ -581,7 +605,7 @@ const T = {
     tabFair:'هل إيجاري عادل؟', tabLegal:'هل الزيادة قانونية؟',
     lblType:'نوع العقار', lblArea:'المنطقة', lblQuote:'الإيجار الذي تدفعه أو المعروض عليك', optOptional:'— اختياري', aed:'درهم', perYear:'/سنة', egPh:n=>'مثلاً '+n,
     howAskingStrong:'النطاق المُعلن', howAsking:'— ما يُعلَن لهذا النوع هنا. الملّاك يطلبون أعلى ثم يتفاوضون.',
-    howSignedStrong:'ما وقّعه المستأجرون', howSigned:'— ما يبلّغ السكان بالاتفاق عليه فعلاً. أضف رقمك ليصبح أدقّ.',
+    howSignedStrong:'ما وقّعه المستأجرون', howSigned:'— ما يبلّغ السكان بالاتفاق عليه فعلاً. أضف رقمك ليصبح أدقّ. البلاغات الموثّقة تُحسب مرّتين.',
     lblCurRent:'إيجارك السنوي الحالي', lblMkt:'متوسط إيجار السوق لوحدات مماثلة', optEditable:'— قابل للتعديل',
     hint:'مُعبّأ مسبقاً من تقديرنا. للرقم الرسمي، استخدم ', hintLink:'مؤشر/حاسبة إيجارات دائرة الأراضي والأملاك',
     explainH:'كيف يعمل سقف زيادة الإيجار في دبي',
@@ -619,6 +643,9 @@ const T = {
     bCurrent:'الإيجار الحالي', bMarket:'متوسط السوق', bBelowMkt:'أقل من السوق', bMaxNew:'أقصى إيجار جديد',
     mTitle:'كم كان الإيجار الذي وقّعته؟', mSub:(t,a)=>`عن <strong>${t}</strong> في <strong>${a}</strong>، سنوياً. يُشارَك بشكل مجهول — بدون اسم أو وسيلة تواصل.`,
     mNotePh:'ملاحظة اختيارية — مثلاً 4 شيكات، غير مفروشة', mAdd:'أضف إيجاري', mDoneTitle:'أُضيف.', mDone:'تم',
+    mAttach:'أضف صورة العقد أو الإيصال', mAttachOpt:'— اختياري', mAttached:'أُرفقت الصورة', mAttachRemove:'إزالة الصورة',
+    mAttachHint:'البلاغات الموثّقة تحصل على شارة وتُحسب مرّتين. تُستخدم الصورة للتحقق من الرقم فقط، ولا تُعرض علناً أبداً.',
+    mUploading:'جارٍ الإضافة…', tPhotoFail:'تعذّر إرفاق الصورة — أُضيف إيجارك بدونها', tPhotoBad:'تعذّرت قراءة الصورة — جرّب صورة أخرى',
     mThanks:(t,a)=>`شكراً لك — الشخص التالي الذي يستأجر ${t} في ${a} سيحصل على صورة أوضح بفضلك.`,
     mVs:(pct,typ)=>pct<=-3?`وقّعت بأقل بنسبة ${-pct}% من الإيجار المطلوب المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من الإيجار المطلوب المعتاد (${typ}) — بلاغك يساعد المستأجر التالي على التفاوض.`:`هذا قريب من الإيجار المطلوب المعتاد (${typ}).`,
     tDup:'أضفت هذا الإيجار نفسه من قبل', tEnough:'شكراً، أضفت ما يكفي هنا اليوم', tLot:'أضفت الكثير اليوم — حاول غداً',
@@ -696,19 +723,23 @@ const adapters={
     url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
     headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
     async list(){
-      const r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      // 'verified' only exists once the docs/backend-setup.md §6 SQL has run — fall back to the legacy select until then
+      let r=await fetch(this.url+'?select=category,area,price,note,verified,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      if(!r.ok) r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) throw new Error('list '+r.status);
       const rows=await r.json();
-      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''}));
+      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||'',v:!!x.verified}));
     },
-    async add(sub){ // created_at defaults to now() in the DB; id is generated
+    async add(sub){ // verified stays false (flipped manually, never by a client)
       const body={category:sub.c,area:sub.a,price:sub.p,note:sub.note||null};
       if(DEVICE) body.device=DEVICE;
+      if(sub.invoice_path) body.invoice_path=sub.invoice_path;
       const post=()=>fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify(body)});
       let r=await post();
-      if(!r.ok&&body.device&&r.status===400){
+      if(!r.ok&&r.status===400&&(body.device||body.invoice_path)){
         const t=await r.text().catch(()=>'');
-        if(/column/i.test(t)&&/device/.test(t)){ delete body.device; r=await post(); } // pre-migration DB — retry without it
+        if(/column/i.test(t)&&/device/.test(t)&&body.device){ delete body.device; r=await post(); }                     // pre-migration DB — retry without it
+        else if(/column/i.test(t)&&/invoice_path/.test(t)&&body.invoice_path){ delete body.invoice_path; r=await post(); } // §6 not run yet — post the rent without the photo
         else if(t){ const e=new Error(t.slice(0,200)); e.reject=true; throw e; }       // trigger/constraint said no
       }
       if(!r.ok){
@@ -742,7 +773,9 @@ function paidStats(cat,area){
   const fresh=all.filter(d=>Date.now()-d.t<=RECENT_MS);
   const use=fresh.length>=3?fresh:all, raw=use.map(d=>d.p);
   if(!raw.length)return{count:0,freshCount:fresh.length};
-  const {kept}=iqrKeep(raw);
+  // verified (receipt-checked) reports weigh 2x in the percentiles — stated in the explainer strip
+  const weighted=use.flatMap(d=>d.v?[d.p,d.p]:[d.p]);
+  const {kept}=iqrKeep(weighted);
   return{count:raw.length,freshCount:fresh.length,p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
 }
 const CAP_BUCKET=2, CAP_DAY=12, DAY_MS=864e5;
@@ -997,6 +1030,47 @@ function renderLegal(){
     </div>`;
 }
 
+/* ===== optional contract/receipt photo (verified tier) =====
+   The canvas re-encode caps the upload at ~1MB and strips all metadata (EXIF, GPS) —
+   only pixels leave the device. The photo is never rendered anywhere; it exists solely
+   so a human can check the figure before flipping `verified` (see docs/backend-setup.md §6). */
+let INVOICE=null;
+async function compressInvoice(file){
+  let img;
+  try{ img=await createImageBitmap(file,{imageOrientation:'from-image'}); }
+  catch(e){
+    img=await new Promise((res,rej)=>{ const u=URL.createObjectURL(file), i=new Image();
+      i.onload=()=>{URL.revokeObjectURL(u);res(i)}; i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('unreadable'))}; i.src=u; });
+  }
+  const w0=img.naturalWidth||img.width, h0=img.naturalHeight||img.height;
+  const sc=Math.min(1,1600/Math.max(w0,h0)), w=Math.max(1,Math.round(w0*sc)), h=Math.max(1,Math.round(h0*sc));
+  const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+  cv.getContext('2d').drawImage(img,0,0,w,h);
+  if(img.close) img.close();
+  let blob=null;
+  for(const q of [0.82,0.68,0.55,0.42]){
+    blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',q));
+    if(blob&&blob.size<=1024*1024) return blob;
+  }
+  if(blob&&blob.size<=1.5*1024*1024) return blob;
+  throw new Error('too large');
+}
+async function uploadInvoice(blob,catId){
+  const path=catId.replace(/[^a-z0-9-]/gi,'')+'/'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)+'.jpg';
+  const r=await fetch(SUPABASE_URL.replace(/\/+$/,'')+'/storage/v1/object/invoices/'+path,
+    {method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'image/jpeg'},body:blob});
+  if(!r.ok) throw new Error('upload '+r.status);
+  return path;
+}
+function setAttachUI(){
+  const b=$('attachBtn'); if(!b) return;
+  const on=!!INVOICE;
+  b.classList.toggle('on',on);
+  $('attachLabel').innerHTML=on?escapeHTML(L.mAttached):escapeHTML(L.mAttach)+' <span class="opt">'+escapeHTML(L.mAttachOpt)+'</span>';
+  $('attachClear').classList.toggle('hidden',!on);
+}
+function clearAttach(){ INVOICE=null; const i=$('modalInvoice'); if(i) i.value=''; setAttachUI(); }
+
 /* ===== modal (report a signed rent) ===== */
 let lastFocus=null;
 function openModal(){
@@ -1004,7 +1078,7 @@ function openModal(){
   $('modalSub').innerHTML=L.mSub(escapeHTML(typeLabel(type)), escapeHTML(areaLabel(area)));
   $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
   const qv=num($('rquote').value);
-  $('modalPrice').value=(qv>0&&qv<100000000)?String(Math.round(qv)):''; $('modalNote').value=''; updateModalBtn();
+  $('modalPrice').value=(qv>0&&qv<100000000)?String(Math.round(qv)):''; $('modalNote').value=''; clearAttach(); updateModalBtn();
   $('modal').classList.remove('hidden'); syncStrip(); lastFocus=document.activeElement;
   document.addEventListener('keydown',onModalKey); setTimeout(()=>$('modalPrice').focus(),30);
 }
@@ -1017,15 +1091,20 @@ async function submitModal(){
   if(p>=10000000){toast(L.tHigh);return}
   const sub={c:'rent-'+$('rtype').value,a:$('rarea').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub); if(!guard.ok){toast(guard.msg);return}
+  const sBtn=$('modalSubmit'), sTxt=sBtn.textContent; sBtn.disabled=true; sBtn.textContent=L.mUploading;
+  // the photo is a bonus, never a blocker: if the upload fails, the rent still posts without it
+  let photoFailed=false;
+  if(INVOICE){ try{ sub.invoice_path=await uploadInvoice(INVOICE,sub.c); }catch(e){ photoFailed=true; } }
   let synced=true;
-  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){if(e&&e.reject){toast(L.tBlocked);return;}synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){if(e&&e.reject){sBtn.disabled=false;sBtn.textContent=sTxt;toast(L.tBlocked);return;}synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  sBtn.textContent=sTxt;
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   const type=typeById($('rtype').value);
   const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
   $('modalSuccessText').textContent=L.mThanks(typeLow(type), areaLabel(sub.a))+vsTxt;
   $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
   setTimeout(()=>{const d=$('modalDone');if(d)d.focus()},30);
-  renderFair(); if(!synced) toast(L.tLocal);
+  renderFair(); if(!synced) toast(L.tLocal); else if(photoFailed) toast(L.tPhotoFail);
 }
 let toastTimer;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
@@ -1070,6 +1149,8 @@ function applyStaticI18n(){
   const ce=document.getElementById('cresult'); if(ce && ce.classList.contains('calc-empty')) ce.textContent=L.calcEmpty1;
   set('#modalTitle', L.mTitle); set('#modalSubmit', L.mAdd); set('#modalDone', L.mDone);
   const mn=$('modalNote'); if(mn) mn.setAttribute('placeholder', L.mNotePh);
+  set('#attachHint', L.mAttachHint); setAttachUI();
+  const ac=$('attachClear'); if(ac) ac.setAttribute('aria-label', L.mAttachRemove);
   const msH=document.querySelector('#modalSuccess h3'); if(msH) msH.textContent=L.mDoneTitle;
 }
 
@@ -1103,6 +1184,17 @@ function applyStaticI18n(){
   $('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
   $('modalSubmit').onclick=submitModal; $('modalDone').onclick=closeModal;
   $('modalPrice').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.kKmM]/g,'');updateModalBtn()});
+  const inv=$('modalInvoice');
+  if(inv){
+    $('attachBtn').onclick=()=>inv.click();
+    $('attachClear').onclick=clearAttach;
+    inv.addEventListener('change',async()=>{
+      const f=inv.files&&inv.files[0];
+      if(!f){ clearAttach(); return; }
+      try{ INVOICE=await compressInvoice(f); }catch(e){ clearAttach(); toast(L.tPhotoBad); return; }
+      setAttachUI();
+    });
+  }
   // if deep-linked with a type/area for the calculator, jump to it
   if(p.get('tab')==='legal' || /increase-calculator/.test(location.pathname)) showTab('legal');   // /rent/increase-calculator is the calculator's own URL
   renderFair(); prefillMarket();
