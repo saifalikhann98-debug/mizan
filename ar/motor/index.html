@@ -518,6 +518,11 @@ const UNLOCK_KEY='mizan:unlocked:v2';
 const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
+// Anonymous per-device id (random UUID kept in localStorage) — sent with submissions so the DB
+// trigger can rate-limit per device. No fingerprinting, no PII; clearing site data resets it
+// (the trigger's per-IP caps are the backstop for that).
+const DEVICE=(()=>{try{let d=localStorage.getItem('mizan:device');if(!d&&crypto.randomUUID){d=crypto.randomUUID();localStorage.setItem('mizan:device',d)}return d||null}catch(e){return null}})();
+
 
 /* ============================ i18n (en / ar) ============================ */
 const LANG = (location.pathname.replace(/^\/+/,'').startsWith('ar') || new URLSearchParams(location.search).get('lang')==='ar') ? 'ar' : 'en';
@@ -552,7 +557,7 @@ const T={
     mAttach:'Add the invoice photo', mAttachOpt:'— optional', mAttached:'Invoice photo attached', mAttachRemove:'Remove the photo',
     mAttachHint:'Verified reports get a badge and count double. The photo is only used to check the price — it is never shown publicly.',
     mUploading:'Adding…', tPhotoFail:'Couldn’t attach the photo — your price was added without it', tPhotoBad:'That photo couldn’t be read — try another one',
-    gDup:'You already added that exact price', gBucket:'Thanks — you’ve added enough here for today', gDay:'That’s a lot of prices today — try again tomorrow',
+    gDup:'You already added that exact price', gBucket:'Thanks — you’ve added enough here for today', gDay:'That’s a lot of prices today — try again tomorrow', tBlocked:"That didn't go through — you've hit today's limit here",
     kVerdict:'Verdict', kGoing:'Going rate', kEstimate:'Estimate', kTypical:'Typical rate',
     wGoing:'Going rate', wTypical:'Typical rate', wFair:'Fair', wSteep:'Steep', wWalk:'Walk away',
     wBelow:'Below typical', wAround:'Around typical', wGreat:'Great deal', wOver:'Overpriced',
@@ -599,7 +604,7 @@ const T={
     mAttach:'أضف صورة الفاتورة', mAttachOpt:'— اختياري', mAttached:'أُرفقت صورة الفاتورة', mAttachRemove:'إزالة الصورة',
     mAttachHint:'البلاغات الموثّقة تحصل على شارة وتُحسب مرّتين. تُستخدم الصورة للتحقق من السعر فقط، ولا تُعرض علناً أبداً.',
     mUploading:'جارٍ الإضافة…', tPhotoFail:'تعذّر إرفاق الصورة — أُضيف سعرك بدونها', tPhotoBad:'تعذّرت قراءة الصورة — جرّب صورة أخرى',
-    gDup:'لقد أضفت هذا السعر بالضبط من قبل', gBucket:'شكراً — لقد أضفت ما يكفي هنا اليوم', gDay:'هذا عدد كبير من الأسعار اليوم — حاول غداً',
+    gDup:'لقد أضفت هذا السعر بالضبط من قبل', tBlocked:'لم يُقبل — بلغت الحد اليومي هنا', gBucket:'شكراً — لقد أضفت ما يكفي هنا اليوم', gDay:'هذا عدد كبير من الأسعار اليوم — حاول غداً',
     kVerdict:'الحكم', kGoing:'السعر السائد', kEstimate:'تقدير', kTypical:'السعر المعتاد',
     wGoing:'السعر السائد', wTypical:'السعر المعتاد', wFair:'عادل', wSteep:'مرتفع', wWalk:'ابتعد',
     wBelow:'أقل من المعتاد', wAround:'قريب من المعتاد', wGreat:'صفقة ممتازة', wOver:'مبالغ فيه',
@@ -695,15 +700,28 @@ const adapters={
     url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
     headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
     async list(){
-      // 'verified' only exists once the docs/backend-setup.md §5 SQL has run — fall back to the legacy select until then
+      // 'verified' only exists once the docs/backend-setup.md §6 SQL has run — fall back to the legacy select until then
       let r=await fetch(this.url+'?select=category,area,price,note,verified,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) throw new Error('list '+r.status);
       return (await r.json()).map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||'',v:!!x.verified}));
     },
     async add(sub){ // verified stays false (flipped manually, never by a client)
-      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null,...(sub.invoice_path?{invoice_path:sub.invoice_path}:{})})});
-      if(!r.ok) throw new Error('add '+r.status);
+      const body={category:sub.c,area:sub.a,price:sub.p,note:sub.note||null};
+      if(DEVICE) body.device=DEVICE;
+      if(sub.invoice_path) body.invoice_path=sub.invoice_path;
+      const post=()=>fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify(body)});
+      let r=await post();
+      if(!r.ok&&r.status===400&&(body.device||body.invoice_path)){
+        const t=await r.text().catch(()=>'');
+        if(/column/i.test(t)&&/device/.test(t)&&body.device){ delete body.device; r=await post(); }                     // pre-migration DB — retry without it
+        else if(/column/i.test(t)&&/invoice_path/.test(t)&&body.invoice_path){ delete body.invoice_path; r=await post(); } // §6 not run yet — post the price without the photo
+        else if(t){ const e=new Error(t.slice(0,200)); e.reject=true; throw e; }       // trigger/constraint said no
+      }
+      if(!r.ok){
+        if(r.status>=400&&r.status<500&&r.status!==401){ const e=new Error('rejected '+r.status); e.reject=true; throw e; }
+        throw new Error('add '+r.status); // network / server / auth trouble → caller degrades to local
+      }
     },
   } : null,
   local:{
@@ -1010,7 +1028,7 @@ function showTab(which){
 /* ===== optional invoice photo (verified tier) =====
    The canvas re-encode caps the upload at ~1MB and strips all metadata (EXIF, GPS) —
    only pixels leave the device. The photo is never rendered anywhere; it exists solely
-   so a human can check the price before flipping `verified` (see docs/backend-setup.md §5). */
+   so a human can check the price before flipping `verified` (see docs/backend-setup.md §6). */
 let INVOICE=null;
 async function compressInvoice(file){
   let img;
@@ -1073,7 +1091,7 @@ async function submitModal(){
   let photoFailed=false;
   if(INVOICE){ try{ sub.invoice_path=await uploadInvoice(INVOICE,sub.c); }catch(e){ photoFailed=true; } }
   let synced=true;
-  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){if(e&&e.reject){sBtn.disabled=false;sBtn.textContent=sTxt;toast(L.tBlocked);return;}synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
   sBtn.textContent=sTxt;
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';

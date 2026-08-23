@@ -154,7 +154,7 @@ function render(rows){
   const vqCard=`<div class="card"><div class="sec-h"><span class="pill ${queue.length?'close':'live'}">${queue.length?'TO CHECK':'CLEAR'}</span> Verification queue${nVerified?` · ${nVerified} verified so far`:''}</div>${
     queue.length
       ? `<div class="qhow" style="border-top:none">Open the photo in <b>Supabase → Storage → invoices</b> at the listed path; if the invoice matches the service, area and price, run the one-liner in the <b>SQL editor</b>. Verified reports get a badge and count double.</div>${vq}`
-      : `<div class="empty">No invoice photos waiting.${rows.some(x=>'invoice_path' in x)?'':' (Run the §5 SQL in docs/backend-setup.md to enable the verified tier.)'}</div>`}</div>`;
+      : `<div class="empty">No invoice photos waiting.${rows.some(x=>'invoice_path' in x)?'':' (Run the §6 SQL in docs/backend-setup.md to enable the verified tier.)'}</div>`}</div>`;
 
   document.getElementById('content').innerHTML=`
     <div class="hero">
@@ -173,7 +173,7 @@ async function load(){
   const c=document.getElementById('content');
   c.innerHTML='<div class="state"><span class="spin"></span>Loading your live data…</div>';
   try{
-    // id/verified/invoice_path only exist after the §5 SQL in docs/backend-setup.md — fall back to the legacy select until then
+    // id/verified/invoice_path only exist after the §6 SQL in docs/backend-setup.md — fall back to the legacy select until then
     let r=await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,category,area,price,verified,invoice_path,created_at&order=created_at.desc&limit=5000`,{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});
     if(!r.ok) r=await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=category,area,price,created_at&order=created_at.desc&limit=5000`,{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});
     if(!r.ok) throw new Error('HTTP '+r.status);

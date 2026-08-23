@@ -533,6 +533,11 @@ const UNLOCK_KEY='mizan:unlocked:v2';
 const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
+// Anonymous per-device id (random UUID kept in localStorage) — sent with submissions so the DB
+// trigger can rate-limit per device. No fingerprinting, no PII; clearing site data resets it
+// (the trigger's per-IP caps are the backstop for that).
+const DEVICE=(()=>{try{let d=localStorage.getItem('mizan:device');if(!d&&crypto.randomUUID){d=crypto.randomUUID();localStorage.setItem('mizan:device',d)}return d||null}catch(e){return null}})();
+
 
 /* ---- i18n (en / ar) — LANG from the URL path (/ar/rent served as a generated copy) or ?lang=ar.
    Arabic is machine MSA pending native review. Numbers/prices stay LTR. ---- */
@@ -590,7 +595,7 @@ const T = {
     mThanks:(t,a)=>`Thank you — the next person renting a ${t} in ${a} gets a sharper picture because of you.`,
     mVs:(pct,typ)=>pct<=-3?`You signed ${-pct}% under the typical asking rent (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical asking rent (${typ}) — your report helps the next tenant negotiate.`:`That's right around the typical asking rent (${typ}).`,
     tDup:'You already added that exact rent', tEnough:"Thanks — you've added enough here for today", tLot:"That's a lot today — try again tomorrow",
-    tHigh:'That rent looks too high', tLocal:'Saved on this device only',
+    tHigh:'That rent looks too high', tLocal:'Saved on this device only', tBlocked:"That didn't go through — you've hit today's limit here",
   },
   ar:{
     docTitle:'إيجارات الإمارات — هل الإيجار عادل وهل الزيادة قانونية؟ | ميزان',
@@ -644,7 +649,7 @@ const T = {
     mThanks:(t,a)=>`شكراً لك — الشخص التالي الذي يستأجر ${t} في ${a} سيحصل على صورة أوضح بفضلك.`,
     mVs:(pct,typ)=>pct<=-3?`وقّعت بأقل بنسبة ${-pct}% من الإيجار المطلوب المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من الإيجار المطلوب المعتاد (${typ}) — بلاغك يساعد المستأجر التالي على التفاوض.`:`هذا قريب من الإيجار المطلوب المعتاد (${typ}).`,
     tDup:'أضفت هذا الإيجار نفسه من قبل', tEnough:'شكراً، أضفت ما يكفي هنا اليوم', tLot:'أضفت الكثير اليوم — حاول غداً',
-    tHigh:'هذا الإيجار يبدو مرتفعاً جداً', tLocal:'حُفظ على هذا الجهاز فقط',
+    tHigh:'هذا الإيجار يبدو مرتفعاً جداً', tLocal:'حُفظ على هذا الجهاز فقط', tBlocked:'لم يُقبل — بلغت الحد اليومي هنا',
   },
 };
 const L = T[LANG];
@@ -718,7 +723,7 @@ const adapters={
     url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
     headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
     async list(){
-      // 'verified' only exists once the docs/backend-setup.md §5 SQL has run — fall back to the legacy select until then
+      // 'verified' only exists once the docs/backend-setup.md §6 SQL has run — fall back to the legacy select until then
       let r=await fetch(this.url+'?select=category,area,price,note,verified,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) throw new Error('list '+r.status);
@@ -726,9 +731,21 @@ const adapters={
       return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||'',v:!!x.verified}));
     },
     async add(sub){ // verified stays false (flipped manually, never by a client)
-      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},
-        body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null,...(sub.invoice_path?{invoice_path:sub.invoice_path}:{})})});
-      if(!r.ok) throw new Error('add '+r.status);
+      const body={category:sub.c,area:sub.a,price:sub.p,note:sub.note||null};
+      if(DEVICE) body.device=DEVICE;
+      if(sub.invoice_path) body.invoice_path=sub.invoice_path;
+      const post=()=>fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify(body)});
+      let r=await post();
+      if(!r.ok&&r.status===400&&(body.device||body.invoice_path)){
+        const t=await r.text().catch(()=>'');
+        if(/column/i.test(t)&&/device/.test(t)&&body.device){ delete body.device; r=await post(); }                     // pre-migration DB — retry without it
+        else if(/column/i.test(t)&&/invoice_path/.test(t)&&body.invoice_path){ delete body.invoice_path; r=await post(); } // §6 not run yet — post the rent without the photo
+        else if(t){ const e=new Error(t.slice(0,200)); e.reject=true; throw e; }       // trigger/constraint said no
+      }
+      if(!r.ok){
+        if(r.status>=400&&r.status<500&&r.status!==401){ const e=new Error('rejected '+r.status); e.reject=true; throw e; }
+        throw new Error('add '+r.status); // network / server / auth trouble → caller degrades to local
+      }
     },
   } : null,
   local:{
@@ -1016,7 +1033,7 @@ function renderLegal(){
 /* ===== optional contract/receipt photo (verified tier) =====
    The canvas re-encode caps the upload at ~1MB and strips all metadata (EXIF, GPS) —
    only pixels leave the device. The photo is never rendered anywhere; it exists solely
-   so a human can check the figure before flipping `verified` (see docs/backend-setup.md §5). */
+   so a human can check the figure before flipping `verified` (see docs/backend-setup.md §6). */
 let INVOICE=null;
 async function compressInvoice(file){
   let img;
@@ -1079,7 +1096,7 @@ async function submitModal(){
   let photoFailed=false;
   if(INVOICE){ try{ sub.invoice_path=await uploadInvoice(INVOICE,sub.c); }catch(e){ photoFailed=true; } }
   let synced=true;
-  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){if(e&&e.reject){sBtn.disabled=false;sBtn.textContent=sTxt;toast(L.tBlocked);return;}synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
   sBtn.textContent=sTxt;
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   const type=typeById($('rtype').value);
