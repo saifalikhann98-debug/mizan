@@ -83,6 +83,7 @@
   :root[data-theme="dark"] .scale .band.locked{background:repeating-linear-gradient(45deg,#33352E,#33352E 5px,#2A2C26 5px,#2A2C26 10px);color:var(--faint-2)}
   :root[data-theme="dark"] .modal-input,
   :root[data-theme="dark"] .note-input{background:var(--surface)}
+  :root[data-theme="dark"] .attach-btn,:root[data-theme="dark"] .attach-clear{background:var(--surface)}
   :root[data-theme="dark"] .toast{background:#0C100F;color:#ECE8E0}
   :root[data-theme="dark"] .brow.alt{background:var(--surface-2)}
   *{box-sizing:border-box}
@@ -284,6 +285,19 @@
   .modal-input input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ink)}
   .note-input{width:100%;border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface-2);margin-bottom:16px;outline:none}
   .note-input:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
+  /* optional invoice photo (verified tier) — must stay lighter than the price input */
+  .attach{margin:-4px 0 16px}
+  .attach-row{display:flex;gap:8px;align-items:stretch}
+  .attach-btn{flex:1;display:flex;align-items:center;gap:9px;border:1px dashed var(--line-2);background:var(--surface-2);border-radius:12px;padding:11px 13px;font-family:inherit;font-size:13.5px;color:var(--muted);cursor:pointer;text-align:start;transition:.15s}
+  .attach-btn svg{width:16px;height:16px;flex:none}
+  .attach-btn .opt{color:var(--faint)}
+  .attach-btn:hover{border-color:var(--teal);color:var(--teal)}
+  .attach-btn:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
+  .attach-btn.on{border-style:solid;border-color:var(--fair);color:var(--fair);background:var(--fair-bg)}
+  .attach-clear{flex:none;width:42px;border:1px solid var(--line-2);background:var(--surface-2);border-radius:12px;color:var(--muted);font-size:17px;cursor:pointer;font-family:inherit}
+  .attach-clear:hover{border-color:var(--walk);color:var(--walk)}
+  .attach-hint{margin:7px 2px 0;font-size:12px;line-height:1.5;color:var(--faint)}
+  .vbadge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--fair);background:var(--fair-bg);border-radius:999px;padding:1.5px 8px;vertical-align:2px;margin-inline-start:6px;white-space:nowrap}
   .btn-submit{width:100%;height:52px;border:none;border-radius:999px;font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;color:var(--on-teal);background:var(--teal);transition:background .2s ease}
   .btn-submit:hover:not(:disabled){background:var(--teal-deep)}
   .btn-submit:disabled{background:#C8C2B4;cursor:not-allowed}
@@ -430,7 +444,7 @@
       </div>
       <div class="howto">
         <div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>Market estimate</strong> — list prices harvested from the web. What companies advertise.</p></div>
-        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report.</p></div>
+        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report. Verified receipts count double.</p></div>
       </div>
     </section>
 
@@ -439,7 +453,7 @@
     <!-- mobile-only: the "how it works" explainer moves below the result so the verdict is in the first view -->
     <div class="howto howto-m">
       <div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>Market estimate</strong> — list prices harvested from the web. What companies advertise.</p></div>
-      <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report.</p></div>
+      <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report. Verified receipts count double.</p></div>
     </div>
   </div>
 
@@ -470,6 +484,14 @@
         <input type="text" inputmode="numeric" id="modalPrice" placeholder="0" aria-label="Amount you actually paid in AED">
       </div>
       <input type="text" class="note-input" id="modalNote" maxlength="60" placeholder="Optional note — e.g. 2 split units, incl. gas" aria-label="Optional note (no personal info)">
+      <div class="attach">
+        <input type="file" id="modalInvoice" accept="image/*" hidden>
+        <div class="attach-row">
+          <button type="button" class="attach-btn" id="attachBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7.5 6.5H4a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 4 19.5h16a1.5 1.5 0 0 0 1.5-1.5V8A1.5 1.5 0 0 0 20 6.5h-3.5z"/><circle cx="12" cy="12.8" r="3.6"/></svg><span id="attachLabel">Add the invoice photo <span class="opt">— optional</span></span></button>
+          <button type="button" class="attach-clear hidden" id="attachClear" aria-label="Remove the photo">×</button>
+        </div>
+        <p class="attach-hint" id="attachHint">Verified reports get a badge and count double. The photo is only used to check the price — it is never shown publicly.</p>
+      </div>
       <button type="button" class="btn-submit" id="modalSubmit" disabled>Add my price</button>
     </div>
     <div id="modalSuccess" class="modal-success hidden">
@@ -520,7 +542,7 @@ const T = {
     subhead:'What UAE residents actually paid, next to what companies advertise. Pick a service and your area — the verdict updates as you go.',
     lblCat:'What are you paying for?', lblArea:'In which area?', lblQuote:'The price you were quoted', quoteOpt:'— optional', aed:'AED', egPh:n=>'e.g. '+n,
     howMarketStrong:'Market estimate', howMarket:' — list prices harvested from the web. What companies advertise.',
-    howPaidStrong:'Paid range', howPaid:' — what residents report actually paying. Gets sharper with every report.',
+    howPaidStrong:'Paid range', howPaid:' — what residents report actually paying. Gets sharper with every report. Verified receipts count double.',
     loading:'Loading prices…', rin:'in', scaleTitle:'The price scale', residentsPaid:'RESIDENTS PAID',
     legendList:'List prices', legendPaid:'Actually paid',
     bdAdvertised:'Advertised (list)', bdResidents:'Residents paid', bdYourQuote:'Your quote',
@@ -548,6 +570,10 @@ const T = {
     mTitle:'What did you actually pay?', mSubA:'For ', mSubB:' in ', mSubC:'. Shared anonymously — no name, no contact.',
     mAdd:'Add my price', mNote:'Optional note — e.g. 2 split units, incl. gas',
     mDoneTitle:'Added to the scale.', mThanks:(s,a)=>`Thank you — the next person who checks ${s} in ${a} gets a sharper estimate because of you.`, mDone:'Done',
+    mAttach:'Add the invoice photo', mAttachOpt:'— optional', mAttached:'Invoice photo attached', mAttachRemove:'Remove the photo',
+    mAttachHint:'Verified reports get a badge and count double. The photo is only used to check the price — it is never shown publicly.',
+    mUploading:'Adding…', tPhotoFail:'Couldn’t attach the photo — your price was added without it', tPhotoBad:'That photo couldn’t be read — try another one',
+    badgeVerified:'Verified',
     mVs:(pct,typ)=>pct<=-3?`You paid ${-pct}% under the typical advertised price (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical advertised price (${typ}) — your report helps the next person push back.`:`That's right around the typical advertised price (${typ}).`,
     feedTitle:'Recently paid', feedSub:'Fresh prices keep the ranges honest. Old ones fade.', feedCount:n=>`${n} resident report${n===1?'':'s'} so far`,
     feedEmpty:'No real prices yet — be the first. Add what you paid and it shows up here for the next person.',
@@ -564,7 +590,7 @@ const T = {
     subhead:'ما يدفعه سكان الإمارات فعلاً، مقابل الأسعار التي تعلنها الشركات. اختر خدمة ومنطقتك، وتُحدَّث النتيجة فوراً.',
     lblCat:'ما الخدمة التي تدفع مقابلها؟', lblArea:'في أي منطقة؟', lblQuote:'السعر الذي عُرض عليك', quoteOpt:'— اختياري', aed:'درهم', egPh:n=>'مثلاً '+n,
     howMarketStrong:'تقدير السوق', howMarket:' — الأسعار المُعلنة على الإنترنت. ما تعلنه الشركات.',
-    howPaidStrong:'النطاق المدفوع', howPaid:' — ما يبلّغ السكان أنهم دفعوه فعلاً. يصبح أدقّ مع كل بلاغ.',
+    howPaidStrong:'النطاق المدفوع', howPaid:' — ما يبلّغ السكان أنهم دفعوه فعلاً. يصبح أدقّ مع كل بلاغ. الإيصالات الموثّقة تُحسب مرّتين.',
     loading:'جارٍ تحميل الأسعار…', rin:'في', scaleTitle:'مقياس الأسعار', residentsPaid:'ما دفعه السكان',
     legendList:'الأسعار المُعلنة', legendPaid:'المدفوع فعلاً',
     bdAdvertised:'المُعلن', bdResidents:'دفع السكان', bdYourQuote:'عرضك',
@@ -592,6 +618,10 @@ const T = {
     mTitle:'كم دفعت فعلاً؟', mSubA:'عن ', mSubB:' في ', mSubC:'. يُشارَك بشكل مجهول، بدون اسم أو وسيلة تواصل.',
     mAdd:'أضف سعري', mNote:'ملاحظة اختيارية، مثلاً وحدتان سبليت، شامل تعبئة الغاز',
     mDoneTitle:'أُضيف إلى المقياس.', mThanks:(s,a)=>`شكراً لك، الشخص التالي الذي يتحقّق من ${s} في ${a} سيحصل على تقدير أدقّ بفضلك.`, mDone:'تم',
+    mAttach:'أضف صورة الفاتورة', mAttachOpt:'— اختياري', mAttached:'أُرفقت صورة الفاتورة', mAttachRemove:'إزالة الصورة',
+    mAttachHint:'البلاغات الموثّقة تحصل على شارة وتُحسب مرّتين. تُستخدم الصورة للتحقق من السعر فقط، ولا تُعرض علناً أبداً.',
+    mUploading:'جارٍ الإضافة…', tPhotoFail:'تعذّر إرفاق الصورة — أُضيف سعرك بدونها', tPhotoBad:'تعذّرت قراءة الصورة — جرّب صورة أخرى',
+    badgeVerified:'موثّق',
     mVs:(pct,typ)=>pct<=-3?`دفعت أقل بنسبة ${-pct}% من السعر المعلن المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من السعر المعلن المعتاد (${typ}) — بلاغك يساعد الشخص التالي على التفاوض.`:`هذا قريب من السعر المعلن المعتاد (${typ}).`,
     feedTitle:'مدفوعات حديثة', feedSub:'الأسعار الحديثة تبقي النطاقات صادقة. القديمة تتلاشى.', feedCount:n=>`${n} بلاغاً من السكان حتى الآن`,
     feedEmpty:'لا أسعار حقيقية بعد، كن أول من يضيف. أضف ما دفعته وسيظهر هنا للشخص التالي.',
@@ -770,15 +800,17 @@ const adapters={
     url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
     headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
     async list(){
-      const r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      // 'verified' only exists once the docs/backend-setup.md §5 SQL has run — fall back to the legacy select until then
+      let r=await fetch(this.url+'?select=category,area,price,note,verified,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      if(!r.ok) r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) throw new Error('Supabase list failed: '+r.status);
       const rows=await r.json();
       if(rows.length>=5000) console.warn('Mizan: read cap (5000) hit — older prices not loaded; move to server-side filtering (P4).');
-      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''})); // DB cols → app shape
+      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||'',v:!!x.verified})); // DB cols → app shape
     },
-    async add(sub){ // created_at defaults to now() in the DB; id is generated
+    async add(sub){ // created_at defaults to now() in the DB; id is generated; verified stays false (flipped manually, never by a client)
       const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},
-        body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null})});
+        body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null,...(sub.invoice_path?{invoice_path:sub.invoice_path}:{})})});
       if(!r.ok) throw new Error('Supabase add failed: '+r.status);
     },
   } : null,
@@ -839,7 +871,9 @@ function paidStats(catId,area){
   const fresh=all.filter(d=>Date.now()-d.t<=RECENT_MS);
   const use=fresh.length>=3?fresh:all, rawPrices=use.map(d=>d.p);
   if(!rawPrices.length)return{count:0,freshCount:fresh.length};
-  const {kept,trimmed}=iqrKeep(rawPrices);                       // range/percentiles use the de-spiked set
+  // verified (receipt-checked) reports weigh 2x in the percentiles — stated in the explainer strip
+  const weighted=use.flatMap(d=>d.v?[d.p,d.p]:[d.p]);
+  const {kept,trimmed}=iqrKeep(weighted);                        // range/percentiles use the de-spiked set
   return{count:rawPrices.length,freshCount:fresh.length,trimmed, // count stays RAW so the >=5 flip is unchanged
     min:Math.min(...kept),max:Math.max(...kept),
     p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
@@ -1175,12 +1209,53 @@ function renderFeed(){
     const href=`${base}?service=${encodeURIComponent(d.c)}&area=${encodeURIComponent(d.a)}`;
     return `<a class="frow${old?' old':''}" href="${href}" title="${escapeHTML(svcLabel(cat))} · ${escapeHTML(areaLabel(d.a))}">
       <div class="amt"><span class="cur">${L.aed}</span><span class="n">${aed(d.p)}</span></div>
-      <div class="fmid"><div class="fs">${escapeHTML(svcLabel(cat))}</div><span class="fa">${escapeHTML(areaLabel(d.a))}</span></div>
+      <div class="fmid"><div class="fs">${escapeHTML(svcLabel(cat))}${d.v?`<span class="vbadge">✓ ${escapeHTML(L.badgeVerified)}</span>`:''}</div><span class="fa">${escapeHTML(areaLabel(d.a))}</span></div>
       <span class="fwhen">${relTime(d.t)}</span></a>`;
   }).join('');
   const total=DATA.filter(d=>catById(d.c)).length;
   $('feed').innerHTML=`<div class="feed-head"><div><h2>${L.feedTitle}</h2><p class="feed-sub">${L.feedSub}</p></div><span class="feed-live"><span class="dot"></span>${L.feedCount(total)}</span></div><div class="rows">${rows}</div>`;
 }
+
+// ===== optional invoice photo (verified tier) =====
+// The canvas re-encode does two jobs at once: caps the upload at ~1MB and strips all
+// metadata (EXIF, GPS) — only pixels leave the device. The photo is never rendered in
+// any UI; it exists solely so a human can check the price before flipping `verified`.
+let INVOICE=null;   // compressed JPEG blob for the open modal, or null
+async function compressInvoice(file){
+  let img;
+  try{ img=await createImageBitmap(file,{imageOrientation:'from-image'}); }
+  catch(e){
+    img=await new Promise((res,rej)=>{ const u=URL.createObjectURL(file), i=new Image();
+      i.onload=()=>{URL.revokeObjectURL(u);res(i)}; i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('unreadable'))}; i.src=u; });
+  }
+  const w0=img.naturalWidth||img.width, h0=img.naturalHeight||img.height;
+  const sc=Math.min(1,1600/Math.max(w0,h0)), w=Math.max(1,Math.round(w0*sc)), h=Math.max(1,Math.round(h0*sc));
+  const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+  cv.getContext('2d').drawImage(img,0,0,w,h);
+  if(img.close) img.close();
+  let blob=null;
+  for(const q of [0.82,0.68,0.55,0.42]){                      // step quality down until it fits
+    blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',q));
+    if(blob&&blob.size<=1024*1024) return blob;
+  }
+  if(blob&&blob.size<=1.5*1024*1024) return blob;             // still under the bucket's 2MB server cap
+  throw new Error('too large');
+}
+async function uploadInvoice(blob,catId){
+  const path=catId.replace(/[^a-z0-9-]/gi,'')+'/'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)+'.jpg';
+  const r=await fetch(SUPABASE_URL.replace(/\/+$/,'')+'/storage/v1/object/invoices/'+path,
+    {method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'image/jpeg'},body:blob});
+  if(!r.ok) throw new Error('upload '+r.status);
+  return path;
+}
+function setAttachUI(){
+  const b=$('attachBtn'); if(!b) return;
+  const on=!!INVOICE;
+  b.classList.toggle('on',on);
+  $('attachLabel').innerHTML=on?escapeHTML(L.mAttached):escapeHTML(L.mAttach)+' <span class="opt">'+escapeHTML(L.mAttachOpt)+'</span>';
+  $('attachClear').classList.toggle('hidden',!on);
+}
+function clearAttach(){ INVOICE=null; const i=$('modalInvoice'); if(i) i.value=''; setAttachUI(); }
 
 // ===== Add-a-price modal =====
 let lastFocus=null;
@@ -1189,7 +1264,7 @@ function openModal(){
   $('modalSub').innerHTML=`${L.mSubA}<strong>${escapeHTML(svcLabel(cat))}</strong>${L.mSubB}<strong>${escapeHTML(areaLabel(area))}</strong>${L.mSubC}`;
   $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
   const qv=parseFloat($('quoted').value);
-  $('modalPrice').value=(qv>0&&qv<1000000)?String(Math.round(qv)):''; $('modalNote').value=''; updateModalBtn();
+  $('modalPrice').value=(qv>0&&qv<1000000)?String(Math.round(qv)):''; $('modalNote').value=''; clearAttach(); updateModalBtn();
   $('modal').classList.remove('hidden'); syncStrip();
   lastFocus=document.activeElement;
   document.addEventListener('keydown',onModalKey);
@@ -1215,9 +1290,14 @@ async function submitModal(){
   const sub={c:$('category').value,a:$('area').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub);
   if(!guard.ok){toast(guard.msg);return}
+  const sBtn=$('modalSubmit'), sTxt=sBtn.textContent; sBtn.disabled=true; sBtn.textContent=L.mUploading;
+  // the photo is a bonus, never a blocker: if the upload fails, the price still posts without it
+  let photoFailed=false;
+  if(INVOICE){ try{ sub.invoice_path=await uploadInvoice(INVOICE,sub.c); }catch(e){ photoFailed=true; } }
   let synced=true;
   try{ await store.add(sub); SUBMISSIONS=await store.list(); }    // re-read shared truth (picks up others too)
   catch(e){ synced=false; SUBMISSIONS=SUBMISSIONS.concat(sub); }  // degrade: keep their price this session
+  sBtn.textContent=sTxt;
   guard.commit();
   UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   DATA=SEED.concat(SUBMISSIONS);
@@ -1227,7 +1307,7 @@ async function submitModal(){
   $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
   setTimeout(()=>{const d=$('modalDone'); if(d)d.focus()},30);
   render(); renderFeed();
-  if(!synced) toast(L.tLocal);
+  if(!synced) toast(L.tLocal); else if(photoFailed) toast(L.tPhotoFail);
 }
 
 let toastTimer;
@@ -1262,6 +1342,8 @@ function applyStaticI18n(){
   set('#modalTitle', L.mTitle);
   const mc=document.querySelector('.modal-input .cur'); if(mc) mc.textContent=L.aed;
   const mn=$('modalNote'); if(mn) mn.setAttribute('placeholder', L.mNote);
+  set('#attachHint', L.mAttachHint); setAttachUI();
+  const ac=$('attachClear'); if(ac) ac.setAttribute('aria-label', L.mAttachRemove);
   set('#modalSubmit', L.mAdd);
   const msH=document.querySelector('#modalSuccess h3'); if(msH) msH.textContent=L.mDoneTitle;
   set('#modalDone', L.mDone);
@@ -1296,6 +1378,17 @@ function applyStaticI18n(){
   const vs=$('vstrip'); if(vs) vs.onclick=e=>{ e.preventDefault(); const v=document.querySelector('#result .verdict'); if(v) v.scrollIntoView({behavior:'smooth',block:'center'}); };
   $('modalDone').onclick=closeModal;
   $('modalPrice').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/[^0-9.]/g,''); updateModalBtn(); });
+  const inv=$('modalInvoice');
+  if(inv){
+    $('attachBtn').onclick=()=>inv.click();
+    $('attachClear').onclick=clearAttach;
+    inv.addEventListener('change',async()=>{
+      const f=inv.files&&inv.files[0];
+      if(!f){ clearAttach(); return; }
+      try{ INVOICE=await compressInvoice(f); }catch(e){ clearAttach(); toast(L.tPhotoBad); return; }
+      setAttachUI();
+    });
+  }
   render(); renderFeed();
 })();
 </script>

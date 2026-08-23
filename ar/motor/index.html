@@ -78,6 +78,7 @@
   :root[data-theme="dark"] .scale .band.locked{background:repeating-linear-gradient(45deg,#33352E,#33352E 5px,#2A2C26 5px,#2A2C26 10px);color:var(--faint-2)}
   :root[data-theme="dark"] .modal-input,
   :root[data-theme="dark"] .note-input{background:var(--surface)}
+  :root[data-theme="dark"] .attach-btn,:root[data-theme="dark"] .attach-clear{background:var(--surface)}
   :root[data-theme="dark"] .toast{background:#0C100F;color:#ECE8E0}
   :root[data-theme="dark"] .brow.alt{background:var(--surface-2)}
   *{box-sizing:border-box}
@@ -288,6 +289,18 @@
   .modal-input input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ink)}
   .note-input{width:100%;border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface-2);margin-bottom:16px;outline:none}
   .note-input:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
+  /* optional invoice photo (verified tier) — must stay lighter than the price input */
+  .attach{margin:-4px 0 16px}
+  .attach-row{display:flex;gap:8px;align-items:stretch}
+  .attach-btn{flex:1;display:flex;align-items:center;gap:9px;border:1px dashed var(--line-2);background:var(--surface-2);border-radius:12px;padding:11px 13px;font-family:inherit;font-size:13.5px;color:var(--muted);cursor:pointer;text-align:start;transition:.15s}
+  .attach-btn svg{width:16px;height:16px;flex:none}
+  .attach-btn .opt{color:var(--faint)}
+  .attach-btn:hover{border-color:var(--teal);color:var(--teal)}
+  .attach-btn:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
+  .attach-btn.on{border-style:solid;border-color:var(--fair);color:var(--fair);background:var(--fair-bg)}
+  .attach-clear{flex:none;width:42px;border:1px solid var(--line-2);background:var(--surface-2);border-radius:12px;color:var(--muted);font-size:17px;cursor:pointer;font-family:inherit}
+  .attach-clear:hover{border-color:var(--walk);color:var(--walk)}
+  .attach-hint{margin:7px 2px 0;font-size:12px;line-height:1.5;color:var(--faint)}
   .btn-submit{width:100%;height:52px;border:none;border-radius:999px;font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;color:var(--on-teal);background:var(--teal);transition:background .2s ease}
   .btn-submit:hover:not(:disabled){background:var(--teal-deep)}
   .btn-submit:disabled{background:#C8C2B4;cursor:not-allowed}
@@ -426,7 +439,7 @@
       <div class="quote-input"><span class="cur">AED</span><input type="text" inputmode="numeric" id="quoted" placeholder="0" aria-label="Price you were quoted in AED"><span class="unit" id="quoteUnit"></span></div></div>
       <div class="howto">
         <div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>Typical range</strong> — what garages across the UAE charge for this job. Dealers sit at the top.</p></div>
-        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Drivers paid</strong> — what people report actually paying. Add yours to sharpen it.</p></div>
+        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Drivers paid</strong> — what people report actually paying. Add yours to sharpen it. Verified receipts count double.</p></div>
       </div>
     </div>
     <div class="result-col"><div id="result" class="loading">Loading…</div></div>
@@ -473,6 +486,14 @@
       <p class="dsub" id="modalSub"></p>
       <div class="modal-input"><span class="cur">AED</span><input type="text" inputmode="numeric" id="modalPrice" placeholder="0" aria-label="Amount you actually paid in AED"></div>
       <input type="text" class="note-input" id="modalNote" maxlength="60" placeholder="Optional note — e.g. genuine parts, Pajero, Satwa garage" aria-label="Optional note (no personal info)">
+      <div class="attach">
+        <input type="file" id="modalInvoice" accept="image/*" hidden>
+        <div class="attach-row">
+          <button type="button" class="attach-btn" id="attachBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7.5 6.5H4a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 4 19.5h16a1.5 1.5 0 0 0 1.5-1.5V8A1.5 1.5 0 0 0 20 6.5h-3.5z"/><circle cx="12" cy="12.8" r="3.6"/></svg><span id="attachLabel">Add the invoice photo <span class="opt">— optional</span></span></button>
+          <button type="button" class="attach-clear hidden" id="attachClear" aria-label="Remove the photo">×</button>
+        </div>
+        <p class="attach-hint" id="attachHint">Verified reports get a badge and count double. The photo is only used to check the price — it is never shown publicly.</p>
+      </div>
       <button type="button" class="btn-submit" id="modalSubmit" disabled>Add my price</button>
     </div>
     <div id="modalSuccess" class="modal-success hidden">
@@ -515,7 +536,7 @@ const T={
     periodDaily:'Daily', periodWeekly:'Weekly', periodMonthly:'Monthly',
     lblUcPrice:'Price when bought new', lblUcAge:'Age', lblUcKm:'Mileage', unitYears:'years old', unitKm:'km',
     howTypStrong:'Typical range', howTyp:'— what garages across the UAE charge for this job. Dealers sit at the top.',
-    howPaidStrong:'Drivers paid', howPaid:'— what people report actually paying. Add yours to sharpen it.',
+    howPaidStrong:'Drivers paid', howPaid:'— what people report actually paying. Add yours to sharpen it. Verified receipts count double.',
     howRentStrong:'Typical range', howRent:'— what UAE rental companies advertise for this class. Airport desks & luxury sit at the top; longer terms are cheaper.',
     usedHint:'A rule-of-thumb estimate from typical UAE depreciation. Actual value depends on the make, condition, service history & demand — premium/luxury brands lose value faster.',
     foot:'Mizan shows the typical advertised range for car jobs next to what UAE drivers report actually paying. Reports are anonymous. Prices are estimates, not quotes — your exact price depends on the car, parts (genuine vs aftermarket) and the garage. ',
@@ -528,6 +549,9 @@ const T={
     mThanksA:'Thank you — the next driver checking ', mThanksB:' gets a sharper picture because of you.', egPh:n=>'e.g. '+n,
     mVs:(pct,typ)=>pct<=-3?`You paid ${-pct}% under the typical garage price (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical garage price (${typ}) — your report helps the next driver push back.`:`That's right around the typical garage price (${typ}).`,
     mTooHigh:'That price looks too high', mSavedLocal:'Saved on this device only',
+    mAttach:'Add the invoice photo', mAttachOpt:'— optional', mAttached:'Invoice photo attached', mAttachRemove:'Remove the photo',
+    mAttachHint:'Verified reports get a badge and count double. The photo is only used to check the price — it is never shown publicly.',
+    mUploading:'Adding…', tPhotoFail:'Couldn’t attach the photo — your price was added without it', tPhotoBad:'That photo couldn’t be read — try another one',
     gDup:'You already added that exact price', gBucket:'Thanks — you’ve added enough here for today', gDay:'That’s a lot of prices today — try again tomorrow',
     kVerdict:'Verdict', kGoing:'Going rate', kEstimate:'Estimate', kTypical:'Typical rate',
     wGoing:'Going rate', wTypical:'Typical rate', wFair:'Fair', wSteep:'Steep', wWalk:'Walk away',
@@ -559,7 +583,7 @@ const T={
     periodDaily:'يومي', periodWeekly:'أسبوعي', periodMonthly:'شهري',
     lblUcPrice:'السعر عند الشراء جديدة', lblUcAge:'العمر', lblUcKm:'المسافة المقطوعة', unitYears:'سنوات', unitKm:'كم',
     howTypStrong:'النطاق المعتاد', howTyp:'— ما تتقاضاه الورش في الإمارات مقابل هذه الخدمة. الوكالات في الحد الأعلى.',
-    howPaidStrong:'ما دفعه السائقون', howPaid:'— ما يبلّغ الناس عن دفعه فعلاً. أضف سعرك لتدقيق النطاق.',
+    howPaidStrong:'ما دفعه السائقون', howPaid:'— ما يبلّغ الناس عن دفعه فعلاً. أضف سعرك لتدقيق النطاق. الإيصالات الموثّقة تُحسب مرّتين.',
     howRentStrong:'النطاق المعتاد', howRent:'— ما تعلن عنه شركات التأجير في الإمارات لهذه الفئة. مكاتب المطار والسيارات الفاخرة في الأعلى؛ المدد الأطول أرخص.',
     usedHint:'تقدير تقريبي مبني على معدّل انخفاض القيمة في الإمارات. القيمة الفعلية تعتمد على الماركة والحالة وسجل الصيانة والطلب — الماركات الفاخرة تفقد قيمتها أسرع.',
     foot:'يعرض ميزان النطاق المعلن المعتاد لخدمات السيارات إلى جانب ما يبلّغ سائقو الإمارات عن دفعه فعلاً. البلاغات مجهولة. الأسعار تقديرية وليست عروضاً — سعرك الفعلي يعتمد على السيارة والقطع (أصلية أم تجارية) والورشة. ',
@@ -572,6 +596,9 @@ const T={
     mThanksA:'شكراً لك — السائق التالي الذي يتحقق من ', mThanksB:' سيحصل على صورة أوضح بفضلك.', egPh:n=>'مثلاً '+n,
     mVs:(pct,typ)=>pct<=-3?`دفعت أقل بنسبة ${-pct}% من سعر الورشة المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من سعر الورشة المعتاد (${typ}) — بلاغك يساعد السائق التالي على التفاوض.`:`هذا قريب من سعر الورشة المعتاد (${typ}).`,
     mTooHigh:'هذا السعر يبدو مرتفعاً جداً', mSavedLocal:'حُفِظ على هذا الجهاز فقط',
+    mAttach:'أضف صورة الفاتورة', mAttachOpt:'— اختياري', mAttached:'أُرفقت صورة الفاتورة', mAttachRemove:'إزالة الصورة',
+    mAttachHint:'البلاغات الموثّقة تحصل على شارة وتُحسب مرّتين. تُستخدم الصورة للتحقق من السعر فقط، ولا تُعرض علناً أبداً.',
+    mUploading:'جارٍ الإضافة…', tPhotoFail:'تعذّر إرفاق الصورة — أُضيف سعرك بدونها', tPhotoBad:'تعذّرت قراءة الصورة — جرّب صورة أخرى',
     gDup:'لقد أضفت هذا السعر بالضبط من قبل', gBucket:'شكراً — لقد أضفت ما يكفي هنا اليوم', gDay:'هذا عدد كبير من الأسعار اليوم — حاول غداً',
     kVerdict:'الحكم', kGoing:'السعر السائد', kEstimate:'تقدير', kTypical:'السعر المعتاد',
     wGoing:'السعر السائد', wTypical:'السعر المعتاد', wFair:'عادل', wSteep:'مرتفع', wWalk:'ابتعد',
@@ -668,12 +695,14 @@ const adapters={
     url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
     headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
     async list(){
-      const r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      // 'verified' only exists once the docs/backend-setup.md §5 SQL has run — fall back to the legacy select until then
+      let r=await fetch(this.url+'?select=category,area,price,note,verified,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      if(!r.ok) r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) throw new Error('list '+r.status);
-      return (await r.json()).map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''}));
+      return (await r.json()).map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||'',v:!!x.verified}));
     },
-    async add(sub){
-      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null})});
+    async add(sub){ // verified stays false (flipped manually, never by a client)
+      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null,...(sub.invoice_path?{invoice_path:sub.invoice_path}:{})})});
       if(!r.ok) throw new Error('add '+r.status);
     },
   } : null,
@@ -697,7 +726,9 @@ function paidStats(cat){
   const fresh=all.filter(d=>Date.now()-d.t<=RECENT_MS);
   const use=fresh.length>=3?fresh:all, raw=use.map(d=>d.p);
   if(!raw.length)return{count:0};
-  const {kept}=iqrKeep(raw);
+  // verified (receipt-checked) reports weigh 2x in the percentiles — stated in the explainer strip
+  const weighted=use.flatMap(d=>d.v?[d.p,d.p]:[d.p]);
+  const {kept}=iqrKeep(weighted);
   return{count:raw.length,p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
 }
 const CAP_BUCKET=2, CAP_DAY=12, DAY_MS=864e5;
@@ -976,13 +1007,54 @@ function showTab(which){
   if(which==='repair')render(); else if(which==='rental')renderRental(); else { renderUsed(); updateStrip('#uresult', false); }
 }
 
+/* ===== optional invoice photo (verified tier) =====
+   The canvas re-encode caps the upload at ~1MB and strips all metadata (EXIF, GPS) —
+   only pixels leave the device. The photo is never rendered anywhere; it exists solely
+   so a human can check the price before flipping `verified` (see docs/backend-setup.md §5). */
+let INVOICE=null;
+async function compressInvoice(file){
+  let img;
+  try{ img=await createImageBitmap(file,{imageOrientation:'from-image'}); }
+  catch(e){
+    img=await new Promise((res,rej)=>{ const u=URL.createObjectURL(file), i=new Image();
+      i.onload=()=>{URL.revokeObjectURL(u);res(i)}; i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('unreadable'))}; i.src=u; });
+  }
+  const w0=img.naturalWidth||img.width, h0=img.naturalHeight||img.height;
+  const sc=Math.min(1,1600/Math.max(w0,h0)), w=Math.max(1,Math.round(w0*sc)), h=Math.max(1,Math.round(h0*sc));
+  const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+  cv.getContext('2d').drawImage(img,0,0,w,h);
+  if(img.close) img.close();
+  let blob=null;
+  for(const q of [0.82,0.68,0.55,0.42]){
+    blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',q));
+    if(blob&&blob.size<=1024*1024) return blob;
+  }
+  if(blob&&blob.size<=1.5*1024*1024) return blob;
+  throw new Error('too large');
+}
+async function uploadInvoice(blob,catId){
+  const path=catId.replace(/[^a-z0-9-]/gi,'')+'/'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)+'.jpg';
+  const r=await fetch(SUPABASE_URL.replace(/\/+$/,'')+'/storage/v1/object/invoices/'+path,
+    {method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'image/jpeg'},body:blob});
+  if(!r.ok) throw new Error('upload '+r.status);
+  return path;
+}
+function setAttachUI(){
+  const b=$('attachBtn'); if(!b) return;
+  const on=!!INVOICE;
+  b.classList.toggle('on',on);
+  $('attachLabel').innerHTML=on?escapeHTML(L.mAttached):escapeHTML(L.mAttach)+' <span class="opt">'+escapeHTML(L.mAttachOpt)+'</span>';
+  $('attachClear').classList.toggle('hidden',!on);
+}
+function clearAttach(){ INVOICE=null; const i=$('modalInvoice'); if(i) i.value=''; setAttachUI(); }
+
 let lastFocus=null;
 function openModal(){
   const cat=catById($('job').value);
   $('modalSub').innerHTML=`${L.mSubA}<strong>${escapeHTML(jobLabel(cat))}</strong>${L.mSubB}`;
   $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
   const qv=parseFloat($('quoted').value);
-  $('modalPrice').value=(qv>0&&qv<1000000)?String(Math.round(qv)):''; $('modalNote').value=''; updateModalBtn();
+  $('modalPrice').value=(qv>0&&qv<1000000)?String(Math.round(qv)):''; $('modalNote').value=''; clearAttach(); updateModalBtn();
   $('modal').classList.remove('hidden'); syncStrip(); lastFocus=document.activeElement;
   document.addEventListener('keydown',onModalKey); setTimeout(()=>$('modalPrice').focus(),30);
 }
@@ -996,14 +1068,19 @@ async function submitModal(){
   const cat=catById($('job').value);
   const sub={c:'motor-'+cat.id,a:AREA,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub); if(!guard.ok){toast(guard.msg);return}
+  const sBtn=$('modalSubmit'), sTxt=sBtn.textContent; sBtn.disabled=true; sBtn.textContent=L.mUploading;
+  // the photo is a bonus, never a blocker: if the upload fails, the price still posts without it
+  let photoFailed=false;
+  if(INVOICE){ try{ sub.invoice_path=await uploadInvoice(INVOICE,sub.c); }catch(e){ photoFailed=true; } }
   let synced=true;
   try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  sBtn.textContent=sTxt;
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
   $('modalSuccessText').textContent=`${L.mThanksA}${jobLow(cat)}${L.mThanksB}`+vsTxt;
   $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
   setTimeout(()=>{const d=$('modalDone');if(d)d.focus()},30);
-  render(); if(!synced) toast(L.mSavedLocal);
+  render(); if(!synced) toast(L.mSavedLocal); else if(photoFailed) toast(L.tPhotoFail);
 }
 let toastTimer;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
@@ -1039,6 +1116,8 @@ function applyStaticI18n(){
   const ce=$('uresult'); if(ce && ce.classList.contains('calc-empty')) ce.textContent=L.calcEmptyUsed;
   set('#modalTitle', L.mTitle); set('#modalSubmit', L.mAdd); set('#modalDone', L.mDone);
   const mn=$('modalNote'); if(mn) mn.setAttribute('placeholder', L.mNotePh);
+  set('#attachHint', L.mAttachHint); setAttachUI();
+  const acl=$('attachClear'); if(acl) acl.setAttribute('aria-label', L.mAttachRemove);
   const msH=document.querySelector('#modalSuccess h3'); if(msH) msH.textContent=L.mDoneTitle;
 }
 
@@ -1072,6 +1151,17 @@ function applyStaticI18n(){
   $('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
   $('modalSubmit').onclick=submitModal; $('modalDone').onclick=closeModal;
   $('modalPrice').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9.]/g,'');updateModalBtn()});
+  const inv=$('modalInvoice');
+  if(inv){
+    $('attachBtn').onclick=()=>inv.click();
+    $('attachClear').onclick=clearAttach;
+    inv.addEventListener('change',async()=>{
+      const f=inv.files&&inv.files[0];
+      if(!f){ clearAttach(); return; }
+      try{ INVOICE=await compressInvoice(f); }catch(e){ clearAttach(); toast(L.tPhotoBad); return; }
+      setAttachUI();
+    });
+  }
   render(); renderRental(); renderUsed();
   const tab=p.get('tab'); if(tab==='rental'||tab==='used') showTab(tab);
 })();
