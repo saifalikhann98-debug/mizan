@@ -512,6 +512,11 @@ const UNLOCK_KEY='mizan:unlocked:v2';
 const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
+// Anonymous per-device id (random UUID kept in localStorage) — sent with submissions so the DB
+// trigger can rate-limit per device. No fingerprinting, no PII; clearing site data resets it
+// (the trigger's per-IP caps are the backstop for that).
+const DEVICE=(()=>{try{let d=localStorage.getItem('mizan:device');if(!d&&crypto.randomUUID){d=crypto.randomUUID();localStorage.setItem('mizan:device',d)}return d||null}catch(e){return null}})();
+
 
 /* ---- i18n (en / ar) — LANG from the URL path (/ar/rent served as a generated copy) or ?lang=ar.
    Arabic is machine MSA pending native review. Numbers/prices stay LTR. ---- */
@@ -566,7 +571,7 @@ const T = {
     mThanks:(t,a)=>`Thank you — the next person renting a ${t} in ${a} gets a sharper picture because of you.`,
     mVs:(pct,typ)=>pct<=-3?`You signed ${-pct}% under the typical asking rent (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical asking rent (${typ}) — your report helps the next tenant negotiate.`:`That's right around the typical asking rent (${typ}).`,
     tDup:'You already added that exact rent', tEnough:"Thanks — you've added enough here for today", tLot:"That's a lot today — try again tomorrow",
-    tHigh:'That rent looks too high', tLocal:'Saved on this device only',
+    tHigh:'That rent looks too high', tLocal:'Saved on this device only', tBlocked:"That didn't go through — you've hit today's limit here",
   },
   ar:{
     docTitle:'إيجارات الإمارات — هل الإيجار عادل وهل الزيادة قانونية؟ | ميزان',
@@ -617,7 +622,7 @@ const T = {
     mThanks:(t,a)=>`شكراً لك — الشخص التالي الذي يستأجر ${t} في ${a} سيحصل على صورة أوضح بفضلك.`,
     mVs:(pct,typ)=>pct<=-3?`وقّعت بأقل بنسبة ${-pct}% من الإيجار المطلوب المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من الإيجار المطلوب المعتاد (${typ}) — بلاغك يساعد المستأجر التالي على التفاوض.`:`هذا قريب من الإيجار المطلوب المعتاد (${typ}).`,
     tDup:'أضفت هذا الإيجار نفسه من قبل', tEnough:'شكراً، أضفت ما يكفي هنا اليوم', tLot:'أضفت الكثير اليوم — حاول غداً',
-    tHigh:'هذا الإيجار يبدو مرتفعاً جداً', tLocal:'حُفظ على هذا الجهاز فقط',
+    tHigh:'هذا الإيجار يبدو مرتفعاً جداً', tLocal:'حُفظ على هذا الجهاز فقط', tBlocked:'لم يُقبل — بلغت الحد اليومي هنا',
   },
 };
 const L = T[LANG];
@@ -696,10 +701,20 @@ const adapters={
       const rows=await r.json();
       return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''}));
     },
-    async add(sub){
-      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},
-        body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null})});
-      if(!r.ok) throw new Error('add '+r.status);
+    async add(sub){ // created_at defaults to now() in the DB; id is generated
+      const body={category:sub.c,area:sub.a,price:sub.p,note:sub.note||null};
+      if(DEVICE) body.device=DEVICE;
+      const post=()=>fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify(body)});
+      let r=await post();
+      if(!r.ok&&body.device&&r.status===400){
+        const t=await r.text().catch(()=>'');
+        if(/column/i.test(t)&&/device/.test(t)){ delete body.device; r=await post(); } // pre-migration DB — retry without it
+        else if(t){ const e=new Error(t.slice(0,200)); e.reject=true; throw e; }       // trigger/constraint said no
+      }
+      if(!r.ok){
+        if(r.status>=400&&r.status<500&&r.status!==401){ const e=new Error('rejected '+r.status); e.reject=true; throw e; }
+        throw new Error('add '+r.status); // network / server / auth trouble → caller degrades to local
+      }
     },
   } : null,
   local:{
@@ -1003,7 +1018,7 @@ async function submitModal(){
   const sub={c:'rent-'+$('rtype').value,a:$('rarea').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub); if(!guard.ok){toast(guard.msg);return}
   let synced=true;
-  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){if(e&&e.reject){toast(L.tBlocked);return;}synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   const type=typeById($('rtype').value);
   const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
