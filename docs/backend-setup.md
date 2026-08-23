@@ -76,3 +76,110 @@ const SUPABASE_ANON_KEY='eyJhbGci...';   // the anon/public key
 If the keys are blank or Supabase is unreachable, the app degrades gracefully: it keeps
 working on the local fallback and a submission shows "Saved on this device only" instead
 of failing. Nothing breaks; it just isn't shared until the backend is reachable.
+
+## 5. Server-side anti-pump (P1) — applied 2026-08
+
+The client-side guard (`submitGuard`) is a deterrent, not a defence — anyone can bypass the
+browser. This migration enforces the same caps **in the database**, where they can't be skipped.
+Paste into **SQL Editor → New query → Run**:
+
+```sql
+-- 5a. columns: anonymous device id (sent by the app) + server-stamped IP hash.
+--     Both are PRIVATE — never readable by anon (see grants below).
+alter table public.submissions add column if not exists device uuid;
+alter table public.submissions add column if not exists ip_hash text;
+
+create index if not exists submissions_device_idx on public.submissions (device, created_at desc);
+create index if not exists submissions_ip_idx     on public.submissions (ip_hash, created_at desc);
+
+-- 5b. column privacy: anon may read only the public columns.
+revoke select on table public.submissions from anon;
+grant  select (category, area, price, note, created_at) on public.submissions to anon;
+
+-- 5c. the guard: BEFORE INSERT trigger enforcing sanity + rate caps.
+--     SECURITY DEFINER so it can read the private columns anon can't.
+create or replace function public.submissions_guard()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+declare
+  xff   text;
+  ip    text;
+  day   timestamptz := now() - interval '24 hours';
+  mon   timestamptz := now() - interval '30 days';
+  n     int;
+begin
+  -- stamp the caller's IP hash server-side (any client-sent value is overwritten)
+  begin
+    xff := coalesce((current_setting('request.headers', true))::json->>'x-forwarded-for','');
+  exception when others then xff := ''; end;
+  ip := nullif(trim(split_part(xff, ',', 1)), '');
+  new.ip_hash := case when ip is null then null else md5('mizan1:'||ip) end;
+
+  -- absolute price sanity (belt over the RLS braces)
+  if new.price is null or new.price <= 0 or new.price >= 1000000 then
+    raise exception 'MIZAN_LIMIT: price out of range';
+  end if;
+
+  -- per-IP backstop: device ids are trivially renewable, IPs much less so.
+  -- 40/day is generous for launch scale (UAE CGNAT can put many homes behind one IP).
+  if new.ip_hash is not null then
+    select count(*) into n from public.submissions
+      where ip_hash = new.ip_hash and created_at > day;
+    if n >= 40 then raise exception 'MIZAN_LIMIT: too many reports from this connection today'; end if;
+  end if;
+
+  if new.device is not null then
+    -- exact duplicate (device, service, area, price) within 30 days
+    perform 1 from public.submissions
+      where device = new.device and category = new.category and area = new.area
+        and price = new.price and created_at > mon limit 1;
+    if found then raise exception 'MIZAN_LIMIT: duplicate report'; end if;
+    -- max 2 per service+area per day (mirrors the client cap)
+    select count(*) into n from public.submissions
+      where device = new.device and category = new.category and area = new.area and created_at > day;
+    if n >= 2 then raise exception 'MIZAN_LIMIT: bucket limit reached'; end if;
+    -- max 12 total per day
+    select count(*) into n from public.submissions
+      where device = new.device and created_at > day;
+    if n >= 12 then raise exception 'MIZAN_LIMIT: daily limit reached'; end if;
+  elsif new.ip_hash is not null then
+    -- no device id (not the official client) → the same caps keyed on IP
+    select count(*) into n from public.submissions
+      where ip_hash = new.ip_hash and category = new.category and area = new.area and created_at > day;
+    if n >= 2 then raise exception 'MIZAN_LIMIT: bucket limit reached'; end if;
+    select count(*) into n from public.submissions
+      where ip_hash = new.ip_hash and created_at > day;
+    if n >= 12 then raise exception 'MIZAN_LIMIT: daily limit reached'; end if;
+  end if;
+
+  return new;
+end $$;
+
+drop trigger if exists submissions_guard on public.submissions;
+create trigger submissions_guard before insert on public.submissions
+  for each row execute function public.submissions_guard();
+
+-- make PostgREST pick up the new columns immediately
+notify pgrst, 'reload schema';
+```
+
+**How the pieces fit**
+- The app sends an anonymous `device` UUID (localStorage `mizan:device`; no fingerprinting, no
+  PII). Clearing site data resets it — that's what the per-IP caps are for.
+- `ip_hash` is written by the trigger from the request headers, salted+hashed; the raw IP is
+  never stored. Neither column is readable via the API (column-level grant).
+- Rejections raise `MIZAN_LIMIT: …` → PostgREST returns HTTP 400 → the app shows a friendly
+  "you've hit today's limit here" toast and does **not** pretend the price was saved.
+- The client is deploy-order-safe: if the `device` column doesn't exist yet, it retries the
+  insert without it, so nothing breaks between deploying the app and running this SQL.
+
+**Testing** (safe — uses a category no app screen ever shows):
+```
+# 1st insert succeeds; the SAME command again must return 400 MIZAN_LIMIT: duplicate report
+curl -s -X POST "https://weouzxiubblpsquxdeok.supabase.co/rest/v1/submissions" \
+  -H "apikey: <ANON_KEY>" -H "Authorization: Bearer <ANON_KEY>" -H "Content-Type: application/json" \
+  -d '{"category":"test-antipump","area":"UAE","price":1,"device":"11111111-1111-4111-8111-111111111111"}'
+```
+Delete test rows afterwards in Table Editor (as owner): `delete from submissions where category like 'test-%';`

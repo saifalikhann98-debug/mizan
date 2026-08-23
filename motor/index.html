@@ -497,6 +497,11 @@ const UNLOCK_KEY='mizan:unlocked:v2';
 const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
+// Anonymous per-device id (random UUID kept in localStorage) — sent with submissions so the DB
+// trigger can rate-limit per device. No fingerprinting, no PII; clearing site data resets it
+// (the trigger's per-IP caps are the backstop for that).
+const DEVICE=(()=>{try{let d=localStorage.getItem('mizan:device');if(!d&&crypto.randomUUID){d=crypto.randomUUID();localStorage.setItem('mizan:device',d)}return d||null}catch(e){return null}})();
+
 
 /* ============================ i18n (en / ar) ============================ */
 const LANG = (location.pathname.replace(/^\/+/,'').startsWith('ar') || new URLSearchParams(location.search).get('lang')==='ar') ? 'ar' : 'en';
@@ -528,7 +533,7 @@ const T={
     mThanksA:'Thank you — the next driver checking ', mThanksB:' gets a sharper picture because of you.', egPh:n=>'e.g. '+n,
     mVs:(pct,typ)=>pct<=-3?`You paid ${-pct}% under the typical garage price (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical garage price (${typ}) — your report helps the next driver push back.`:`That's right around the typical garage price (${typ}).`,
     mTooHigh:'That price looks too high', mSavedLocal:'Saved on this device only',
-    gDup:'You already added that exact price', gBucket:'Thanks — you’ve added enough here for today', gDay:'That’s a lot of prices today — try again tomorrow',
+    gDup:'You already added that exact price', gBucket:'Thanks — you’ve added enough here for today', gDay:'That’s a lot of prices today — try again tomorrow', tBlocked:"That didn't go through — you've hit today's limit here",
     kVerdict:'Verdict', kGoing:'Going rate', kEstimate:'Estimate', kTypical:'Typical rate',
     wGoing:'Going rate', wTypical:'Typical rate', wFair:'Fair', wSteep:'Steep', wWalk:'Walk away',
     wBelow:'Below typical', wAround:'Around typical', wGreat:'Great deal', wOver:'Overpriced',
@@ -572,7 +577,7 @@ const T={
     mThanksA:'شكراً لك — السائق التالي الذي يتحقق من ', mThanksB:' سيحصل على صورة أوضح بفضلك.', egPh:n=>'مثلاً '+n,
     mVs:(pct,typ)=>pct<=-3?`دفعت أقل بنسبة ${-pct}% من سعر الورشة المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من سعر الورشة المعتاد (${typ}) — بلاغك يساعد السائق التالي على التفاوض.`:`هذا قريب من سعر الورشة المعتاد (${typ}).`,
     mTooHigh:'هذا السعر يبدو مرتفعاً جداً', mSavedLocal:'حُفِظ على هذا الجهاز فقط',
-    gDup:'لقد أضفت هذا السعر بالضبط من قبل', gBucket:'شكراً — لقد أضفت ما يكفي هنا اليوم', gDay:'هذا عدد كبير من الأسعار اليوم — حاول غداً',
+    gDup:'لقد أضفت هذا السعر بالضبط من قبل', tBlocked:'لم يُقبل — بلغت الحد اليومي هنا', gBucket:'شكراً — لقد أضفت ما يكفي هنا اليوم', gDay:'هذا عدد كبير من الأسعار اليوم — حاول غداً',
     kVerdict:'الحكم', kGoing:'السعر السائد', kEstimate:'تقدير', kTypical:'السعر المعتاد',
     wGoing:'السعر السائد', wTypical:'السعر المعتاد', wFair:'عادل', wSteep:'مرتفع', wWalk:'ابتعد',
     wBelow:'أقل من المعتاد', wAround:'قريب من المعتاد', wGreat:'صفقة ممتازة', wOver:'مبالغ فيه',
@@ -673,8 +678,19 @@ const adapters={
       return (await r.json()).map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''}));
     },
     async add(sub){
-      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null})});
-      if(!r.ok) throw new Error('add '+r.status);
+      const body={category:sub.c,area:sub.a,price:sub.p,note:sub.note||null};
+      if(DEVICE) body.device=DEVICE;
+      const post=()=>fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify(body)});
+      let r=await post();
+      if(!r.ok&&body.device&&r.status===400){
+        const t=await r.text().catch(()=>'');
+        if(/column/i.test(t)&&/device/.test(t)){ delete body.device; r=await post(); } // pre-migration DB — retry without it
+        else if(t){ const e=new Error(t.slice(0,200)); e.reject=true; throw e; }       // trigger/constraint said no
+      }
+      if(!r.ok){
+        if(r.status>=400&&r.status<500&&r.status!==401){ const e=new Error('rejected '+r.status); e.reject=true; throw e; }
+        throw new Error('add '+r.status); // network / server / auth trouble → caller degrades to local
+      }
     },
   } : null,
   local:{
@@ -997,7 +1013,7 @@ async function submitModal(){
   const sub={c:'motor-'+cat.id,a:AREA,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub); if(!guard.ok){toast(guard.msg);return}
   let synced=true;
-  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){if(e&&e.reject){toast(L.tBlocked);return;}synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
   $('modalSuccessText').textContent=`${L.mThanksA}${jobLow(cat)}${L.mThanksB}`+vsTxt;
