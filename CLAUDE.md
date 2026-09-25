@@ -32,6 +32,20 @@ The whole product is trust + presentation.
 Rule: a service+area shows the paid layer only once it has **≥5 recent prices**. Below that,
 it shows the market estimate and says so. The flip from estimate→paid is the product working.
 
+## US edition (added Sep 2026)
+`/us/`, `/us/rent/`, `/us/motor/` are US copies of the three apps: USD, US-wide with a **metro
+selector** (24 metros for rent, 23 for services), same two-layer model and reciprocity gate.
+- Market estimates are REAL published US figures (Angi/HomeGuide/RepairPal/Zumper/Zillow etc.,
+  Sep 2026) — sources in `data/us-market-prices.json`. Metro multipliers = BEA Regional Price
+  Parities 2023 ("Services: Other"). Rent lo/hi is a labelled derived spread around real medians.
+- Category ids carry a `us-` prefix (`us-hvac`, `us-rent-1br`, `us-motor-oilchange`) so US and UAE
+  buckets never mix in the shared Supabase `submissions` table; each app's feed filters by its own
+  known ids. localStorage keys use `mizan:us:*`.
+- The Dubai RERA increase calculator is UAE-only and was removed from `/us/rent`; there is no
+  US-wide legal-cap equivalent (rent control is city/state-specific).
+- `/us/*` has no Arabic copies. The `T.ar` blocks inside the US files are dead code inherited from
+  the copy — LANG is always `en` on `/us/*` paths.
+
 ## The reciprocity gate (just added)
 The free market estimate is always visible. The crowd **paid** range is **locked** until the
 user contributes one price (`UNLOCKED` flag, stored under `mizan:unlocked:v2`, per-user).
