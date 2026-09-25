@@ -11,8 +11,7 @@
 <link rel="alternate" hreflang="en-US" href="https://www.mizan-price.com/us/">
 <link rel="alternate" hreflang="x-default" href="https://www.mizan-price.com/">
 <meta name="robots" content="index,follow">
-<meta name="theme-color" content="#FBFAF6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#121615" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FBFAF6">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mizan">
@@ -41,7 +40,7 @@
 ]}
 ]}
 </script>
-<script>/* set theme + text direction before paint to avoid a flash */(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}try{var p=location.pathname.replace(/^\/+/,'');if(p.indexOf('ar')===0||location.search.indexOf('lang=ar')>-1){document.documentElement.lang='ar';document.documentElement.setAttribute('dir','rtl');}}catch(e){}})();</script>
+<script>/* set theme + text direction before paint to avoid a flash */(function(){try{document.documentElement.setAttribute('data-theme','light');}catch(e){document.documentElement.setAttribute('data-theme','light');}try{var p=location.pathname.replace(/^\/+/,'');if(p.indexOf('ar')===0||location.search.indexOf('lang=ar')>-1){document.documentElement.lang='ar';document.documentElement.setAttribute('dir','rtl');}}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Geist+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -65,28 +64,6 @@
     --mono:'Geist Mono',ui-monospace,monospace;
     --ease:cubic-bezier(.2,.8,.2,1);
   }
-  /* ---- Dark theme: set on <html data-theme="dark"> by the no-flash script + toggle ---- */
-  :root[data-theme="dark"]{
-    --ink:#ECE8E0; --ink-2:#CFC9BD; --muted:#A29D92; --muted-2:#A8A398;
-    --faint:#8F8A7E; --faint-2:#8E8779; --faint-3:#7E796E; --eyebrow:#9C9274;
-    --surface:#1B1F1D; --surface-2:#222724;
-    --line:#2F3531; --line-2:#363C38; --line-3:#2A302C; --line-4:#333935; --line-5:#282D2A;
-    --teal:#5EC091; --teal-deep:#79CFA6; --teal-bg:#13241D; --pill-text:#0E1A17; --on-teal:#0E1A17;
-    --band:#121615; --on-band:#ECE8E0; --on-band-2:#A29D92; --band-line:#343A36; --mint:#96D6B4; --dot:rgba(246,244,236,.10); --switch-bg:#1B1F1D; --switch-hover:#252A27;
-    --fair:#5FB985; --fair-bg:#16271D; --success-bg:#16271D;
-    --steep:#D7A24A; --steep-bg:#292214;
-    --walk:#E2705A; --walk-bg:#2C1915;
-    --hatch-a:#3C3D34; --hatch-b:#2F302A; --feed-dot:#7FB39B;
-    --bg:#121615;
-  }
-  :root[data-theme="dark"] .verdict-line{color:#CBC6BB}
-  :root[data-theme="dark"] .verdict-line em{color:var(--faint-2)}
-  :root[data-theme="dark"] .scale .band.locked{background:repeating-linear-gradient(45deg,#33352E,#33352E 5px,#2A2C26 5px,#2A2C26 10px);color:var(--faint-2)}
-  :root[data-theme="dark"] .modal-input,
-  :root[data-theme="dark"] .note-input{background:var(--surface)}
-  :root[data-theme="dark"] .attach-btn,:root[data-theme="dark"] .attach-clear{background:var(--surface)}
-  :root[data-theme="dark"] .toast{background:#0C100F;color:#ECE8E0}
-  :root[data-theme="dark"] .brow.alt{background:var(--surface-2)}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background-color:var(--bg);background-image:linear-gradient(var(--bg),var(--bg)),radial-gradient(circle,var(--dot) .75px,transparent 1.2px);background-size:100% 99999px,16px 16px;background-position:0 var(--dots-end,1100px),8px 8px;background-repeat:no-repeat,repeat;min-height:100vh;color:var(--ink);
@@ -108,14 +85,6 @@
   .nav-right{display:flex;align-items:center;gap:22px}
   .nav-meta{font-size:13px;color:var(--on-band-2)}
   .nav-right #langLink{color:var(--on-band)!important;font-weight:500!important}
-  .theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
-    border:1px solid var(--band-line);border-radius:10px;background:transparent;color:var(--on-band);cursor:pointer;flex-shrink:0;transition:border-color .15s,background .15s}
-  .theme-toggle:hover{background:var(--switch-hover)}
-  .theme-toggle:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(23,63,53,.2)}
-  .theme-toggle svg{width:17px;height:17px;display:block}
-  .theme-toggle .icon-sun{display:none}
-  :root[data-theme="dark"] .theme-toggle .icon-sun{display:block}
-  :root[data-theme="dark"] .theme-toggle .icon-moon{display:none}
 
   .hero{max-width:1140px;margin:0 auto;padding:clamp(22px,4vw,44px) clamp(18px,5vw,32px) 0;text-align:center}
   .eyebrow{display:none}
@@ -131,7 +100,6 @@
   .mode.active{background:var(--teal);color:var(--on-teal);opacity:1}
   .mode:not(.active):hover{background:var(--switch-hover);color:var(--on-band)}
   .mode:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(23,63,53,.2)}
-  :root[data-theme="dark"] .mode.active{color:var(--on-teal)}
 
   /* ---- layout ---- */
   main{max-width:1140px;margin:-72px auto 0;padding:0 clamp(18px,5vw,32px) 70px;position:relative;z-index:1}
@@ -406,10 +374,6 @@
       <span class="nav-meta">Crowdsourced fair prices · UAE</span>
       <a href="/us/" id="usLink" hreflang="en-US" aria-label="Switch to the US edition" style="font-size:14px;font-weight:600;color:var(--teal);flex-shrink:0;text-decoration:none">US ⇄</a>
       <a href="/ar/" id="langLink" hreflang="ar" lang="ar" aria-label="العربية" style="font-size:14px;font-weight:600;color:var(--teal);flex-shrink:0;text-decoration:none">عربي</a>
-      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M2 12h2.5M19.5 12H22M4.5 19.5l1.8-1.8M17.7 6.3l1.8-1.8"/></svg>
-      </button>
     </div>
   </div>
 </header>
@@ -1460,9 +1424,6 @@ function applyStaticI18n(){
   $('scope').addEventListener('change',render);
   makeCombobox($('category'),{placeholder:L.searchSvc,labelledBy:'lbl-cat'});
   makeCombobox($('area'),{placeholder:L.searchArea,labelledBy:'lbl-area'});
-  const tt=$('themeToggle');
-  if(tt) tt.onclick=()=>{ const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
-    document.documentElement.setAttribute('data-theme',next); try{localStorage.setItem('mizan:theme',next)}catch(e){} };
   $('quoted').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/[^0-9.]/g,''); render(); });
   $('modal').addEventListener('click',e=>{ if(e.target===$('modal'))closeModal(); });
   $('modalSubmit').onclick=submitModal;

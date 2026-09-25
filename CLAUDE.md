@@ -43,8 +43,9 @@ selector** (24 metros for rent, 23 for services), same two-layer model and recip
   known ids. localStorage keys use `mizan:us:*`.
 - The Dubai RERA increase calculator is UAE-only and was removed from `/us/rent`; there is no
   US-wide legal-cap equivalent (rent control is city/state-specific).
-- `/us/*` has no Arabic copies. The `T.ar` blocks inside the US files are dead code inherited from
-  the copy — LANG is always `en` on `/us/*` paths.
+- `/us/*` is English-only (`LANG` pinned to `en`; the Arabic i18n code was stripped from the US
+  copies) and uses **brick orange `--teal #9E3B1F`** as its single accent instead of the pine green;
+  the US header drops the Arabic wordmark.
 
 ## The reciprocity gate (just added)
 The free market estimate is always visible. The crowd **paid** range is **locked** until the
@@ -80,8 +81,8 @@ headline, ONE brand accent). Still a single self-contained file per app (`index.
 - Layout: max-width 1140px; ≤900px inputs 2-up; ≤760px stacks, switcher fills width, mobile verdict strip
   (`.vstrip`) mirrors the verdict when the card is off-screen. Result recomputes live; tiers Fair / Steep /
   Walk away / Going rate.
-- **Dual theme** via tokens under `:root` / `:root[data-theme="dark"]`; no-flash `<head>` script; toggle
-  persists to localStorage. Respect `prefers-reduced-motion`. `:focus-visible` states. Modal focus-trap.
+- **Light theme only** (Sep 2026: dark mode + the theme switcher were removed product-wide; the
+  no-flash script pins `data-theme="light"`). Respect `prefers-reduced-motion`. `:focus-visible` states. Modal focus-trap.
 - One bold element (the verdict word); keep everything else quiet. Verdict meaning never by colour alone.
 - Guides share the system (CSS in `tools/build-seo-pages.mjs` → `/prices/page.css`; `G()` lifts crumb +
   h1 + lede into `.topband`). OG cards (`node tools/build-og.mjs`) intentionally stay on the pine field.
