@@ -83,6 +83,7 @@
   :root[data-theme="dark"] .scale .band.locked{background:repeating-linear-gradient(45deg,#33352E,#33352E 5px,#2A2C26 5px,#2A2C26 10px);color:var(--faint-2)}
   :root[data-theme="dark"] .modal-input,
   :root[data-theme="dark"] .note-input{background:var(--surface)}
+  :root[data-theme="dark"] .attach-btn,:root[data-theme="dark"] .attach-clear{background:var(--surface)}
   :root[data-theme="dark"] .toast{background:#0C100F;color:#ECE8E0}
   :root[data-theme="dark"] .brow.alt{background:var(--surface-2)}
   *{box-sizing:border-box}
@@ -146,6 +147,10 @@
   .select-wrap select{appearance:none;-webkit-appearance:none;width:100%;min-width:0;height:30px;padding:0 24px 0 0;border:none;background:transparent;
     font-family:inherit;font-size:16px;font-weight:500;color:var(--ink);cursor:pointer;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
   .select-wrap .chev{position:absolute;right:0;top:50%;transform:translateY(-50%);pointer-events:none;width:16px;height:16px}
+  /* scope sub-option ("what's included") — only services with a `scopes` list show the 4th field */
+  .scope-field{display:none}
+  .form-col.has-scope{grid-template-columns:1.4fr .9fr .9fr 1fr}
+  .form-col.has-scope .scope-field{display:block}
   /* custom searchable dropdown (combobox) over the hidden native <select> */
   .combo{position:static}
   .combo-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;height:30px;padding:0;border:none;background:transparent;
@@ -284,6 +289,19 @@
   .modal-input input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ink)}
   .note-input{width:100%;border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface-2);margin-bottom:16px;outline:none}
   .note-input:focus-visible{border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
+  /* optional invoice photo (verified tier) — must stay lighter than the price input */
+  .attach{margin:-4px 0 16px}
+  .attach-row{display:flex;gap:8px;align-items:stretch}
+  .attach-btn{flex:1;display:flex;align-items:center;gap:9px;border:1px dashed var(--line-2);background:var(--surface-2);border-radius:12px;padding:11px 13px;font-family:inherit;font-size:13.5px;color:var(--muted);cursor:pointer;text-align:start;transition:.15s}
+  .attach-btn svg{width:16px;height:16px;flex:none}
+  .attach-btn .opt{color:var(--faint)}
+  .attach-btn:hover{border-color:var(--teal);color:var(--teal)}
+  .attach-btn:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(23,63,53,.15)}
+  .attach-btn.on{border-style:solid;border-color:var(--fair);color:var(--fair);background:var(--fair-bg)}
+  .attach-clear{flex:none;width:42px;border:1px solid var(--line-2);background:var(--surface-2);border-radius:12px;color:var(--muted);font-size:17px;cursor:pointer;font-family:inherit}
+  .attach-clear:hover{border-color:var(--walk);color:var(--walk)}
+  .attach-hint{margin:7px 2px 0;font-size:12px;line-height:1.5;color:var(--faint)}
+  .vbadge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--fair);background:var(--fair-bg);border-radius:999px;padding:1.5px 8px;vertical-align:2px;margin-inline-start:6px;white-space:nowrap}
   .btn-submit{width:100%;height:52px;border:none;border-radius:999px;font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;color:var(--on-teal);background:var(--teal);transition:background .2s ease}
   .btn-submit:hover:not(:disabled){background:var(--teal-deep)}
   .btn-submit:disabled{background:#C8C2B4;cursor:not-allowed}
@@ -314,8 +332,9 @@
 
   /* responsive */
   @media (max-width:900px){
-    .form-col{grid-template-columns:1fr 1fr}
+    .form-col,.form-col.has-scope{grid-template-columns:1fr 1fr}
     .form-col .field:first-child{grid-column:1/-1}
+    .form-col.has-scope .field:nth-of-type(4){grid-column:1/-1}   /* quote input gets its own row; area + scope pair up */
     .rows{grid-template-columns:1fr}
     .qas{grid-template-columns:1fr 1fr}
   }
@@ -329,7 +348,7 @@
     .modeswitch{display:flex;left:0;transform:none;width:auto;margin:20px 18px 0}
     .mode{flex:1 1 0;justify-content:center;gap:7px;padding:10px 6px;font-size:14px}
     main{margin-top:-44px;padding-bottom:56px}
-    .form-col{grid-template-columns:1fr;gap:10px;padding:16px}
+    .form-col,.form-col.has-scope{grid-template-columns:1fr;gap:10px;padding:16px}
     .result-col{grid-template-columns:1fr;gap:18px;padding:18px 16px 16px}
     .verdict{grid-column:1;grid-row:auto;padding:18px}
     .verdict-word{font-size:38px}
@@ -366,6 +385,8 @@
   html[lang="ar"] .qmark .qlabel{font-family:'Geist Mono','IBM Plex Sans Arabic',ui-monospace,monospace}
   html[lang="ar"] .brow .v{text-align:left}
   html[lang="ar"] .combo-trigger{text-align:right}
+  html[lang="ar"] .select-wrap select{padding:0 0 0 24px}
+  html[lang="ar"] .select-wrap .chev{right:auto;left:0}
   html[lang="ar"] .faq details p{padding-right:0;padding-left:28px}
 </style>
 </head>
@@ -420,6 +441,13 @@
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </div>
       </div>
+      <div class="field scope-field">
+      <label class="flabel" id="lbl-scope" for="scope">What&rsquo;s included?</label>
+      <div class="select-wrap">
+        <select id="scope" aria-label="What's included"></select>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      </div>
       <div class="field">
       <label class="flabel" for="quoted">The price you were quoted <span class="opt">— optional</span></label>
       <div class="quote-input">
@@ -430,7 +458,7 @@
       </div>
       <div class="howto">
         <div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>Market estimate</strong> — list prices harvested from the web. What companies advertise.</p></div>
-        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report.</p></div>
+        <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report. Verified receipts count double.</p></div>
       </div>
     </section>
 
@@ -439,7 +467,7 @@
     <!-- mobile-only: the "how it works" explainer moves below the result so the verdict is in the first view -->
     <div class="howto howto-m">
       <div class="hrow"><span class="dot" style="background:var(--hatch-a)"></span><p><strong>Market estimate</strong> — list prices harvested from the web. What companies advertise.</p></div>
-      <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report.</p></div>
+      <div class="hrow"><span class="dot" style="background:var(--teal)"></span><p><strong>Paid range</strong> — what residents report actually paying. Gets sharper with every report. Verified receipts count double.</p></div>
     </div>
   </div>
 
@@ -470,6 +498,14 @@
         <input type="text" inputmode="numeric" id="modalPrice" placeholder="0" aria-label="Amount you actually paid in AED">
       </div>
       <input type="text" class="note-input" id="modalNote" maxlength="60" placeholder="Optional note — e.g. 2 split units, incl. gas" aria-label="Optional note (no personal info)">
+      <div class="attach">
+        <input type="file" id="modalInvoice" accept="image/*" hidden>
+        <div class="attach-row">
+          <button type="button" class="attach-btn" id="attachBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7.5 6.5H4a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 4 19.5h16a1.5 1.5 0 0 0 1.5-1.5V8A1.5 1.5 0 0 0 20 6.5h-3.5z"/><circle cx="12" cy="12.8" r="3.6"/></svg><span id="attachLabel">Add the invoice photo <span class="opt">— optional</span></span></button>
+          <button type="button" class="attach-clear hidden" id="attachClear" aria-label="Remove the photo">×</button>
+        </div>
+        <p class="attach-hint" id="attachHint">Verified reports get a badge and count double. The photo is only used to check the price — it is never shown publicly.</p>
+      </div>
       <button type="button" class="btn-submit" id="modalSubmit" disabled>Add my price</button>
     </div>
     <div id="modalSuccess" class="modal-success hidden">
@@ -503,6 +539,11 @@ const UNLOCK_KEY='mizan:unlocked:v2';
 const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';   // anon / public key — public by design, access enforced by RLS (NOT service_role)
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
+// Anonymous per-device id (random UUID kept in localStorage) — sent with submissions so the DB
+// trigger can rate-limit per device. No fingerprinting, no PII; clearing site data resets it
+// (the trigger's per-IP caps are the backstop for that).
+const DEVICE=(()=>{try{let d=localStorage.getItem('mizan:device');if(!d&&crypto.randomUUID){d=crypto.randomUUID();localStorage.setItem('mizan:device',d)}return d||null}catch(e){return null}})();
+
 
 // Synthetic seed = DEMO ONLY. Must stay false in production: showing fabricated prices as
 // real paid data breaks the core honesty rule (CLAUDE.md). Flip to true only for local demos.
@@ -520,7 +561,7 @@ const T = {
     subhead:'What UAE residents actually paid, next to what companies advertise. Pick a service and your area — the verdict updates as you go.',
     lblCat:'What are you paying for?', lblArea:'In which area?', lblQuote:'The price you were quoted', quoteOpt:'— optional', aed:'AED', egPh:n=>'e.g. '+n,
     howMarketStrong:'Market estimate', howMarket:' — list prices harvested from the web. What companies advertise.',
-    howPaidStrong:'Paid range', howPaid:' — what residents report actually paying. Gets sharper with every report.',
+    howPaidStrong:'Paid range', howPaid:' — what residents report actually paying. Gets sharper with every report. Verified receipts count double.',
     loading:'Loading prices…', rin:'in', scaleTitle:'The price scale', residentsPaid:'RESIDENTS PAID',
     legendList:'List prices', legendPaid:'Actually paid',
     bdAdvertised:'Advertised (list)', bdResidents:'Residents paid', bdYourQuote:'Your quote',
@@ -548,6 +589,10 @@ const T = {
     mTitle:'What did you actually pay?', mSubA:'For ', mSubB:' in ', mSubC:'. Shared anonymously — no name, no contact.',
     mAdd:'Add my price', mNote:'Optional note — e.g. 2 split units, incl. gas',
     mDoneTitle:'Added to the scale.', mThanks:(s,a)=>`Thank you — the next person who checks ${s} in ${a} gets a sharper estimate because of you.`, mDone:'Done',
+    mAttach:'Add the invoice photo', mAttachOpt:'— optional', mAttached:'Invoice photo attached', mAttachRemove:'Remove the photo',
+    mAttachHint:'Verified reports get a badge and count double. The photo is only used to check the price — it is never shown publicly.',
+    mUploading:'Adding…', tPhotoFail:'Couldn’t attach the photo — your price was added without it', tPhotoBad:'That photo couldn’t be read — try another one',
+    badgeVerified:'Verified',
     mVs:(pct,typ)=>pct<=-3?`You paid ${-pct}% under the typical advertised price (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical advertised price (${typ}) — your report helps the next person push back.`:`That's right around the typical advertised price (${typ}).`,
     feedTitle:'Recently paid', feedSub:'Fresh prices keep the ranges honest. Old ones fade.', feedCount:n=>`${n} resident report${n===1?'':'s'} so far`,
     feedEmpty:'No real prices yet — be the first. Add what you paid and it shows up here for the next person.',
@@ -556,7 +601,7 @@ const T = {
     footPrices:'Service prices →', footRent:'Rent by area →', footMotor:'Car repair costs →',
     tEnter:'Enter a price first', tHigh:'That price looks too high', tEnough:'Thanks — you’ve added enough here for today',
     tDup:'You already added that exact price', tLot:'That’s a lot of prices today — try again tomorrow',
-    tLocal:'Saved on this device only', tUnlocked:'Unlocked, thank you', tAdded:'Added, thank you',
+    tLocal:'Saved on this device only', tBlocked:"That didn't go through — you've hit today's limit here", tUnlocked:'Unlocked, thank you', tAdded:'Added, thank you',
   },
   ar:{
     tagline:'أسعار عادلة من السكان · الإمارات', langLink:'English', langHref:'/',
@@ -564,7 +609,7 @@ const T = {
     subhead:'ما يدفعه سكان الإمارات فعلاً، مقابل الأسعار التي تعلنها الشركات. اختر خدمة ومنطقتك، وتُحدَّث النتيجة فوراً.',
     lblCat:'ما الخدمة التي تدفع مقابلها؟', lblArea:'في أي منطقة؟', lblQuote:'السعر الذي عُرض عليك', quoteOpt:'— اختياري', aed:'درهم', egPh:n=>'مثلاً '+n,
     howMarketStrong:'تقدير السوق', howMarket:' — الأسعار المُعلنة على الإنترنت. ما تعلنه الشركات.',
-    howPaidStrong:'النطاق المدفوع', howPaid:' — ما يبلّغ السكان أنهم دفعوه فعلاً. يصبح أدقّ مع كل بلاغ.',
+    howPaidStrong:'النطاق المدفوع', howPaid:' — ما يبلّغ السكان أنهم دفعوه فعلاً. يصبح أدقّ مع كل بلاغ. الإيصالات الموثّقة تُحسب مرّتين.',
     loading:'جارٍ تحميل الأسعار…', rin:'في', scaleTitle:'مقياس الأسعار', residentsPaid:'ما دفعه السكان',
     legendList:'الأسعار المُعلنة', legendPaid:'المدفوع فعلاً',
     bdAdvertised:'المُعلن', bdResidents:'دفع السكان', bdYourQuote:'عرضك',
@@ -592,6 +637,10 @@ const T = {
     mTitle:'كم دفعت فعلاً؟', mSubA:'عن ', mSubB:' في ', mSubC:'. يُشارَك بشكل مجهول، بدون اسم أو وسيلة تواصل.',
     mAdd:'أضف سعري', mNote:'ملاحظة اختيارية، مثلاً وحدتان سبليت، شامل تعبئة الغاز',
     mDoneTitle:'أُضيف إلى المقياس.', mThanks:(s,a)=>`شكراً لك، الشخص التالي الذي يتحقّق من ${s} في ${a} سيحصل على تقدير أدقّ بفضلك.`, mDone:'تم',
+    mAttach:'أضف صورة الفاتورة', mAttachOpt:'— اختياري', mAttached:'أُرفقت صورة الفاتورة', mAttachRemove:'إزالة الصورة',
+    mAttachHint:'البلاغات الموثّقة تحصل على شارة وتُحسب مرّتين. تُستخدم الصورة للتحقق من السعر فقط، ولا تُعرض علناً أبداً.',
+    mUploading:'جارٍ الإضافة…', tPhotoFail:'تعذّر إرفاق الصورة — أُضيف سعرك بدونها', tPhotoBad:'تعذّرت قراءة الصورة — جرّب صورة أخرى',
+    badgeVerified:'موثّق',
     mVs:(pct,typ)=>pct<=-3?`دفعت أقل بنسبة ${-pct}% من السعر المعلن المعتاد (${typ}). أحسنت.`:pct>=3?`هذا أعلى بنسبة ${pct}% من السعر المعلن المعتاد (${typ}) — بلاغك يساعد الشخص التالي على التفاوض.`:`هذا قريب من السعر المعلن المعتاد (${typ}).`,
     feedTitle:'مدفوعات حديثة', feedSub:'الأسعار الحديثة تبقي النطاقات صادقة. القديمة تتلاشى.', feedCount:n=>`${n} بلاغاً من السكان حتى الآن`,
     feedEmpty:'لا أسعار حقيقية بعد، كن أول من يضيف. أضف ما دفعته وسيظهر هنا للشخص التالي.',
@@ -600,7 +649,7 @@ const T = {
     footPrices:'أسعار الخدمات ←', footRent:'الإيجار حسب المنطقة ←', footMotor:'أسعار إصلاح السيارات ←',
     tEnter:'أدخل سعراً أولاً', tHigh:'هذا السعر يبدو مرتفعاً جداً', tEnough:'شكراً، أضفت ما يكفي هنا اليوم',
     tDup:'أضفت هذا السعر نفسه من قبل', tLot:'أضفت أسعاراً كثيرة اليوم، حاول غداً',
-    tLocal:'حُفظ على هذا الجهاز فقط', tUnlocked:'فُتح، شكراً لك', tAdded:'أُضيف، شكراً لك',
+    tLocal:'حُفظ على هذا الجهاز فقط', tBlocked:'لم يُقبل — بلغت الحد اليومي هنا', tUnlocked:'فُتح، شكراً لك', tAdded:'أُضيف، شكراً لك',
   },
 };
 const L = T[LANG];
@@ -621,6 +670,17 @@ const money      = n => LANG==='ar' ? `${aed(n)} درهم` : `AED ${aed(n)}`;
 const moneyRange = (a,b) => LANG==='ar' ? `${aed(a)} – ${aed(b)} درهم` : `AED ${aed(a)} – ${aed(b)}`;
 // extra UI strings + the FAQ content (per-locale)
 Object.assign(T.en,{
+  // scope sub-options ("what's included") — labels per service id + scope suffix ('' = base scope)
+  lblScope:'What’s included?',
+  scopeLabels:{
+    ac:      {'':'1 unit','2u':'2 units','3u':'3 units','4u':'4+ units'},
+    cleaning:{'st':'Studio','1b':'1-bed apartment','':'2-bed apartment','3b':'3-bed apartment','vl':'Villa'},
+    pest:    {'st':'Studio','1b':'1-bed apartment','':'2-bed apartment','3b':'3-bed apartment','vl':'Villa'},
+    painting:{'':'One room','st':'Full studio','1b':'Full 1-bed apartment','2b':'Full 2-bed apartment'},
+    salon:   {'':'Cut + blow-dry','col':'Cut + colour'},
+    tyres:   {'1t':'1 tyre','2t':'2 tyres','':'Set of 4'},
+    movers:  {'st':'Studio','':'1-bed home','2b':'2-bed home','3b':'3-bed / villa'},
+  },
   noMatches:'No matches', searchSvc:'Search services…', searchArea:'Search areas…', docTitle:'Mizan — Is the price fair?',
   shareBtn:'Share', shareResidents:'residents pay', shareTypical:'typically', shareCheck:'Is your quote fair? Check on Mizan:', navRent:'Rent', navServices:'Services', navMotor:'Motor',
   faqs:[
@@ -633,6 +693,16 @@ Object.assign(T.en,{
   ],
 });
 Object.assign(T.ar,{
+  lblScope:'ما الذي يشمله السعر؟',
+  scopeLabels:{
+    ac:      {'':'وحدة واحدة','2u':'وحدتان','3u':'3 وحدات','4u':'4 وحدات أو أكثر'},
+    cleaning:{'st':'استوديو','1b':'شقة بغرفة نوم','':'شقة بغرفتي نوم','3b':'شقة بثلاث غرف','vl':'فيلا'},
+    pest:    {'st':'استوديو','1b':'شقة بغرفة نوم','':'شقة بغرفتي نوم','3b':'شقة بثلاث غرف','vl':'فيلا'},
+    painting:{'':'غرفة واحدة','st':'استوديو كامل','1b':'شقة كاملة بغرفة نوم','2b':'شقة كاملة بغرفتي نوم'},
+    salon:   {'':'قص وتصفيف','col':'قص وصبغة'},
+    tyres:   {'1t':'إطار واحد','2t':'إطاران','':'طقم 4 إطارات'},
+    movers:  {'st':'استوديو','':'منزل بغرفة نوم','2b':'منزل بغرفتي نوم','3b':'3 غرف أو فيلا'},
+  },
   noMatches:'لا نتائج مطابقة', searchSvc:'ابحث عن خدمة…', searchArea:'ابحث عن منطقة…', docTitle:'ميزان — هل السعر عادل؟',
   shareBtn:'مشاركة', shareResidents:'يدفع السكان', shareTypical:'عادةً', shareCheck:'هل سعرك عادل؟ تحقّق على ميزان:', navRent:'الإيجارات', navServices:'الخدمات', navMotor:'السيارات',
   faqs:[
@@ -650,11 +720,16 @@ Object.assign(T.ar,{
 // The first 10 (ac…movers) are web-researched (see data/market-prices.json). The rest are
 // reasonable market ESTIMATES (not individually web-verified) — refine over time. All are shown
 // under the honest "Market estimate" label; none is presented as verified paid data.
+// scopes = optional "what's included" sub-options: [suffix, ×mult] applied to the BASE lo/hi/typical
+// ('' = the base scope the headline range describes; existing un-scoped reports stay in that bucket,
+// other scopes bucket under `id+suffix`, e.g. ac+2u). Multipliers are rounded from typical advertised
+// bundles (multi-unit/multi-room visits are discounted) — honest ballparks, not measurements; the
+// band stays labelled ESTIMATE. Labels live in T.*.scopeLabels (EN + AR).
 const CATEGORIES=[
   // Home & cleaning
-  {id:'ac',        label:'AC service / cleaning (split unit)', lo:150, hi:350,  typical:250,  unit:'/unit',    group:'Home & cleaning'},
-  {id:'cleaning',  label:'Home deep clean (2-bed)',            lo:450, hi:900,  typical:600,  unit:'/job',     group:'Home & cleaning'},
-  {id:'pest',      label:'Pest control',                       lo:150, hi:500,  typical:250,  unit:'/visit',   group:'Home & cleaning'},
+  {id:'ac',        label:'AC service / cleaning (split unit)', lo:150, hi:350,  typical:250,  unit:'/unit',    group:'Home & cleaning', scopes:[['',1],['2u',1.9],['3u',2.7],['4u',3.4]]},
+  {id:'cleaning',  label:'Home deep clean (2-bed)',            lo:450, hi:900,  typical:600,  unit:'/job',     group:'Home & cleaning', scopes:[['st',0.55],['1b',0.75],['',1],['3b',1.35],['vl',1.9]]},
+  {id:'pest',      label:'Pest control',                       lo:150, hi:500,  typical:250,  unit:'/visit',   group:'Home & cleaning', scopes:[['st',0.6],['1b',0.8],['',1],['3b',1.2],['vl',1.5]]},
   {id:'ductclean', label:'AC duct deep-clean',                 lo:300, hi:1200, typical:600,  unit:'/job',     group:'Home & cleaning'},
   {id:'upholstery',label:'Sofa & carpet cleaning',            lo:120, hi:450,  typical:250,  unit:'/job',     group:'Home & cleaning'},
   {id:'watertank', label:'Water-tank cleaning',                lo:150, hi:500,  typical:300,  unit:'/job',     group:'Home & cleaning'},
@@ -664,7 +739,7 @@ const CATEGORIES=[
   {id:'handyman',  label:'Handyman (per hour)',                lo:75,  hi:200,  typical:110,  unit:'/hour',    group:'Repairs & handyman'},
   {id:'plumber',   label:'Plumber call-out',                   lo:100, hi:350,  typical:180,  unit:'/visit',   group:'Repairs & handyman'},
   {id:'electrician',label:'Electrician call-out',              lo:100, hi:350,  typical:180,  unit:'/visit',   group:'Repairs & handyman'},
-  {id:'painting',  label:'Painting (per room)',                lo:250, hi:800,  typical:450,  unit:'/room',    group:'Repairs & handyman'},
+  {id:'painting',  label:'Painting (per room)',                lo:250, hi:800,  typical:450,  unit:'/room',    group:'Repairs & handyman', scopes:[['',1],['st',2.2],['1b',3],['2b',4]]},
   {id:'applrepair',label:'Appliance repair (washer/fridge)',   lo:150, hi:600,  typical:300,  unit:'/repair',  group:'Repairs & handyman'},
   {id:'tvmount',   label:'TV wall-mounting',                   lo:100, hi:400,  typical:200,  unit:'/job',     group:'Repairs & handyman'},
   {id:'acinstall', label:'AC installation (split)',            lo:300, hi:1200, typical:600,  unit:'/unit',    group:'Repairs & handyman'},
@@ -672,13 +747,13 @@ const CATEGORIES=[
   {id:'carserv',   label:'Car minor service (oil + check)',    lo:250, hi:900,  typical:500,  unit:'/service', group:'Auto'},
   {id:'carwash',   label:'Car wash & detailing',               lo:30,  hi:600,  typical:150,  unit:'/service', group:'Auto'},
   {id:'oilchange', label:'Oil change',                         lo:150, hi:500,  typical:280,  unit:'/service', group:'Auto'},
-  {id:'tyres',     label:'Tyre replacement (set of 4)',        lo:600, hi:3000, typical:1400, unit:'/set',     group:'Auto'},
+  {id:'tyres',     label:'Tyre replacement (set of 4)',        lo:600, hi:3000, typical:1400, unit:'/set',     group:'Auto', scopes:[['1t',0.25],['2t',0.5],['',1]]},
   {id:'carac',     label:'Car AC re-gas',                      lo:150, hi:500,  typical:280,  unit:'/service', group:'Auto'},
   {id:'carbattery',label:'Car battery replacement',            lo:250, hi:900,  typical:500,  unit:'/service', group:'Auto'},
   {id:'tint',      label:'Car window tinting',                 lo:300, hi:1500, typical:700,  unit:'/car',     group:'Auto'},
   // Beauty & grooming
   {id:'haircut',   label:"Men's haircut",                      lo:40,  hi:150,  typical:70,   unit:'/cut',     group:'Beauty & grooming'},
-  {id:'salon',     label:'Salon — cut + blow-dry',             lo:120, hi:350,  typical:200,  unit:'/visit',   group:'Beauty & grooming'},
+  {id:'salon',     label:'Salon — cut + blow-dry',             lo:120, hi:350,  typical:200,  unit:'/visit',   group:'Beauty & grooming', scopes:[['',1],['col',2]]},
   {id:'womenshair',label:'Women’s cut & color',                lo:200, hi:800,  typical:400,  unit:'/visit',   group:'Beauty & grooming'},
   {id:'keratin',   label:'Keratin / hair treatment',           lo:300, hi:1500, typical:700,  unit:'/visit',   group:'Beauty & grooming'},
   {id:'manipedi',  label:'Mani-pedi',                          lo:80,  hi:250,  typical:140,  unit:'/visit',   group:'Beauty & grooming'},
@@ -707,7 +782,7 @@ const CATEGORIES=[
   {id:'dryclean',  label:'Dry cleaning (per item)',            lo:10,  hi:60,   typical:25,   unit:'/item',    group:'Laundry & garments'},
   {id:'tailoring', label:'Tailoring / alterations',            lo:20,  hi:150,  typical:60,   unit:'/item',    group:'Laundry & garments'},
   // Moving
-  {id:'movers',    label:'Movers (1-bed, within Dubai)',       lo:800, hi:2000, typical:1100, unit:'/move',    group:'Moving'},
+  {id:'movers',    label:'Movers (1-bed, within Dubai)',       lo:800, hi:2000, typical:1100, unit:'/move',    group:'Moving', scopes:[['st',0.7],['',1],['2b',1.5],['3b',2.2]]},
 ];
 // Areas grouped by emirate. mult = rough cost-of-living factor applied to the market estimate.
 // Dubai mults are web-calibrated; the other emirates are ESTIMATES (refine over time). Dubai area
@@ -725,6 +800,12 @@ const AREAS=AREA_GROUPS.flatMap(g=>g.areas.map(a=>a[0]));               // flat 
 const PREMIUM=Object.fromEntries(AREA_GROUPS.flatMap(g=>g.areas.map(a=>[a[0],a[1]])));  // name → mult
 
 function catById(id){return CATEGORIES.find(c=>c.id===id)}
+// scope helpers — a submission's bucket id is `catId` for the base scope, `catId+suffix` otherwise,
+// so buckets segment naturally and pre-scope data stays under the base id.
+function bucketOf(catId,scopeId){return scopeId?catId+'+'+scopeId:catId}
+function parseBucket(b){const i=b.indexOf('+');return i<0?{cat:catById(b),scope:''}:{cat:catById(b.slice(0,i)),scope:b.slice(i+1)}}
+function curScope(cat){if(!cat||!cat.scopes)return null;const v=$('scope').value;return cat.scopes.find(s=>s[0]===v)||cat.scopes.find(s=>s[0]==='')||cat.scopes[0]}
+function scopeLabelOf(cat,scopeId){const t=(L.scopeLabels||{})[cat.id];return t&&t[scopeId]!=null?t[scopeId]:scopeId}
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function seedFor(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 
@@ -770,16 +851,30 @@ const adapters={
     url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
     headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
     async list(){
-      const r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      // 'verified' only exists once the docs/backend-setup.md §6 SQL has run — fall back to the legacy select until then
+      let r=await fetch(this.url+'?select=category,area,price,note,verified,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      if(!r.ok) r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) throw new Error('Supabase list failed: '+r.status);
       const rows=await r.json();
       if(rows.length>=5000) console.warn('Mizan: read cap (5000) hit — older prices not loaded; move to server-side filtering (P4).');
-      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''})); // DB cols → app shape
+      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||'',v:!!x.verified})); // DB cols → app shape
     },
-    async add(sub){ // created_at defaults to now() in the DB; id is generated
-      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},
-        body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null})});
-      if(!r.ok) throw new Error('Supabase add failed: '+r.status);
+    async add(sub){ // created_at defaults to now() in the DB; id is generated; verified stays false (flipped manually, never by a client)
+      const body={category:sub.c,area:sub.a,price:sub.p,note:sub.note||null};
+      if(DEVICE) body.device=DEVICE;
+      if(sub.invoice_path) body.invoice_path=sub.invoice_path;
+      const post=()=>fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify(body)});
+      let r=await post();
+      if(!r.ok&&r.status===400&&(body.device||body.invoice_path)){
+        const t=await r.text().catch(()=>'');
+        if(/column/i.test(t)&&/device/.test(t)&&body.device){ delete body.device; r=await post(); }                     // pre-migration DB — retry without it
+        else if(/column/i.test(t)&&/invoice_path/.test(t)&&body.invoice_path){ delete body.invoice_path; r=await post(); } // §6 not run yet — post the price without the photo
+        else if(t){ const e=new Error(t.slice(0,200)); e.reject=true; throw e; }       // trigger/constraint said no
+      }
+      if(!r.ok){
+        if(r.status>=400&&r.status<500&&r.status!==401){ const e=new Error('rejected '+r.status); e.reject=true; throw e; }
+        throw new Error('Supabase add failed: '+r.status); // network / server / auth trouble → caller degrades to local
+      }
     },
   } : null,
   // Claude.ai artifact runtime (shared key/value scope)
@@ -839,7 +934,9 @@ function paidStats(catId,area){
   const fresh=all.filter(d=>Date.now()-d.t<=RECENT_MS);
   const use=fresh.length>=3?fresh:all, rawPrices=use.map(d=>d.p);
   if(!rawPrices.length)return{count:0,freshCount:fresh.length};
-  const {kept,trimmed}=iqrKeep(rawPrices);                       // range/percentiles use the de-spiked set
+  // verified (receipt-checked) reports weigh 2x in the percentiles — stated in the explainer strip
+  const weighted=use.flatMap(d=>d.v?[d.p,d.p]:[d.p]);
+  const {kept,trimmed}=iqrKeep(weighted);                        // range/percentiles use the de-spiked set
   return{count:rawPrices.length,freshCount:fresh.length,trimmed, // count stays RAW so the >=5 flip is unchanged
     min:Math.min(...kept),max:Math.max(...kept),
     p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
@@ -876,6 +973,16 @@ function fillSelects(){
   $('area').innerHTML=AREA_GROUPS.map(g=>`<optgroup label="${escapeHTML(emirateLabel(g.emirate))}">`+
     g.areas.map(a=>`<option value="${escapeHTML(a[0])}">${escapeHTML(areaLabel(a[0]))}</option>`).join('')+`</optgroup>`).join('');
   $('area').value='Al Qusais';
+}
+
+// (Re)build the scope select for the current service; hide the field when the service has none.
+// Always defaults to the base scope ('' — the one the headline lo/hi/typical describe).
+function fillScope(){
+  const cat=catById($('category').value), sel=$('scope'), fc=document.querySelector('.form-col');
+  if(!cat.scopes){ sel.innerHTML=''; fc.classList.remove('has-scope'); return; }
+  sel.innerHTML=cat.scopes.map(s=>`<option value="${escapeHTML(s[0])}">${escapeHTML(scopeLabelOf(cat,s[0]))}</option>`).join('');
+  sel.value='';
+  fc.classList.add('has-scope');
 }
 
 // Custom searchable dropdown over a native <select>. The select stays in the DOM (hidden) as the
@@ -965,16 +1072,19 @@ let CUR_TYP=0;                  // area-adjusted typical list price of the curre
 // ===== live result (recomputes on every input change; no submit step) =====
 function render(){
   const catId=$('category').value, area=$('area').value, cat=catById(catId);
+  const sc=curScope(cat), scId=sc?sc[0]:'', smult=sc?sc[1]:1;   // scope sub-option (base = ×1)
   const qRaw=parseFloat($('quoted').value); const q=(!isNaN(qRaw)&&qRaw>0)?qRaw:0; const hasQuote=q>0;
-  const s=paidStats(catId,area);
+  const s=paidStats(bucketOf(catId,scId),area);   // paid data reads ONLY the scoped bucket
   const hasPaid=s.count>=5;                 // a real paid range needs >=5 reports
   const paidVisible=hasPaid&&UNLOCKED;      // gate: revealed only after the user contributes
 
-  $('quoteUnit').textContent=unitLabel(cat.unit);
+  // per-X unit suffix is misleading once a scope names the whole job ("2 units", "set of 4") — drop it
+  $('quoteUnit').textContent=cat.scopes?'':unitLabel(cat.unit);
 
-  // market estimate, area-adjusted: Dubai-wide list prices × the area cost factor.
-  // A labelled ESTIMATE (the underlying harvest isn't measured per-area); real paid data stays per-area as reported.
-  const mult=PREMIUM[area]||1;
+  // market estimate, area-adjusted: Dubai-wide list prices × the area cost factor × the scope
+  // multiplier. A labelled ESTIMATE (the underlying harvest isn't measured per-area); real paid
+  // data stays per-area and per-scope as reported.
+  const mult=(PREMIUM[area]||1)*smult;
   const mLow=round5(cat.lo*mult), mHigh=round5(cat.hi*mult), mTyp=round5(cat.typical*mult);
   $('quoted').placeholder=L.egPh(aed(mTyp)); CUR_TYP=mTyp;
   // paid (real percentiles — only when revealed)
@@ -989,7 +1099,8 @@ function render(){
 
   // ---- verdict ----
   let tier,word,kicker,line,statBig='',statSub='',hasStat=false,roomLabel,roomValue;
-  const svcLow = LANG==='ar'?svcLabel(cat):cat.label.toLowerCase();   // Arabic has no case; en lowercases inline
+  const scL = scId?scopeLabelOf(cat,scId):'';                        // non-base scope label ('' for base)
+  const svcLow = (LANG==='ar'?svcLabel(cat):cat.label.toLowerCase()) + (scL?` (${LANG==='ar'?scL:scL.toLowerCase()})`:'');
   const areaL = areaLabel(area);
   if(paidVisible){
     kicker=hasQuote?L.kVerdict:L.kEstimate;
@@ -1062,12 +1173,13 @@ function render(){
   const shareRange = paidVisible ? moneyRange(pLow,pHigh) : moneyRange(mLow,mHigh);
   const svEN={fair:'fair',going:'about the going rate',steep:'steep',walk:'too high'}[tier]||'worth checking';
   const svAR={fair:'عادل',going:'قريب من المعتاد',steep:'مرتفع',walk:'مرتفع جداً'}[tier]||'يستحق التحقق';
+  const svcShare = svcLabel(cat)+(scL?` — ${scL}`:'');   // scope travels with the share so the range means what it says
   shareMsg = hasQuote
     ? (LANG==='ar'
-        ? `عُرض عليّ ${money(q)} مقابل ${svcLabel(cat)} في ${areaL} — ميزان يقول إنه ${svAR} (المعتاد ${shareRange}). تحقّق من سعرك على ميزان:`
-        : `I was quoted ${money(q)} for ${svcLabel(cat)} in ${areaL} — Mizan says it's ${svEN} (most pay ${shareRange}). Check yours on Mizan:`)
-    : `${svcLabel(cat)} ${L.rin} ${areaL}: ${paidVisible?L.shareResidents:L.shareTypical} ${shareRange}. ${L.shareCheck}`;
-  shareUrl = location.origin + (LANG==='ar'?'/ar/':'/') + '?service=' + cat.id + '&area=' + encodeURIComponent(area);
+        ? `عُرض عليّ ${money(q)} مقابل ${svcShare} في ${areaL} — ميزان يقول إنه ${svAR} (المعتاد ${shareRange}). تحقّق من سعرك على ميزان:`
+        : `I was quoted ${money(q)} for ${svcShare} in ${areaL} — Mizan says it's ${svEN} (most pay ${shareRange}). Check yours on Mizan:`)
+    : `${svcShare} ${L.rin} ${areaL}: ${paidVisible?L.shareResidents:L.shareTypical} ${shareRange}. ${L.shareCheck}`;
+  shareUrl = location.origin + (LANG==='ar'?'/ar/':'/') + '?service=' + cat.id + (scId?'&scope='+encodeURIComponent(scId):'') + '&area=' + encodeURIComponent(area);
 
   // ---- scale geometry ----
   const mL=pos(mLow), mW=pos(mHigh)-pos(mLow);
@@ -1164,32 +1276,76 @@ function shareResult(){
 }
 
 function renderFeed(){
-  const recent=DATA.filter(d=>catById(d.c)).sort((a,b)=>b.t-a.t).slice(0,8);
+  const recent=DATA.filter(d=>parseBucket(d.c).cat).sort((a,b)=>b.t-a.t).slice(0,8);
   if(!recent.length){
     $('feed').innerHTML=`<h2>${L.feedTitle}</h2><p class="feed-sub">${L.feedEmpty}</p>`;
     return;
   }
   const now=Date.now(), base=(LANG==='ar'?'/ar/':'/');
   const rows=recent.map(d=>{
-    const cat=catById(d.c), old=(now-d.t)>45*864e5;
-    const href=`${base}?service=${encodeURIComponent(d.c)}&area=${encodeURIComponent(d.a)}`;
-    return `<a class="frow${old?' old':''}" href="${href}" title="${escapeHTML(svcLabel(cat))} · ${escapeHTML(areaLabel(d.a))}">
+    const {cat,scope}=parseBucket(d.c), old=(now-d.t)>45*864e5;
+    const label=svcLabel(cat)+(scope?` · ${scopeLabelOf(cat,scope)}`:'');
+    const href=`${base}?service=${encodeURIComponent(cat.id)}${scope?'&scope='+encodeURIComponent(scope):''}&area=${encodeURIComponent(d.a)}`;
+    return `<a class="frow${old?' old':''}" href="${href}" title="${escapeHTML(label)} · ${escapeHTML(areaLabel(d.a))}">
       <div class="amt"><span class="cur">${L.aed}</span><span class="n">${aed(d.p)}</span></div>
-      <div class="fmid"><div class="fs">${escapeHTML(svcLabel(cat))}</div><span class="fa">${escapeHTML(areaLabel(d.a))}</span></div>
+      <div class="fmid"><div class="fs">${escapeHTML(label)}${d.v?`<span class="vbadge">✓ ${escapeHTML(L.badgeVerified)}</span>`:''}</div><span class="fa">${escapeHTML(areaLabel(d.a))}</span></div>
       <span class="fwhen">${relTime(d.t)}</span></a>`;
   }).join('');
-  const total=DATA.filter(d=>catById(d.c)).length;
+  const total=DATA.filter(d=>parseBucket(d.c).cat).length;
   $('feed').innerHTML=`<div class="feed-head"><div><h2>${L.feedTitle}</h2><p class="feed-sub">${L.feedSub}</p></div><span class="feed-live"><span class="dot"></span>${L.feedCount(total)}</span></div><div class="rows">${rows}</div>`;
 }
+
+// ===== optional invoice photo (verified tier) =====
+// The canvas re-encode does two jobs at once: caps the upload at ~1MB and strips all
+// metadata (EXIF, GPS) — only pixels leave the device. The photo is never rendered in
+// any UI; it exists solely so a human can check the price before flipping `verified`.
+let INVOICE=null;   // compressed JPEG blob for the open modal, or null
+async function compressInvoice(file){
+  let img;
+  try{ img=await createImageBitmap(file,{imageOrientation:'from-image'}); }
+  catch(e){
+    img=await new Promise((res,rej)=>{ const u=URL.createObjectURL(file), i=new Image();
+      i.onload=()=>{URL.revokeObjectURL(u);res(i)}; i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('unreadable'))}; i.src=u; });
+  }
+  const w0=img.naturalWidth||img.width, h0=img.naturalHeight||img.height;
+  const sc=Math.min(1,1600/Math.max(w0,h0)), w=Math.max(1,Math.round(w0*sc)), h=Math.max(1,Math.round(h0*sc));
+  const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+  cv.getContext('2d').drawImage(img,0,0,w,h);
+  if(img.close) img.close();
+  let blob=null;
+  for(const q of [0.82,0.68,0.55,0.42]){                      // step quality down until it fits
+    blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',q));
+    if(blob&&blob.size<=1024*1024) return blob;
+  }
+  if(blob&&blob.size<=1.5*1024*1024) return blob;             // still under the bucket's 2MB server cap
+  throw new Error('too large');
+}
+async function uploadInvoice(blob,catId){
+  const path=catId.replace(/[^a-z0-9-]/gi,'')+'/'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)+'.jpg';
+  const r=await fetch(SUPABASE_URL.replace(/\/+$/,'')+'/storage/v1/object/invoices/'+path,
+    {method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'image/jpeg'},body:blob});
+  if(!r.ok) throw new Error('upload '+r.status);
+  return path;
+}
+function setAttachUI(){
+  const b=$('attachBtn'); if(!b) return;
+  const on=!!INVOICE;
+  b.classList.toggle('on',on);
+  $('attachLabel').innerHTML=on?escapeHTML(L.mAttached):escapeHTML(L.mAttach)+' <span class="opt">'+escapeHTML(L.mAttachOpt)+'</span>';
+  $('attachClear').classList.toggle('hidden',!on);
+}
+function clearAttach(){ INVOICE=null; const i=$('modalInvoice'); if(i) i.value=''; setAttachUI(); }
 
 // ===== Add-a-price modal =====
 let lastFocus=null;
 function openModal(){
   const cat=catById($('category').value), area=$('area').value;
-  $('modalSub').innerHTML=`${L.mSubA}<strong>${escapeHTML(svcLabel(cat))}</strong>${L.mSubB}<strong>${escapeHTML(areaLabel(area))}</strong>${L.mSubC}`;
+  // echo the chosen scope so people report a price for the right thing (base scope included — "1 unit" matters)
+  const sc=curScope(cat), scTxt=sc?` — ${scopeLabelOf(cat,sc[0])}`:'';
+  $('modalSub').innerHTML=`${L.mSubA}<strong>${escapeHTML(svcLabel(cat)+scTxt)}</strong>${L.mSubB}<strong>${escapeHTML(areaLabel(area))}</strong>${L.mSubC}`;
   $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
   const qv=parseFloat($('quoted').value);
-  $('modalPrice').value=(qv>0&&qv<1000000)?String(Math.round(qv)):''; $('modalNote').value=''; updateModalBtn();
+  $('modalPrice').value=(qv>0&&qv<1000000)?String(Math.round(qv)):''; $('modalNote').value=''; clearAttach(); updateModalBtn();
   $('modal').classList.remove('hidden'); syncStrip();
   lastFocus=document.activeElement;
   document.addEventListener('keydown',onModalKey);
@@ -1212,22 +1368,31 @@ async function submitModal(){
   const p=parseFloat($('modalPrice').value);
   if(isNaN(p)||p<=0){return}
   if(p>=1000000){toast(L.tHigh);return}
-  const sub={c:$('category').value,a:$('area').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
+  const cat=catById($('category').value), sc=curScope(cat);
+  const sub={c:bucketOf(cat.id,sc?sc[0]:''),a:$('area').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub);
   if(!guard.ok){toast(guard.msg);return}
+  const sBtn=$('modalSubmit'), sTxt=sBtn.textContent; sBtn.disabled=true; sBtn.textContent=L.mUploading;
+  // the photo is a bonus, never a blocker: if the upload fails, the price still posts without it
+  let photoFailed=false;
+  if(INVOICE){ try{ sub.invoice_path=await uploadInvoice(INVOICE,sub.c); }catch(e){ photoFailed=true; } }
   let synced=true;
   try{ await store.add(sub); SUBMISSIONS=await store.list(); }    // re-read shared truth (picks up others too)
-  catch(e){ synced=false; SUBMISSIONS=SUBMISSIONS.concat(sub); }  // degrade: keep their price this session
+  catch(e){
+    if(e&&e.reject){ sBtn.disabled=false; sBtn.textContent=sTxt; toast(L.tBlocked); return; } // the DB refused it (rate limit / sanity) — do NOT claim success
+    synced=false; SUBMISSIONS=SUBMISSIONS.concat(sub);            // degrade: keep their price this session
+  }
+  sBtn.textContent=sTxt;
   guard.commit();
   UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   DATA=SEED.concat(SUBMISSIONS);
-  const cat=catById(sub.c);
+  const scTxt=sc&&sc[0]?` — ${scopeLabelOf(cat,sc[0])}`:'';
   const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
-  $('modalSuccessText').textContent=L.mThanks(svcLabel(cat), areaLabel(sub.a))+vsTxt;
+  $('modalSuccessText').textContent=L.mThanks(svcLabel(cat)+scTxt, areaLabel(sub.a))+vsTxt;
   $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
   setTimeout(()=>{const d=$('modalDone'); if(d)d.focus()},30);
   render(); renderFeed();
-  if(!synced) toast(L.tLocal);
+  if(!synced) toast(L.tLocal); else if(photoFailed) toast(L.tPhotoFail);
 }
 
 let toastTimer;
@@ -1251,7 +1416,7 @@ function applyStaticI18n(){
   set('.eyebrow', L.eyebrow);
   const h1=document.querySelector('.hero h1'); if(h1) h1.innerHTML=`${esc(L.h1a)}<em>${esc(L.h1em)}</em><br>${esc(L.h1b)}`;
   set('.hero p', L.subhead);
-  set('#lbl-cat', L.lblCat); set('#lbl-area', L.lblArea);
+  set('#lbl-cat', L.lblCat); set('#lbl-area', L.lblArea); set('#lbl-scope', L.lblScope);
   const ql=document.querySelector('label[for="quoted"]'); if(ql) ql.innerHTML=`${esc(L.lblQuote)} <span class="opt">${esc(L.quoteOpt)}</span>`;
   const fc=document.querySelector('.quote-input .cur'); if(fc) fc.textContent=L.aed;
   document.querySelectorAll('.howto').forEach(h=>{ h.innerHTML=
@@ -1262,6 +1427,8 @@ function applyStaticI18n(){
   set('#modalTitle', L.mTitle);
   const mc=document.querySelector('.modal-input .cur'); if(mc) mc.textContent=L.aed;
   const mn=$('modalNote'); if(mn) mn.setAttribute('placeholder', L.mNote);
+  set('#attachHint', L.mAttachHint); setAttachUI();
+  const ac=$('attachClear'); if(ac) ac.setAttribute('aria-label', L.mAttachRemove);
   set('#modalSubmit', L.mAdd);
   const msH=document.querySelector('#modalSuccess h3'); if(msH) msH.textContent=L.mDoneTitle;
   set('#modalDone', L.mDone);
@@ -1278,13 +1445,17 @@ function applyStaticI18n(){
   dotsEnd(); addEventListener('resize',dotsEnd); new ResizeObserver(dotsEnd).observe(document.body);
   fillSelects();
   if(LANG==='ar') applyStaticI18n();
-  // deep-link: /?service=<id>&area=<name> pre-selects (used by the /prices SEO pages)
+  // deep-link: /?service=<id>&scope=<suffix>&area=<name> pre-selects (used by the /prices SEO pages)
   const _p=new URLSearchParams(location.search);
   const _s=_p.get('service'); if(_s&&catById(_s))$('category').value=_s;
   const _a=_p.get('area'); if(_a&&AREAS.includes(_a))$('area').value=_a;
+  fillScope();
+  const _sc=_p.get('scope'), _c=catById($('category').value);
+  if(_sc&&_c.scopes&&_c.scopes.some(s=>s[0]===_sc))$('scope').value=_sc;
   await loadState();
-  $('category').addEventListener('change',render);
+  $('category').addEventListener('change',()=>{fillScope();render();});
   $('area').addEventListener('change',render);
+  $('scope').addEventListener('change',render);
   makeCombobox($('category'),{placeholder:L.searchSvc,labelledBy:'lbl-cat'});
   makeCombobox($('area'),{placeholder:L.searchArea,labelledBy:'lbl-area'});
   const tt=$('themeToggle');
@@ -1296,6 +1467,17 @@ function applyStaticI18n(){
   const vs=$('vstrip'); if(vs) vs.onclick=e=>{ e.preventDefault(); const v=document.querySelector('#result .verdict'); if(v) v.scrollIntoView({behavior:'smooth',block:'center'}); };
   $('modalDone').onclick=closeModal;
   $('modalPrice').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/[^0-9.]/g,''); updateModalBtn(); });
+  const inv=$('modalInvoice');
+  if(inv){
+    $('attachBtn').onclick=()=>inv.click();
+    $('attachClear').onclick=clearAttach;
+    inv.addEventListener('change',async()=>{
+      const f=inv.files&&inv.files[0];
+      if(!f){ clearAttach(); return; }
+      try{ INVOICE=await compressInvoice(f); }catch(e){ clearAttach(); toast(L.tPhotoBad); return; }
+      setAttachUI();
+    });
+  }
   render(); renderFeed();
 })();
 </script>
