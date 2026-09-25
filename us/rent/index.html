@@ -577,8 +577,7 @@ function moneyRange(a,b){return '$'+aed(a)+' – $'+aed(b)}
 // parse rent amounts, accepting "110k" / "1.1m" shorthand (rents are big — users think in k)
 function num(v){v=(''+v).toLowerCase().replace(/,/g,'').trim();var m=1;if(v.slice(-1)==='k'){m=1e3;v=v.slice(0,-1)}else if(v.slice(-1)==='m'){m=1e6;v=v.slice(0,-1)}var n=parseFloat(v);return isNaN(n)?NaN:n*m}
 function relTime(t){const d=(Date.now()-t)/864e5;
-  if(LANG==='ar'){if(d<1)return'اليوم';if(d<2)return'أمس';if(d<30)return'منذ '+Math.round(d)+' يوم';const m=Math.round(d/30);if(m<12)return'منذ '+m+' شهر';return'منذ '+Math.round(m/12)+' سنة'}
-  if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
+    if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
 
 /* ---- combobox (same as the services app) ---- */
 function makeCombobox(select, opts){
@@ -716,11 +715,8 @@ function renderFair(){
   else metaText=L.metaThin(s.count, 5-s.count);
 
   const svEN={fair:'fair',steep:'on the high side',walk:'above market'}[tier]||'worth checking';
-  const svAR={fair:'عادل',steep:'مرتفع بعض الشيء',walk:'أعلى من السوق'}[tier]||'يستحق التحقق';
   shareMsg = hasQuote
-    ? (LANG==='ar'
-        ? `إيجاري ${money(q)}${perYr} لـ${typeLabel(type)} في ${areaL} — ميزان يقول إنه ${svAR} (المُعلن ${moneyRange(refLo,refHi)}). تحقّق من إيجارك على ميزان:`
-        : `My rent is ${money(q)}${perYr} for a ${typeLabel(type)} in ${areaL} — Mizan says that's ${svEN} (asking ${moneyRange(refLo,refHi)}). Check yours on Mizan:`)
+    ? `My rent is ${money(q)}${perYr} for a ${typeLabel(type)} in ${areaL} — Mizan says that's ${svEN} (asking ${moneyRange(refLo,refHi)}). Check yours on Mizan:`
     : L.shareMsg(typeLabel(type), areaL, paidVisible?L.shareSigned:L.shareAsking, moneyRange(refLo,refHi));
   shareUrl=location.origin+'/us/rent'+'?type='+typeId+'&area='+encodeURIComponent(area);
 

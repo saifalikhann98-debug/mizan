@@ -726,8 +726,7 @@ function iqrKeep(prices){
 function aed(n){return Math.round(n).toLocaleString('en-US')}
 function round5(n){return Math.round(n/5)*5}
 function relTime(t){const d=(Date.now()-t)/(864e5);
-  if(LANG==='ar'){if(d<1)return'اليوم';if(d<2)return'أمس';if(d<30)return'منذ '+Math.round(d)+' يوم';const m=Math.round(d/30);if(m<12)return'منذ '+m+' شهر';return'منذ '+Math.round(m/12)+' سنة'}
-  if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
+    if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
 
 function paidStats(catId,area){
   const all=DATA.filter(d=>d.c===catId&&d.a===area);
@@ -884,7 +883,7 @@ function render(){
 
   // ---- verdict ----
   let tier,word,kicker,line,statBig='',statSub='',hasStat=false,roomLabel,roomValue;
-  const svcLow = LANG==='ar'?svcLabel(cat):cat.label.toLowerCase();   // Arabic has no case; en lowercases inline
+  const svcLow = cat.label.toLowerCase();
   const areaL = areaLabel(area);
   if(paidVisible){
     kicker=hasQuote?L.kVerdict:L.kEstimate;
@@ -956,11 +955,8 @@ function render(){
   // ---- share message (built from the current result; consumed by the Share button) ----
   const shareRange = paidVisible ? moneyRange(pLow,pHigh) : moneyRange(mLow,mHigh);
   const svEN={fair:'fair',going:'about the going rate',steep:'steep',walk:'too high'}[tier]||'worth checking';
-  const svAR={fair:'عادل',going:'قريب من المعتاد',steep:'مرتفع',walk:'مرتفع جداً'}[tier]||'يستحق التحقق';
   shareMsg = hasQuote
-    ? (LANG==='ar'
-        ? `عُرض عليّ ${money(q)} مقابل ${svcLabel(cat)} في ${areaL} — ميزان يقول إنه ${svAR} (المعتاد ${shareRange}). تحقّق من سعرك على ميزان:`
-        : `I was quoted ${money(q)} for ${svcLabel(cat)} in ${areaL} — Mizan says it's ${svEN} (most pay ${shareRange}). Check yours on Mizan:`)
+    ? `I was quoted ${money(q)} for ${svcLabel(cat)} in ${areaL} — Mizan says it's ${svEN} (most pay ${shareRange}). Check yours on Mizan:`
     : `${svcLabel(cat)} ${L.rin} ${areaL}: ${paidVisible?L.shareResidents:L.shareTypical} ${shareRange}. ${L.shareCheck}`;
   shareUrl = location.origin + '/us/' + '?service=' + cat.id + '&area=' + encodeURIComponent(area);
 

@@ -458,7 +458,7 @@ const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.
 
 /* ============================ i18n (en / ar) ============================ */
 const LANG='en';   // US edition is English-only (no /ar copies)
-const tr=(en,ar)=>en;   // legacy bilingual helper — ar args are inert in the US edition
+const tr=en=>en;   // legacy bilingual helper (ar args were stripped in the US edition)
 const T={
   en:{
     docTitle:'Car repair & service prices in the US — fair price check | Mizan',
@@ -627,7 +627,7 @@ function aed(n){return Math.round(n).toLocaleString('en-US')}
 function money(n){return '$'+aed(n)}
 function moneyRange(a,b){return '$'+aed(a)+' – $'+aed(b)}
 function round5(n){return Math.round(n/5)*5}
-function relTime(t){const d=(Date.now()-t)/864e5;if(LANG==='ar'){if(d<1)return'اليوم';if(d<2)return'أمس';if(d<30)return'منذ '+Math.round(d)+' يوم';const m=Math.round(d/30);if(m<12)return'منذ '+m+' شهر';return'منذ '+Math.round(m/12)+' سنة'}if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
+function relTime(t){const d=(Date.now()-t)/864e5;if(d<1)return'today';if(d<2)return'yesterday';if(d<30)return Math.round(d)+'d ago';const m=Math.round(d/30);if(m<12)return m+'mo ago';return Math.round(m/12)+'y ago'}
 
 function makeCombobox(select, opts){
   opts=opts||{};
@@ -733,17 +733,17 @@ function render(){
   let tier,word,kicker,line,statBig='',statSub='',hasStat=false,roomLabel,roomValue;
   if(paidVisible){
     kicker=hasQuote?L.kVerdict:L.kGoing;
-    if(!hasQuote){ tier='going'; word=L.wGoing; line=tr(`Here’s what ${jobLow(cat)} runs across the US. Enter a quote to get a verdict.`,`إليك ما تكلّفه خدمة ${jobLabel(cat)} عبر الإمارات. أدخل سعراً للحصول على حكم.`); roomLabel=L.rmAimFor; roomValue=money(pMid); }
-    else if(q<=pHi){ tier='fair'; word=L.wFair; line=q<=pMid?tr('At or below what drivers typically pay. Lock it in.','عند أو أقل مما يدفعه السائقون عادةً. ثبّت السعر.'):tr('Within what drivers actually report paying. Reasonable.','ضمن ما يبلّغ السائقون عن دفعه فعلاً. معقول.'); const vs=Math.round((1-q/pHi)*100); if(vs>=3){hasStat=true;statBig=vs+'%';statSub=L.sUnderMost;} roomLabel=L.rmSmart; roomValue='✓'; }
-    else if(q<=hi){ tier='steep'; word=L.wSteep; const over=Math.round((q/pMid-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverTyp; line=tr('Most drivers pay less than this — get another quote before you agree.','معظم السائقين يدفعون أقل من هذا — احصل على عرض آخر قبل أن توافق.'); roomLabel=L.rmNegotiate; roomValue=money(q-pMid); }
-    else { tier='walk'; word=L.wWalk; const over=Math.round((q/hi-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverHigh; line=tr('Above even the high end of the usual range. Try another shop.','أعلى حتى من الحد الأعلى للنطاق المعتاد. جرّب ورشة أخرى.'); roomLabel=L.rmOver; roomValue=money(q-pMid); }
+    if(!hasQuote){ tier='going'; word=L.wGoing; line=`Here’s what ${jobLow(cat)} runs across the US. Enter a quote to get a verdict.`; roomLabel=L.rmAimFor; roomValue=money(pMid); }
+    else if(q<=pHi){ tier='fair'; word=L.wFair; line=q<=pMid?'At or below what drivers typically pay. Lock it in.':'Within what drivers actually report paying. Reasonable.'; const vs=Math.round((1-q/pHi)*100); if(vs>=3){hasStat=true;statBig=vs+'%';statSub=L.sUnderMost;} roomLabel=L.rmSmart; roomValue='✓'; }
+    else if(q<=hi){ tier='steep'; word=L.wSteep; const over=Math.round((q/pMid-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverTyp; line='Most drivers pay less than this — get another quote before you agree.'; roomLabel=L.rmNegotiate; roomValue=money(q-pMid); }
+    else { tier='walk'; word=L.wWalk; const over=Math.round((q/hi-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverHigh; line='Above even the high end of the usual range. Try another shop.'; roomLabel=L.rmOver; roomValue=money(q-pMid); }
   } else {
     kicker=L.kEstimate;
-    if(!hasQuote){ tier='going'; word=L.wGoing; line=tr(`Here’s what ${jobLow(cat)} typically runs across the US. Add a price to reveal what drivers actually pay.`,`إليك ما تكلّفه خدمة ${jobLabel(cat)} عادةً عبر الإمارات. أضف سعراً لكشف ما يدفعه السائقون فعلاً.`); roomLabel=L.rmTypical; roomValue=money(typ); }
-    else if(q<=lo){ tier='fair'; word=L.wBelow; line=tr('Cheaper than most shops charge. Looks good — confirm parts (OEM vs aftermarket) and warranty.','أرخص مما تتقاضاه معظم الورش. يبدو جيداً — تأكّد من القطع (أصلية أم تجارية) والضمان.'); roomLabel=L.rmTypical; roomValue=money(typ); }
-    else if(q<=typ){ tier='going'; word=L.wAround; line=tr('Close to the going rate. Reasonable — a second quote often shaves a bit.','قريب من السعر السائد. معقول — العرض الثاني غالباً يخفّض قليلاً.'); roomLabel=L.rmTypical; roomValue=money(typ); }
-    else if(q<=hi){ tier='steep'; word=L.wSteep; const over=Math.round((q/typ-1)*100); if(over>=3){hasStat=true;statBig='+'+over+'%';statSub=L.sOverTyp2;} line=tr('At the pricey end. Shop one or two more places first.','في الطرف المرتفع. قارن مع ورشة أو اثنتين أولاً.'); roomLabel=L.rmNegotiate; roomValue=money(q-typ); }
-    else { tier='walk'; word=L.wWalk; const over=Math.round((q/hi-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverHigh; line=tr('Above the highest typical price. Get another quote before you commit.','أعلى من أعلى سعر معتاد. احصل على عرض آخر قبل أن تلتزم.'); roomLabel=L.rmOver; roomValue=money(q-hi); }
+    if(!hasQuote){ tier='going'; word=L.wGoing; line=`Here’s what ${jobLow(cat)} typically runs across the US. Add a price to reveal what drivers actually pay.`; roomLabel=L.rmTypical; roomValue=money(typ); }
+    else if(q<=lo){ tier='fair'; word=L.wBelow; line='Cheaper than most shops charge. Looks good — confirm parts (OEM vs aftermarket) and warranty.'; roomLabel=L.rmTypical; roomValue=money(typ); }
+    else if(q<=typ){ tier='going'; word=L.wAround; line='Close to the going rate. Reasonable — a second quote often shaves a bit.'; roomLabel=L.rmTypical; roomValue=money(typ); }
+    else if(q<=hi){ tier='steep'; word=L.wSteep; const over=Math.round((q/typ-1)*100); if(over>=3){hasStat=true;statBig='+'+over+'%';statSub=L.sOverTyp2;} line='At the pricey end. Shop one or two more places first.'; roomLabel=L.rmNegotiate; roomValue=money(q-typ); }
+    else { tier='walk'; word=L.wWalk; const over=Math.round((q/hi-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverHigh; line='Above the highest typical price. Get another quote before you commit.'; roomLabel=L.rmOver; roomValue=money(q-hi); }
   }
   const tone=TONES[tier];
   const estNote=(!paidVisible&&hasQuote)?` <em>${L.estNote}</em>`:'';
@@ -753,16 +753,15 @@ function render(){
   const quoteRow = hasQuote ? `<div class="brow"><span class="k">${L.bdYourQuote}</span><span class="v" style="color:${tone.c}">${money(q)}</span></div>` : '';
   let metaText;
   if(s.count===0) metaText=L.metaNone;
-  else if(paidVisible) metaText=tr(`${s.count} driver report${s.count>1?'s':''} · last ${relTime(s.lastSeen)}`,`${s.count} بلاغ من السائقين · آخرها ${relTime(s.lastSeen)}`);
-  else if(hasPaid) metaText=tr(`${s.count} drivers reported · add yours to reveal the range`,`${s.count} سائق أبلغوا · أضف بلاغك لكشف النطاق`);
-  else metaText=tr(`${s.count} report${s.count>1?'s':''} so far · ${5-s.count} more to unlock`,`${s.count} بلاغ حتى الآن · ${5-s.count} أخرى للفتح`);
+  else if(paidVisible) metaText=`${s.count} driver report${s.count>1?'s':''} · last ${relTime(s.lastSeen)}`;
+  else if(hasPaid) metaText=`${s.count} drivers reported · add yours to reveal the range`;
+  else metaText=`${s.count} report${s.count>1?'s':''} so far · ${5-s.count} more to unlock`;
 
   const svEN={fair:'fair',going:'about the going rate',steep:'steep',walk:'too high'}[tier]||'worth checking';
-  const svAR={fair:'عادل',going:'قريب من المعتاد',steep:'مرتفع',walk:'مرتفع جداً'}[tier]||'يستحق التحقق';
   const shRange=paidVisible?moneyRange(pLo,pHi):moneyRange(lo,hi);
   shareMsg = hasQuote
-    ? tr(`I was quoted ${money(q)} for ${jobLow(cat)} (${make.n}) — Mizan says that's ${svEN} (most pay ${shRange}). Check your quote on Mizan:`,`عُرض عليّ ${money(q)} مقابل ${jobLabel(cat)} (${make.n}) — ميزان يقول إنه ${svAR} (المعتاد ${shRange}). تحقّق من سعرك على ميزان:`)
-    : tr(`Typical ${jobLow(cat)} for a ${make.n} in the US is ${shRange}. Is your repair quote fair? Check on Mizan:`,`المعتاد لـ${jobLabel(cat)} لسيارة ${make.n} في الإمارات ${shRange}. هل سعر ورشتك عادل؟ تحقّق على ميزان:`);
+    ? `I was quoted ${money(q)} for ${jobLow(cat)} (${make.n}) — Mizan says that's ${svEN} (most pay ${shRange}). Check your quote on Mizan:`
+    : `Typical ${jobLow(cat)} for a ${make.n} in the US is ${shRange}. Is your repair quote fair? Check on Mizan:`;
   shareUrl=location.origin+'/us/motor'+'?job='+cat.id+'&make='+encodeURIComponent(make.n)+'&body='+body.id;
 
   // scale
@@ -772,7 +771,7 @@ function render(){
   const pos=x=>Math.max(0,Math.min(100,((x-dMin)/((dMax-dMin)||1))*100));
   const mL=pos(lo), mW=pos(hi)-pos(lo);
   let paidBand='';
-  if(paidVisible) paidBand=`<div class="band paid" style="left:${pos(pLo)}%;width:${Math.max(0,pos(pHi)-pos(pLo))}%"></div><div class="pill" style="left:${pos(pMid)}%">${tr('DRIVERS PAID','المدفوع')}</div>`;
+  if(paidVisible) paidBand=`<div class="band paid" style="left:${pos(pLo)}%;width:${Math.max(0,pos(pHi)-pos(pLo))}%"></div><div class="pill" style="left:${pos(pMid)}%">${'DRIVERS PAID'}</div>`;
   else if(hasPaid) paidBand=`<div class="band locked" style="left:${mL+mW*0.28}%;width:${mW*0.4}%">🔒</div>`;
   const qHTML = hasQuote ? `<div class="qmark" style="left:${pos(q)}%;background:${tone.c}"><div class="qlabel" style="background:${tone.c}">${money(q)}</div><div class="qtri" style="border-top:5px solid ${tone.c}"></div></div>` : '';
 
@@ -798,8 +797,8 @@ function render(){
     </div>
     <div class="meta-row"><div class="meta"><span class="dot"></span>${metaText}</div>
       <div class="actions">
-        <button type="button" class="btn-ghost" id="shareBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>${tr('Share','مشاركة')}</button>
-        <button type="button" class="btn-primary" id="reportBtn">${tr('Report what you paid','أبلغ عمّا دفعت')}</button>
+        <button type="button" class="btn-ghost" id="shareBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>${'Share'}</button>
+        <button type="button" class="btn-primary" id="reportBtn">${'Report what you paid'}</button>
       </div>
     </div>`;
   const rb=$('reportBtn'); if(rb) rb.onclick=openModal;
@@ -818,20 +817,20 @@ let shareMsgR='', shareUrlR='';
 function renderRental(){
   const c=rclassById($('rclass').value), period=$('rperiod').value;
   const unit=period==='daily'?L.perDay:period==='weekly'?L.perWeek:L.perMonth;
-  const periodWord=period==='daily'?tr('per day','يومياً'):period==='weekly'?tr('per week','أسبوعياً'):tr('per month','شهرياً');
+  const periodWord=period==='daily'?'per day':period==='weekly'?'per week':'per month';
   $('rquoteUnit').textContent=unit;
   const [lo,typ,hi]=rentRate(c.id,period);
   $('rquoted').placeholder=L.egPh(aed(typ));
   const qRaw=parseFloat($('rquoted').value), q=(!isNaN(qRaw)&&qRaw>0)?qRaw:0, hasQuote=q>0;
   let tier,word,kicker=hasQuote?L.kVerdict:L.kTypical,line,statBig='',statSub='',hasStat=false;
-  if(!hasQuote){ tier='going'; word=L.wTypical; line=tr(`Here’s what ${rclassLabel(c).toLowerCase()} typically rents for ${periodWord} in the US. Enter a rate to check it.`,`إليك كم تُؤجَّر فئة ${rclassLabel(c)} عادةً ${periodWord} في الإمارات. أدخل سعراً للتحقق منه.`); }
-  else if(q<=lo){ tier='fair'; word=L.wGreat; line=tr('Below the usual range — grab it. Check the mileage cap, insurance and fees in the contract.','أقل من النطاق المعتاد — اغتنمها. تحقّق من حد المسافة والتأمين والرسوم في العقد.'); const vs=Math.round((1-q/typ)*100); if(vs>=3){hasStat=true;statBig=vs+'%';statSub=L.sUnderTyp;} }
-  else if(q<=typ){ tier='fair'; word=L.wFair; line=tr('Around the going rate. Reasonable — longer terms and off-airport pickup are usually cheaper.','قريب من السعر السائد. معقول — المدد الأطول والاستلام خارج المطار عادةً أرخص.'); }
-  else if(q<=hi){ tier='steep'; word=L.wSteep; const over=Math.round((q/typ-1)*100); if(over>=3){hasStat=true;statBig='+'+over+'%';statSub=L.sOverTyp2;} line=tr('At the high end. Compare a couple more companies — rates vary a lot.','في الطرف المرتفع. قارن مع شركتين أخريين — الأسعار تتفاوت كثيراً.'); }
-  else { tier='walk'; word=L.wOver; const over=Math.round((q/hi-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverHigh; line=tr('Above the usual top rate. Try another company or a longer term.','أعلى من أعلى سعر معتاد. جرّب شركة أخرى أو مدة أطول.'); }
+  if(!hasQuote){ tier='going'; word=L.wTypical; line=`Here’s what ${rclassLabel(c).toLowerCase()} typically rents for ${periodWord} in the US. Enter a rate to check it.`; }
+  else if(q<=lo){ tier='fair'; word=L.wGreat; line='Below the usual range — grab it. Check the mileage cap, insurance and fees in the contract.'; const vs=Math.round((1-q/typ)*100); if(vs>=3){hasStat=true;statBig=vs+'%';statSub=L.sUnderTyp;} }
+  else if(q<=typ){ tier='fair'; word=L.wFair; line='Around the going rate. Reasonable — longer terms and off-airport pickup are usually cheaper.'; }
+  else if(q<=hi){ tier='steep'; word=L.wSteep; const over=Math.round((q/typ-1)*100); if(over>=3){hasStat=true;statBig='+'+over+'%';statSub=L.sOverTyp2;} line='At the high end. Compare a couple more companies — rates vary a lot.'; }
+  else { tier='walk'; word=L.wOver; const over=Math.round((q/hi-1)*100); hasStat=true; statBig='+'+over+'%'; statSub=L.sOverHigh; line='Above the usual top rate. Try another company or a longer term.'; }
   const tone=TONES[tier];
   const quoteRow=hasQuote?`<div class="brow"><span class="k">${L.bdYourRate}</span><span class="v" style="color:${tone.c}">${money(q)}${unit}</span></div>`:'';
-  shareMsgR=tr(`${c.label} rental in the US: typically ${moneyRange(lo,hi)}${unit}. Is your rate fair? Check on Mizan:`,`تأجير فئة ${rclassLabel(c)} في الإمارات: عادةً ${moneyRange(lo,hi)}${unit}. هل سعرك عادل؟ تحقّق على ميزان:`);
+  shareMsgR=`${c.label} rental in the US: typically ${moneyRange(lo,hi)}${unit}. Is your rate fair? Check on Mizan:`;
   shareUrlR=location.origin+'/us/motor'+'?tab=rental&class='+c.id+'&period='+period;
   const loD=Math.min(lo,hasQuote?q:lo), hiD=Math.max(hi,hasQuote?q:hi);
   const pad=((hiD-loD)||1)*0.16, dMin=loD-pad, dMax=hiD+pad;
@@ -847,7 +846,7 @@ function renderRental(){
       <div class="legend"><div><span class="sw mkt"></span><span class="lbl">${L.lgRate}</span></div></div></div>
     <div class="breakdown"><div class="brow"><span class="k">${L.bdUaeRange}</span><span class="v">${moneyRange(lo,hi)}${unit}</span></div>${quoteRow}<div class="brow alt"><span class="k">${L.rmTypical}</span><span class="v strong">${money(typ)}${unit}</span></div></div>
     <div class="meta-row"><div class="meta"><span class="dot"></span>${L.rentMeta}</div>
-      <div class="actions"><button type="button" class="btn-ghost" id="shareBtnR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>${tr('Share','مشاركة')}</button></div></div>`;
+      <div class="actions"><button type="button" class="btn-ghost" id="shareBtnR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>${'Share'}</button></div></div>`;
   updateStrip('#rresult', hasQuote);
   const sb=$('shareBtnR'); if(sb) sb.onclick=()=>{ if(navigator.share){navigator.share({title:'Mizan',text:shareMsgR,url:shareUrlR}).catch(()=>{})}else{window.open('https://wa.me/?text='+encodeURIComponent(shareMsgR+' '+shareUrlR),'_blank','noopener')} };
 }
@@ -861,7 +860,7 @@ function renderUsed(){
   let adj=-0.03*((kmN-expected)/10000); adj=Math.max(-0.25,Math.min(0.15,adj));
   const fair=round5(price*ret*(1+adj)), lo=round5(fair*0.9), hi=round5(fair*1.1);
   const tone=TONES.going;
-  const kmNote = km>0 ? (Math.abs(adj)<0.01?tr(', at about average mileage','، عند معدّل مسافة متوسط تقريباً'):(adj<0?tr(', and higher-than-average mileage trims it further','، ومسافة أعلى من المتوسط تخفّضها أكثر'):tr(', and low mileage adds a little','، ومسافة منخفضة تضيف قليلاً'))) : '';
+  const kmNote = km>0 ? (Math.abs(adj)<0.01?', at about average mileage':(adj<0?', and higher-than-average mileage trims it further':', and low mileage adds a little')) : '';
   const ageWord=age==1?L.ucYrOld:L.ucYrsOld;
   $('uresult').className='';
   $('uresult').innerHTML=`
@@ -869,12 +868,12 @@ function renderUsed(){
     <div class="ucbox" style="background:${tone.bg};border:1px solid ${tone.c}22">
       <div class="kicker" style="color:${tone.c}">${L.ucEstFair}</div>
       <div class="big" style="color:${tone.c}">${money(fair)}</div>
-      <p class="line">${tr(`A ${age}-year-old car keeps roughly <strong>${retPct}%</strong> of its ${money(price)} new price${kmNote}. Expect a fair asking range of <strong>${moneyRange(lo,hi)}</strong>.`,`سيارة عمرها ${age} ${age==1?'سنة':'سنوات'} تحتفظ بنحو <strong>${retPct}%</strong> من سعرها الجديد ${money(price)}${kmNote}. توقّع نطاق سعر عادل قدره <strong>${moneyRange(lo,hi)}</strong>.`)}</p>
+      <p class="line">${`A ${age}-year-old car keeps roughly <strong>${retPct}%</strong> of its ${money(price)} new price${kmNote}. Expect a fair asking range of <strong>${moneyRange(lo,hi)}</strong>.`}</p>
     </div>
     <div class="breakdown">
       <div class="brow"><span class="k">${L.bdNewPrice}</span><span class="v">${money(price)}</span></div>
-      <div class="brow"><span class="k">${tr(`Retained after ${age} yr${age==1?'':'s'}`,`القيمة المتبقية بعد ${age} ${age==1?'سنة':'سنوات'}`)}</span><span class="v">${retPct}%</span></div>
-      ${km>0?`<div class="brow"><span class="k">${L.ucMileage}</span><span class="v">${aed(km)} ${tr('mi','ميل')}</span></div>`:''}
+      <div class="brow"><span class="k">${`Retained after ${age} yr${age==1?'':'s'}`}</span><span class="v">${retPct}%</span></div>
+      ${km>0?`<div class="brow"><span class="k">${L.ucMileage}</span><span class="v">${aed(km)} ${'mi'}</span></div>`:''}
       <div class="brow alt"><span class="k">${L.bdFairRange}</span><span class="v strong">${moneyRange(lo,hi)}</span></div>
     </div>
     <p class="hint" style="margin-top:16px">${L.ucHintA}<a href="https://www.kbb.com/whats-my-car-worth/" target="_blank" rel="noopener">Kelley Blue Book</a>${L.ucHintB}</p>`;
