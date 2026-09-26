@@ -498,6 +498,7 @@ const T={
     scalePrice:'The price scale', scaleRate:'The rate scale',
     paidReveal:'🔒 add a price to reveal', paidNone:'no reports yet',
     metaNone:'No driver reports yet · be the first',
+    confHigh:'High confidence', confMed:'Building confidence', confLow:'Early data',
     estNote:'(vs typical garage prices — not verified paid data)',
     rentMeta:'Advertised rates · varies by company, mileage cap, insurance & deposit',
     perDay:'/day', perWeek:'/week', perMonth:'/month',
@@ -608,9 +609,18 @@ function paidStats(cat){
   const all=SUBMISSIONS.filter(d=>d.c===cat&&d.a===AREA);
   const fresh=all.filter(d=>Date.now()-d.t<=RECENT_MS);
   const use=fresh.length>=3?fresh:all, raw=use.map(d=>d.p);
-  if(!raw.length)return{count:0};
-  const {kept}=iqrKeep(raw);
-  return{count:raw.length,p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
+  if(!raw.length)return{count:0,freshCount:fresh.length};
+  // verified (receipt-checked) reports weigh 2x in the percentiles
+  const weighted=use.flatMap(d=>d.v?[d.p,d.p]:[d.p]);
+  const {kept}=iqrKeep(weighted);
+  return{count:raw.length,freshCount:fresh.length,p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
+}
+// Confidence in a paid range: more recent prices + freshness = higher confidence.
+function confidenceOf(s){
+  const n=s.freshCount||0, ageMonths=(Date.now()-(s.lastSeen||0))/(30*864e5);
+  let level = n>=12?'high' : n>=6?'med' : 'low';
+  if(ageMonths>6 && level!=='low') level = level==='high'?'med':'low';   // stale data downgrades a notch
+  return {level, label: level==='high'?L.confHigh : level==='med'?L.confMed : L.confLow};
 }
 const CAP_BUCKET=2, CAP_DAY=12, DAY_MS=864e5;
 function submitGuard(sub){
@@ -753,7 +763,7 @@ function render(){
   const quoteRow = hasQuote ? `<div class="brow"><span class="k">${L.bdYourQuote}</span><span class="v" style="color:${tone.c}">${money(q)}</span></div>` : '';
   let metaText;
   if(s.count===0) metaText=L.metaNone;
-  else if(paidVisible) metaText=`${s.count} driver report${s.count>1?'s':''} · last ${relTime(s.lastSeen)}`;
+  else if(paidVisible){ const conf=confidenceOf(s); metaText=`${conf.label} · ${s.count} driver report${s.count>1?'s':''} · last ${relTime(s.lastSeen)}`; }
   else if(hasPaid) metaText=`${s.count} drivers reported · add yours to reveal the range`;
   else metaText=`${s.count} report${s.count>1?'s':''} so far · ${5-s.count} more to unlock`;
 
