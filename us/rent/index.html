@@ -406,6 +406,8 @@ const STORE_KEY='mizan:us:submissions:v1';
 const UNLOCK_KEY='mizan:us:unlocked:v1';
 const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';
+// anonymous per-browser id — lets the DB trigger rate-limit a device without knowing who it is
+const DEVICE=(()=>{try{let d=localStorage.getItem('mizan:device');if(!d&&crypto.randomUUID){d=crypto.randomUUID();localStorage.setItem('mizan:device',d)}return d||null}catch(e){return null}})();
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
 
 /* ---- i18n (en / ar) — LANG from the URL path (/ar/rent served as a generated copy) or ?lang=ar.
@@ -463,6 +465,7 @@ const T = {
     mVs:(pct,typ)=>pct<=-3?`You signed ${-pct}% under the typical asking rent (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical asking rent (${typ}) — your report helps the next tenant negotiate.`:`That's right around the typical asking rent (${typ}).`,
     tDup:'You already added that exact rent', tEnough:"Thanks — you've added enough here for today", tLot:"That's a lot today — try again tomorrow",
     tHigh:'That rent looks too high', tLocal:'Saved on this device only',
+    tBlocked:"That didn't go through — you've hit today's limit here",
   },
 };
 const L = T[LANG];
@@ -522,15 +525,27 @@ const adapters={
     url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
     headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
     async list(){
-      const r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      // 'verified' only exists once the docs/backend-setup.md §6 SQL has run — fall back to the legacy select until then
+      let r=await fetch(this.url+'?select=category,area,price,note,verified,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      if(!r.ok) r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) throw new Error('list '+r.status);
       const rows=await r.json();
-      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''}));
+      return rows.map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||'',v:!!x.verified}));
     },
-    async add(sub){
-      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},
-        body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null})});
-      if(!r.ok) throw new Error('add '+r.status);
+    async add(sub){ // verified stays false (flipped manually, never by a client)
+      const body={category:sub.c,area:sub.a,price:sub.p,note:sub.note||null};
+      if(DEVICE) body.device=DEVICE;
+      const post=()=>fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify(body)});
+      let r=await post();
+      if(!r.ok&&r.status===400&&body.device){
+        const t=await r.text().catch(()=>'');
+        if(/column/i.test(t)&&/device/.test(t)){ delete body.device; r=await post(); }       // pre-migration DB — retry without it
+        else if(t){ const e=new Error(t.slice(0,200)); e.reject=true; throw e; }             // trigger/constraint said no
+      }
+      if(!r.ok){
+        if(r.status>=400&&r.status<500&&r.status!==401){ const e=new Error('rejected '+r.status); e.reject=true; throw e; }
+        throw new Error('add '+r.status); // network / server / auth trouble → caller degrades to local
+      }
     },
   } : null,
   local:{
@@ -558,7 +573,9 @@ function paidStats(cat,area){
   const fresh=all.filter(d=>Date.now()-d.t<=RECENT_MS);
   const use=fresh.length>=3?fresh:all, raw=use.map(d=>d.p);
   if(!raw.length)return{count:0,freshCount:fresh.length};
-  const {kept}=iqrKeep(raw);
+  // verified (receipt-checked) reports weigh 2x in the percentiles
+  const weighted=use.flatMap(d=>d.v?[d.p,d.p]:[d.p]);
+  const {kept}=iqrKeep(weighted);
   return{count:raw.length,freshCount:fresh.length,p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
 }
 // Confidence in a signed range: more recent reports + freshness = higher confidence.
@@ -798,7 +815,11 @@ async function submitModal(){
   const sub={c:'us-rent-'+$('rtype').value,a:$('rarea').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub); if(!guard.ok){toast(guard.msg);return}
   let synced=true;
-  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  try{await store.add(sub);SUBMISSIONS=await store.list();}
+  catch(e){
+    if(e&&e.reject){toast(L.tBlocked);return;}   // the DB refused it (rate limit / sanity) — do NOT claim success
+    synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);
+  }
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   const type=typeById($('rtype').value);
   const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';

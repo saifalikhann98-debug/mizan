@@ -454,6 +454,8 @@ const STORE_KEY='mizan:us:submissions:v1';
 const UNLOCK_KEY='mizan:us:unlocked:v1';
 const SUPABASE_URL='https://weouzxiubblpsquxdeok.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb3V6eGl1YmJscHNxdXhkZW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Nzc3MjAsImV4cCI6MjA5NzM1MzcyMH0.-y37t_zdUg-VKsUOeJJwmZGCps8buAzpe8V4lx6LOSg';
+// anonymous per-browser id — lets the DB trigger rate-limit a device without knowing who it is
+const DEVICE=(()=>{try{let d=localStorage.getItem('mizan:device');if(!d&&crypto.randomUUID){d=crypto.randomUUID();localStorage.setItem('mizan:device',d)}return d||null}catch(e){return null}})();
 const SUPABASE_READY = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length>20;
 
 /* ============================ i18n (en / ar) ============================ */
@@ -487,6 +489,7 @@ const T={
     mVs:(pct,typ)=>pct<=-3?`You paid ${-pct}% under the typical shop price (${typ}). Nicely done.`:pct>=3?`That's ${pct}% over the typical shop price (${typ}) — your report helps the next driver push back.`:`That's right around the typical shop price (${typ}).`,
     mTooHigh:'That price looks too high', mSavedLocal:'Saved on this device only',
     gDup:'You already added that exact price', gBucket:'Thanks — you’ve added enough here for today', gDay:'That’s a lot of prices today — try again tomorrow',
+    tBlocked:"That didn't go through — you've hit today's limit here",
     kVerdict:'Verdict', kGoing:'Going rate', kEstimate:'Estimate', kTypical:'Typical rate',
     wGoing:'Going rate', wTypical:'Typical rate', wFair:'Fair', wSteep:'Steep', wWalk:'Walk away',
     wBelow:'Below typical', wAround:'Around typical', wGreat:'Great deal', wOver:'Overpriced',
@@ -581,13 +584,26 @@ const adapters={
     url: SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/submissions',
     headers:{apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json'},
     async list(){
-      const r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      // 'verified' only exists once the docs/backend-setup.md §6 SQL has run — fall back to the legacy select until then
+      let r=await fetch(this.url+'?select=category,area,price,note,verified,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
+      if(!r.ok) r=await fetch(this.url+'?select=category,area,price,note,created_at&order=created_at.desc&limit=5000',{headers:this.headers});
       if(!r.ok) throw new Error('list '+r.status);
-      return (await r.json()).map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||''}));
+      return (await r.json()).map(x=>({c:x.category,a:x.area,p:x.price,t:Date.parse(x.created_at),note:x.note||'',v:!!x.verified}));
     },
-    async add(sub){
-      const r=await fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify({category:sub.c,area:sub.a,price:sub.p,note:sub.note||null})});
-      if(!r.ok) throw new Error('add '+r.status);
+    async add(sub){ // verified stays false (flipped manually, never by a client)
+      const body={category:sub.c,area:sub.a,price:sub.p,note:sub.note||null};
+      if(DEVICE) body.device=DEVICE;
+      const post=()=>fetch(this.url,{method:'POST',headers:{...this.headers,Prefer:'return=minimal'},body:JSON.stringify(body)});
+      let r=await post();
+      if(!r.ok&&r.status===400&&body.device){
+        const t=await r.text().catch(()=>'');
+        if(/column/i.test(t)&&/device/.test(t)){ delete body.device; r=await post(); }       // pre-migration DB — retry without it
+        else if(t){ const e=new Error(t.slice(0,200)); e.reject=true; throw e; }             // trigger/constraint said no
+      }
+      if(!r.ok){
+        if(r.status>=400&&r.status<500&&r.status!==401){ const e=new Error('rejected '+r.status); e.reject=true; throw e; }
+        throw new Error('add '+r.status); // network / server / auth trouble → caller degrades to local
+      }
     },
   } : null,
   local:{
@@ -918,7 +934,11 @@ async function submitModal(){
   const sub={c:'us-motor-'+cat.id,a:AREA,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub); if(!guard.ok){toast(guard.msg);return}
   let synced=true;
-  try{await store.add(sub);SUBMISSIONS=await store.list();}catch(e){synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);}
+  try{await store.add(sub);SUBMISSIONS=await store.list();}
+  catch(e){
+    if(e&&e.reject){toast(L.tBlocked);return;}   // the DB refused it (rate limit / sanity) — do NOT claim success
+    synced=false;SUBMISSIONS=SUBMISSIONS.concat(sub);
+  }
   guard.commit(); UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
   $('modalSuccessText').textContent=`${L.mThanksA}${jobLow(cat)}${L.mThanksB}`+vsTxt;
