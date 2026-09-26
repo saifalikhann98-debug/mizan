@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mizan · Dashboard</title>
 <meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#EEF2F1" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#16201E" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#EEF2F1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<script>/* no-flash theme */(function(){try{var s=localStorage.getItem('mizan:theme');var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
+<script>/* no-flash theme */document.documentElement.setAttribute('data-theme','light');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -24,16 +23,6 @@
     --shadow:0 1px 2px rgba(40,34,20,.04), 0 22px 46px -34px rgba(40,34,20,.34);
     --serif:'Outfit',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
     --sans:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  }
-  :root[data-theme="dark"]{
-    --ink:#F0ECE2; --muted:#BFB9AD; --faint:#8F897D;
-    --teal:#5FB7A8; --teal-bg:#173330;
-    --surface:#1C2422; --surface-2:#222A28;
-    --line:#2E3835; --line-2:#28312E;
-    --fair:#6FBF8F; --fair-bg:#17281E;
-    --steep:#D6A24E; --steep-bg:#2A2417;
-    --bg:radial-gradient(140% 90% at 50% -10%, #1A211F 0%, #161D1B 55%, #121917 100%);
-    --shadow:0 1px 2px rgba(0,0,0,.2), 0 22px 46px -34px rgba(0,0,0,.6);
   }
   *{box-sizing:border-box}
   body{margin:0;min-height:100vh;background:var(--bg);background-attachment:fixed;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.5}
@@ -103,7 +92,6 @@
     </a>
     <div class="hbtns">
       <button class="icon" id="refresh" type="button" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg></button>
-      <button class="icon" id="theme" type="button" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
     </div>
   </header>
 
@@ -186,7 +174,6 @@ async function load(){
 }
 
 document.getElementById('refresh').onclick=load;
-document.getElementById('theme').onclick=()=>{const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('mizan:theme',n)}catch(e){}};
 load();
 </script>
 </body>
