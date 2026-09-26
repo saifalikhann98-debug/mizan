@@ -87,31 +87,25 @@ headline, ONE brand accent). Still a single self-contained file per app (`index.
 - Guides share the system (CSS in `tools/build-seo-pages.mjs` → `/prices/page.css`; `G()` lifts crumb +
   h1 + lede into `.topband`). OG cards (`node tools/build-og.mjs`) intentionally stay on the pine field.
 
-## Prioritized backlog
-**First real task — make it persist for real (required before launch):**
-- Add a tiny backend (e.g. Supabase, Firebase, or a small serverless KV) so submissions
-  persist across users outside the artifact runtime. Abstract storage behind a small
-  `store.get/set/list` module so `window.storage` and the real backend are interchangeable.
+## Backlog status (Sep 2026 — keep this honest, it drives planning)
+**Shipped — do not re-plan these:**
+- Backend: Supabase REST behind the `store` abstraction (shared `submissions` table, RLS,
+  anon key in the page). All six apps.
+- P1 data integrity: IQR outlier fence; per-device/day caps client-side AND a server DB
+  trigger (per-device + per-IP caps, price sanity, duplicate rejection — clients send an
+  anonymous `device` id); `verified` invoice tier (photo → private bucket → manual flip,
+  2× weight); confidence label at the verdict ("High confidence / Building confidence /
+  Early data" from fresh-report count, downgraded when stale). All six apps.
+- P2 "what's included" scopes: sub-option select; buckets segment as `id+suffix`
+  (e.g. `ac+2u`, `us-hvac+2u`); base scope keeps the bare id. UAE + US services apps.
+- P3 growth loops: share button with verdict message + deep link; post-submit
+  "you paid X% under/over typical (…)" feedback. All six apps.
+- P4 searchable pickers: `makeCombobox()` type-to-filter over the hidden native selects.
 
-**P1 — data integrity (the actual moat):**
-- Anti-gaming: trim outliers before computing the range (IQR fence), cap submissions per
-  device/day, weight by agreement. A business shouldn't be able to pump its area's range.
-- Provenance tiers: `paid` vs `verified` (photo of invoice) — verified prices weighted higher.
-- Confidence signal: make a tight range from many recent prices visibly different from a wide
-  range from few old ones (e.g. a confidence label at the verdict).
-
-**P2 — accuracy:**
-- "What's included" structured sub-options per service (AC: # of units; salon: cut vs cut+color;
-  car: oil only vs minor service). Right now different scopes pollute one range. Highest
-  accuracy lever after data integrity.
-
-**P3 — growth loops:**
-- Shareable verdict ("send this to the technician") — doubles as a distribution loop.
-- "You paid X% under the area average" feedback after contributing (makes giving feel like winning).
-
-**P4 — scale:**
-- Searchable service/area pickers (current `<select>` won't scale past ~20 entries).
+**Remaining:**
 - WhatsApp entry point (the real distribution channel — users message a number, get a verdict).
+- Server-side filtering/pagination once the 5000-row read cap gets close.
+- Agreement weighting (beyond verified 2×) if pumping is ever observed in the wild.
 
 ## Strategy & background
 See `docs/roadmap.md` for the full thinking (cold-start plan, the "one bucket" focus,

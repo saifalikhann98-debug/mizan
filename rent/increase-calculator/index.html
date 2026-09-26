@@ -540,7 +540,8 @@ const T = {
     bAsking:'Asking range (advertised)', bSigned:'Tenants signed', bYourRent:'Your rent', bTypical:'Typical asking',
     signedReveal:'🔒 add a rent to reveal', signedNone:'no reports yet',
     metaNone:'No tenant reports yet · be the first', metaFirst:'Be the first to report here',
-    metaPaid:(n,t)=>`${n} tenant report${n>1?'s':''} · last ${t}`,
+    metaPaid:(c,n,t)=>`${c} · ${n} tenant report${n>1?'s':''} · last ${t}`,
+    confHigh:'High confidence', confMed:'Building confidence', confLow:'Early data',
     metaLocked:n=>`${n} tenants reported · add yours to reveal the range`,
     metaThin:(n,m)=>`${n} report${n>1?'s':''} so far · ${m} more to unlock`,
     scaleTitle:'The yearly range', scaleUnit:'AED/yr', pillSigned:'TENANTS SIGNED', legAsking:'Asking', legSigned:'Signed',
@@ -594,7 +595,8 @@ const T = {
     bAsking:'النطاق المُعلن', bSigned:'ما وقّعه المستأجرون', bYourRent:'إيجارك', bTypical:'المُعلن المعتاد',
     signedReveal:'🔒 أضف إيجاراً للكشف', signedNone:'لا بلاغات بعد',
     metaNone:'لا بلاغات من المستأجرين بعد · كن أول من يضيف', metaFirst:'كن أول من يبلّغ هنا',
-    metaPaid:(n,t)=>`${n} بلاغ من المستأجرين · آخرها ${t}`,
+    metaPaid:(c,n,t)=>`${c} · ${n} بلاغ من المستأجرين · آخرها ${t}`,
+    confHigh:'ثقة عالية', confMed:'ثقة متنامية', confLow:'بيانات أولية',
     metaLocked:n=>`أبلغ ${n} مستأجراً · أضف بلاغك للكشف عن النطاق`,
     metaThin:(n,m)=>`${n} بلاغ حتى الآن · ${m} أخرى لفتح النطاق`,
     scaleTitle:'النطاق السنوي', scaleUnit:'درهم/سنة', pillSigned:'وقّعه المستأجرون', legAsking:'مُعلن', legSigned:'موقّع',
@@ -741,6 +743,13 @@ function paidStats(cat,area){
   const weighted=use.flatMap(d=>d.v?[d.p,d.p]:[d.p]);
   const {kept}=iqrKeep(weighted);
   return{count:raw.length,freshCount:fresh.length,p25:pct(kept,.25),p50:pct(kept,.5),p75:pct(kept,.75),lastSeen:Math.max(...use.map(d=>d.t))};
+}
+// Confidence in a signed range: more recent reports + freshness = higher confidence.
+function confidenceOf(s){
+  const n=s.freshCount||0, ageMonths=(Date.now()-(s.lastSeen||0))/(30*864e5);
+  let level = n>=12?'high' : n>=6?'med' : 'low';
+  if(ageMonths>6 && level!=='low') level = level==='high'?'med':'low';   // stale data downgrades a notch
+  return {level, label: level==='high'?L.confHigh : level==='med'?L.confMed : L.confLow};
 }
 const CAP_BUCKET=2, CAP_DAY=12, DAY_MS=864e5;
 function submitGuard(sub){
@@ -893,7 +902,7 @@ function renderFair(){
   const quoteRow = hasQuote ? `<div class="brow"><span class="k">${L.bYourRent}</span><span class="v" style="color:${tone.c}">${money(q)}${perYr}</span></div>` : '';
   let metaText;
   if(s.count===0) metaText=L.metaNone;
-  else if(paidVisible) metaText=L.metaPaid(s.count, relTime(s.lastSeen));
+  else if(paidVisible){ const conf=confidenceOf(s); metaText=L.metaPaid(conf.label, s.count, relTime(s.lastSeen)); }
   else if(hasPaid) metaText=L.metaLocked(s.count);
   else metaText=L.metaThin(s.count, 5-s.count);
 
