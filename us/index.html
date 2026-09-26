@@ -108,6 +108,10 @@
   .workspace{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:visible;box-shadow:0 1px 2px rgba(28,26,21,.04),0 24px 60px -40px rgba(28,26,21,.35)}
   .form-col{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:14px;padding:22px 24px;border-bottom:1px solid var(--line-3)}
   .form-col>.howto{display:none}
+  /* scope sub-option ("what's included") — only services with a `scopes` list show the 4th field */
+  .scope-field{display:none}
+  .form-col.has-scope{grid-template-columns:1.4fr .9fr .9fr 1fr}
+  .form-col.has-scope .scope-field{display:block}
   .field{border:1px solid var(--line-2);border-radius:14px;background:var(--surface-2);padding:10px 14px 9px;position:relative;transition:border-color .15s,box-shadow .15s}
   .field:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(158,59,31,.14)}
   .flabel{display:block;font-size:10.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 3px}
@@ -226,6 +230,7 @@
   .frow .fmid .fs{font-size:14.5px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .frow .fmid .fa{flex:none;font-size:12px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line-3);border-radius:999px;padding:2px 9px;white-space:nowrap}
   .frow .fwhen{flex:none;font-size:12.5px;color:var(--faint-2)}
+  .vbadge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--fair);background:var(--fair-bg);border-radius:999px;padding:1.5px 8px;vertical-align:2px;margin-inline-start:6px;white-space:nowrap}
   .feed-empty{font-size:14.5px;color:var(--muted-2)}
 
   /* footer + faq */
@@ -284,8 +289,9 @@
 
   /* responsive */
   @media (max-width:900px){
-    .form-col{grid-template-columns:1fr 1fr}
+    .form-col,.form-col.has-scope{grid-template-columns:1fr 1fr}
     .form-col .field:first-child{grid-column:1/-1}
+    .form-col.has-scope .field:nth-of-type(4){grid-column:1/-1}   /* quote input gets its own row; area + scope pair up */
     .rows{grid-template-columns:1fr}
     .qas{grid-template-columns:1fr 1fr}
   }
@@ -299,7 +305,7 @@
     .modeswitch{display:flex;left:0;transform:none;width:auto;margin:20px 18px 0}
     .mode{flex:1 1 0;justify-content:center;gap:7px;padding:10px 6px;font-size:14px}
     main{margin-top:-44px;padding-bottom:56px}
-    .form-col{grid-template-columns:1fr;gap:10px;padding:16px}
+    .form-col,.form-col.has-scope{grid-template-columns:1fr;gap:10px;padding:16px}
     .result-col{grid-template-columns:1fr;gap:18px;padding:18px 16px 16px}
     .verdict{grid-column:1;grid-row:auto;padding:18px}
     .verdict-word{font-size:38px}
@@ -383,6 +389,13 @@
       <label class="flabel" id="lbl-area" for="area">In which city?</label>
       <div class="select-wrap">
         <select id="area" aria-label="Area"></select>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      </div>
+      <div class="field scope-field">
+      <label class="flabel" id="lbl-scope" for="scope">What&rsquo;s included?</label>
+      <div class="select-wrap">
+        <select id="scope" aria-label="What's included"></select>
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#9A9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </div>
       </div>
@@ -537,6 +550,16 @@ const money      = n => '$' + aed(n);
 const moneyRange = (a,b) => '$' + aed(a) + ' – $' + aed(b);
 // extra UI strings + the FAQ content (per-locale)
 Object.assign(T.en,{
+  // scope sub-options ("what's included") — labels per service id + scope suffix ('' = base scope)
+  lblScope:'What’s included?',
+  scopeLabels:{
+    'us-hvac':    {'':'1 system','2u':'2 systems','3u':'3+ systems'},
+    'us-cleaning':{'st':'Studio','1b':'1-bed apartment','':'2-bed apartment','3b':'3-bed apartment','hs':'House (4+ bed)'},
+    'us-pest':    {'st':'Studio','1b':'1-bed apartment','':'2-bed apartment','3b':'3-bed apartment','hs':'House (4+ bed)'},
+    'us-painting':{'':'One room','st':'Full studio','1b':'Full 1-bed apartment','2b':'Full 2-bed apartment'},
+    'us-tires':   {'1t':'1 tire','2t':'2 tires','':'Set of 4'},
+    'us-movers':  {'st':'Studio','':'1-bed home','2b':'2-bed home','3b':'3-bed home / house'},
+  },
   noMatches:'No matches', searchSvc:'Search services…', searchArea:'Search cities…', docTitle:'Mizan US — Is the price fair?',
   shareBtn:'Share', shareResidents:'residents pay', shareTypical:'typically', shareCheck:'Is your quote fair? Check on Mizan:', navRent:'Rent', navServices:'Services', navMotor:'Motor',
   faqs:[
@@ -555,10 +578,10 @@ Object.assign(T.en,{
 // ids carry the us- prefix so US submissions live in their own buckets in the shared table.
 const CATEGORIES=[
   // Home & cleaning
-  {id:'us-hvac',       label:'HVAC tune-up / service visit',       lo:75,   hi:200,  typical:125, unit:'/visit',   group:'Home & cleaning'},
-  {id:'us-cleaning',   label:'House deep cleaning (2-bed)',        lo:150,  hi:400,  typical:260, unit:'/clean',   group:'Home & cleaning'},
+  {id:'us-hvac',       label:'HVAC tune-up / service visit',       lo:75,   hi:200,  typical:125, unit:'/visit',   group:'Home & cleaning', scopes:[['',1],['2u',1.8],['3u',2.5]]},
+  {id:'us-cleaning',   label:'House deep cleaning (2-bed)',        lo:150,  hi:400,  typical:260, unit:'/clean',   group:'Home & cleaning', scopes:[['st',0.7],['1b',0.85],['',1],['3b',1.3],['hs',1.6]]},
   {id:'us-cleanhr',    label:'House cleaning (per cleaner)',       lo:25,   hi:75,   typical:45,  unit:'/hour',    group:'Home & cleaning'},
-  {id:'us-pest',       label:'Pest control (general visit)',       lo:110,  hi:260,  typical:170, unit:'/visit',   group:'Home & cleaning'},
+  {id:'us-pest',       label:'Pest control (general visit)',       lo:110,  hi:260,  typical:170, unit:'/visit',   group:'Home & cleaning', scopes:[['st',0.8],['1b',0.9],['',1],['3b',1.2],['hs',1.4]]},
   {id:'us-ductclean',  label:'Air duct cleaning',                  lo:270,  hi:700,  typical:390, unit:'/job',     group:'Home & cleaning'},
   {id:'us-carpet',     label:'Carpet & upholstery cleaning',       lo:120,  hi:250,  typical:185, unit:'/job',     group:'Home & cleaning'},
   {id:'us-windows',    label:'Window cleaning (whole house)',      lo:150,  hi:300,  typical:220, unit:'/visit',   group:'Home & cleaning'},
@@ -567,14 +590,14 @@ const CATEGORIES=[
   {id:'us-handyman',   label:'Handyman (per hour)',                lo:50,   hi:150,  typical:75,  unit:'/hour',    group:'Repairs & handyman'},
   {id:'us-plumber',    label:'Plumber service call',               lo:50,   hi:250,  typical:125, unit:'/visit',   group:'Repairs & handyman'},
   {id:'us-electrician',label:'Electrician service call',           lo:100,  hi:200,  typical:150, unit:'/visit',   group:'Repairs & handyman'},
-  {id:'us-painting',   label:'Interior painting (per room)',       lo:200,  hi:1000, typical:500, unit:'/room',    group:'Repairs & handyman'},
+  {id:'us-painting',   label:'Interior painting (per room)',       lo:200,  hi:1000, typical:500, unit:'/room',    group:'Repairs & handyman', scopes:[['',1],['st',2.2],['1b',3],['2b',4]]},
   {id:'us-applrepair', label:'Appliance repair (washer/fridge)',   lo:125,  hi:400,  typical:200, unit:'/repair',  group:'Repairs & handyman'},
   {id:'us-tvmount',    label:'TV wall mounting',                   lo:150,  hi:400,  typical:250, unit:'/job',     group:'Repairs & handyman'},
   {id:'us-minisplit',  label:'Mini-split AC install (single zone)',lo:2000, hi:6000, typical:3000,unit:'/system',  group:'Repairs & handyman'},
   // Auto (quick checks — the Motor app covers repairs in depth)
   {id:'us-oilchange',  label:'Oil change (full synthetic)',        lo:65,   hi:125,  typical:90,  unit:'/service', group:'Auto'},
   {id:'us-carwash',    label:'Full car detail',                    lo:125,  hi:500,  typical:200, unit:'/detail',  group:'Auto'},
-  {id:'us-tires',      label:'Tires (set of 4, installed)',        lo:460,  hi:1280, typical:700, unit:'/set',     group:'Auto'},
+  {id:'us-tires',      label:'Tires (set of 4, installed)',        lo:460,  hi:1280, typical:700, unit:'/set',     group:'Auto', scopes:[['1t',0.25],['2t',0.5],['',1]]},
   // Beauty & grooming
   {id:'us-haircut',    label:"Men's haircut",                      lo:20,   hi:60,   typical:35,  unit:'/cut',     group:'Beauty & grooming'},
   {id:'us-womenshair', label:"Women's cut + blow-dry",             lo:35,   hi:95,   typical:65,  unit:'/visit',   group:'Beauty & grooming'},
@@ -605,7 +628,7 @@ const CATEGORIES=[
   {id:'us-dryclean',   label:'Dry cleaning (shirt/pants)',         lo:3,    hi:12,   typical:6,   unit:'/item',    group:'Laundry & garments'},
   {id:'us-tailoring',  label:'Alterations (pants hem)',            lo:15,   hi:45,   typical:25,  unit:'/item',    group:'Laundry & garments'},
   // Moving
-  {id:'us-movers',     label:'Local movers (1-bed apartment)',     lo:400,  hi:1500, typical:800, unit:'/move',    group:'Moving'},
+  {id:'us-movers',     label:'Local movers (1-bed apartment)',     lo:400,  hi:1500, typical:800, unit:'/move',    group:'Moving', scopes:[['st',0.7],['',1],['2b',1.5],['3b',2.2]]},
 ];
 // Metros grouped by region. mult = BEA Regional Price Parities 2023, "Services: Other" component
 // (services excluding housing rents & utilities), US = 100 → mult = RPP/100. Real published index,
@@ -620,6 +643,12 @@ const AREAS=AREA_GROUPS.flatMap(g=>g.areas.map(a=>a[0]));               // flat 
 const PREMIUM=Object.fromEntries(AREA_GROUPS.flatMap(g=>g.areas.map(a=>[a[0],a[1]])));  // name → mult
 
 function catById(id){return CATEGORIES.find(c=>c.id===id)}
+// scope helpers — a submission's bucket id is `catId` for the base scope, `catId+suffix` otherwise,
+// so buckets segment naturally and pre-scope data stays under the base id.
+function bucketOf(catId,scopeId){return scopeId?catId+'+'+scopeId:catId}
+function parseBucket(b){const i=b.indexOf('+');return i<0?{cat:catById(b),scope:''}:{cat:catById(b.slice(0,i)),scope:b.slice(i+1)}}
+function curScope(cat){if(!cat||!cat.scopes)return null;const v=$('scope').value;return cat.scopes.find(s=>s[0]===v)||cat.scopes.find(s=>s[0]==='')||cat.scopes[0]}
+function scopeLabelOf(cat,scopeId){const t=(L.scopeLabels||{})[cat.id];return t&&t[scopeId]!=null?t[scopeId]:scopeId}
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function seedFor(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 
@@ -772,6 +801,16 @@ function fillSelects(){
   $('area').value='New York';
 }
 
+// (Re)build the scope select for the current service; hide the field when the service has none.
+// Always defaults to the base scope ('' — the one the headline lo/hi/typical describe).
+function fillScope(){
+  const cat=catById($('category').value), sel=$('scope'), fc=document.querySelector('.form-col');
+  if(!cat.scopes){ sel.innerHTML=''; fc.classList.remove('has-scope'); return; }
+  sel.innerHTML=cat.scopes.map(s=>`<option value="${escapeHTML(s[0])}">${escapeHTML(scopeLabelOf(cat,s[0]))}</option>`).join('');
+  sel.value='';
+  fc.classList.add('has-scope');
+}
+
 // Custom searchable dropdown over a native <select>. The select stays in the DOM (hidden) as the
 // value/source of truth, so render() + the change wiring are unchanged — this just adds a styled,
 // type-to-filter UI that mirrors the select's <optgroup>/<option> structure. If JS fails to run,
@@ -859,16 +898,19 @@ let CUR_TYP=0;                  // area-adjusted typical list price of the curre
 // ===== live result (recomputes on every input change; no submit step) =====
 function render(){
   const catId=$('category').value, area=$('area').value, cat=catById(catId);
+  const sc=curScope(cat), scId=sc?sc[0]:'', smult=sc?sc[1]:1;   // scope sub-option (base = ×1)
   const qRaw=parseFloat($('quoted').value); const q=(!isNaN(qRaw)&&qRaw>0)?qRaw:0; const hasQuote=q>0;
-  const s=paidStats(catId,area);
+  const s=paidStats(bucketOf(catId,scId),area);   // paid data reads ONLY the scoped bucket
   const hasPaid=s.count>=5;                 // a real paid range needs >=5 reports
   const paidVisible=hasPaid&&UNLOCKED;      // gate: revealed only after the user contributes
 
-  $('quoteUnit').textContent=unitLabel(cat.unit);
+  // per-X unit suffix is misleading once a scope names the whole job ("2 systems", "set of 4") — drop it
+  $('quoteUnit').textContent=cat.scopes?'':unitLabel(cat.unit);
 
-  // market estimate, metro-adjusted: US national list prices × the BEA regional price factor.
-  // A labelled ESTIMATE (the underlying harvest isn't measured per-area); real paid data stays per-area as reported.
-  const mult=PREMIUM[area]||1;
+  // market estimate, metro-adjusted: US national list prices × the BEA regional price factor × the
+  // scope multiplier. A labelled ESTIMATE (the underlying harvest isn't measured per-area); real
+  // paid data stays per-area and per-scope as reported.
+  const mult=(PREMIUM[area]||1)*smult;
   const mLow=round5(cat.lo*mult), mHigh=round5(cat.hi*mult), mTyp=round5(cat.typical*mult);
   $('quoted').placeholder=L.egPh(aed(mTyp)); CUR_TYP=mTyp;
   // paid (real percentiles — only when revealed)
@@ -883,7 +925,8 @@ function render(){
 
   // ---- verdict ----
   let tier,word,kicker,line,statBig='',statSub='',hasStat=false,roomLabel,roomValue;
-  const svcLow = cat.label.toLowerCase();
+  const scL = scId?scopeLabelOf(cat,scId):'';                        // non-base scope label ('' for base)
+  const svcLow = cat.label.toLowerCase() + (scL?` (${scL.toLowerCase()})`:'');
   const areaL = areaLabel(area);
   if(paidVisible){
     kicker=hasQuote?L.kVerdict:L.kEstimate;
@@ -955,10 +998,11 @@ function render(){
   // ---- share message (built from the current result; consumed by the Share button) ----
   const shareRange = paidVisible ? moneyRange(pLow,pHigh) : moneyRange(mLow,mHigh);
   const svEN={fair:'fair',going:'about the going rate',steep:'steep',walk:'too high'}[tier]||'worth checking';
+  const svcShare = svcLabel(cat)+(scL?` — ${scL}`:'');   // scope travels with the share so the range means what it says
   shareMsg = hasQuote
-    ? `I was quoted ${money(q)} for ${svcLabel(cat)} in ${areaL} — Mizan says it's ${svEN} (most pay ${shareRange}). Check yours on Mizan:`
-    : `${svcLabel(cat)} ${L.rin} ${areaL}: ${paidVisible?L.shareResidents:L.shareTypical} ${shareRange}. ${L.shareCheck}`;
-  shareUrl = location.origin + '/us/' + '?service=' + cat.id + '&area=' + encodeURIComponent(area);
+    ? `I was quoted ${money(q)} for ${svcShare} in ${areaL} — Mizan says it's ${svEN} (most pay ${shareRange}). Check yours on Mizan:`
+    : `${svcShare} ${L.rin} ${areaL}: ${paidVisible?L.shareResidents:L.shareTypical} ${shareRange}. ${L.shareCheck}`;
+  shareUrl = location.origin + '/us/' + '?service=' + cat.id + (scId?'&scope='+encodeURIComponent(scId):'') + '&area=' + encodeURIComponent(area);
 
   // ---- scale geometry ----
   const mL=pos(mLow), mW=pos(mHigh)-pos(mLow);
@@ -1055,21 +1099,22 @@ function shareResult(){
 }
 
 function renderFeed(){
-  const recent=DATA.filter(d=>catById(d.c)).sort((a,b)=>b.t-a.t).slice(0,8);
+  const recent=DATA.filter(d=>parseBucket(d.c).cat).sort((a,b)=>b.t-a.t).slice(0,8);
   if(!recent.length){
     $('feed').innerHTML=`<h2>${L.feedTitle}</h2><p class="feed-sub">${L.feedEmpty}</p>`;
     return;
   }
   const now=Date.now(), base='/us/';
   const rows=recent.map(d=>{
-    const cat=catById(d.c), old=(now-d.t)>45*864e5;
-    const href=`${base}?service=${encodeURIComponent(d.c)}&area=${encodeURIComponent(d.a)}`;
-    return `<a class="frow${old?' old':''}" href="${href}" title="${escapeHTML(svcLabel(cat))} · ${escapeHTML(areaLabel(d.a))}">
+    const {cat,scope}=parseBucket(d.c), old=(now-d.t)>45*864e5;
+    const label=svcLabel(cat)+(scope?` · ${scopeLabelOf(cat,scope)}`:'');
+    const href=`${base}?service=${encodeURIComponent(cat.id)}${scope?'&scope='+encodeURIComponent(scope):''}&area=${encodeURIComponent(d.a)}`;
+    return `<a class="frow${old?' old':''}" href="${href}" title="${escapeHTML(label)} · ${escapeHTML(areaLabel(d.a))}">
       <div class="amt"><span class="cur">${L.aed}</span><span class="n">${aed(d.p)}</span></div>
-      <div class="fmid"><div class="fs">${escapeHTML(svcLabel(cat))}</div><span class="fa">${escapeHTML(areaLabel(d.a))}</span></div>
+      <div class="fmid"><div class="fs">${escapeHTML(label)}${d.v?`<span class="vbadge">✓ verified</span>`:''}</div><span class="fa">${escapeHTML(areaLabel(d.a))}</span></div>
       <span class="fwhen">${relTime(d.t)}</span></a>`;
   }).join('');
-  const total=DATA.filter(d=>catById(d.c)).length;
+  const total=DATA.filter(d=>parseBucket(d.c).cat).length;
   $('feed').innerHTML=`<div class="feed-head"><div><h2>${L.feedTitle}</h2><p class="feed-sub">${L.feedSub}</p></div><span class="feed-live"><span class="dot"></span>${L.feedCount(total)}</span></div><div class="rows">${rows}</div>`;
 }
 
@@ -1077,7 +1122,9 @@ function renderFeed(){
 let lastFocus=null;
 function openModal(){
   const cat=catById($('category').value), area=$('area').value;
-  $('modalSub').innerHTML=`${L.mSubA}<strong>${escapeHTML(svcLabel(cat))}</strong>${L.mSubB}<strong>${escapeHTML(areaLabel(area))}</strong>${L.mSubC}`;
+  // echo the chosen scope so people report a price for the right thing (base scope included — "1 system" matters)
+  const sc=curScope(cat), scTxt=sc?` — ${scopeLabelOf(cat,sc[0])}`:'';
+  $('modalSub').innerHTML=`${L.mSubA}<strong>${escapeHTML(svcLabel(cat)+scTxt)}</strong>${L.mSubB}<strong>${escapeHTML(areaLabel(area))}</strong>${L.mSubC}`;
   $('modalForm').classList.remove('hidden'); $('modalSuccess').classList.add('hidden');
   const qv=parseFloat($('quoted').value);
   $('modalPrice').value=(qv>0&&qv<1000000)?String(Math.round(qv)):''; $('modalNote').value=''; updateModalBtn();
@@ -1103,7 +1150,8 @@ async function submitModal(){
   const p=parseFloat($('modalPrice').value);
   if(isNaN(p)||p<=0){return}
   if(p>=1000000){toast(L.tHigh);return}
-  const sub={c:$('category').value,a:$('area').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
+  const cat=catById($('category').value), sc=curScope(cat);
+  const sub={c:bucketOf(cat.id,sc?sc[0]:''),a:$('area').value,p:Math.round(p),t:Date.now(),note:($('modalNote').value||'').trim()};
   const guard=submitGuard(sub);
   if(!guard.ok){toast(guard.msg);return}
   let synced=true;
@@ -1112,9 +1160,9 @@ async function submitModal(){
   guard.commit();
   UNLOCKED=true; try{await store.set(UNLOCK_KEY,'1')}catch(e){}
   DATA=SEED.concat(SUBMISSIONS);
-  const cat=catById(sub.c);
+  const scTxt=sc&&sc[0]?` — ${scopeLabelOf(cat,sc[0])}`:'';
   const vsTxt=CUR_TYP>0?' '+L.mVs(Math.round((sub.p/CUR_TYP-1)*100), money(CUR_TYP)):'';
-  $('modalSuccessText').textContent=L.mThanks(svcLabel(cat), areaLabel(sub.a))+vsTxt;
+  $('modalSuccessText').textContent=L.mThanks(svcLabel(cat)+scTxt, areaLabel(sub.a))+vsTxt;
   $('modalForm').classList.add('hidden'); $('modalSuccess').classList.remove('hidden');
   setTimeout(()=>{const d=$('modalDone'); if(d)d.focus()},30);
   render(); renderFeed();
@@ -1130,13 +1178,17 @@ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show')
   const dotsEnd=()=>{const w=document.querySelector('.workspace,.workcard'); if(w) document.body.style.setProperty('--dots-end',Math.round(w.getBoundingClientRect().bottom+scrollY+48)+'px');};
   dotsEnd(); addEventListener('resize',dotsEnd); new ResizeObserver(dotsEnd).observe(document.body);
   fillSelects();
-  // deep-link: /?service=<id>&area=<name> pre-selects (used by the /prices SEO pages)
+  // deep-link: /?service=<id>&scope=<suffix>&area=<name> pre-selects (used by the /prices SEO pages)
   const _p=new URLSearchParams(location.search);
   const _s=_p.get('service'); if(_s&&catById(_s))$('category').value=_s;
   const _a=_p.get('area'); if(_a&&AREAS.includes(_a))$('area').value=_a;
+  fillScope();
+  const _sc=_p.get('scope'), _c=catById($('category').value);
+  if(_sc&&_c.scopes&&_c.scopes.some(s=>s[0]===_sc))$('scope').value=_sc;
   await loadState();
-  $('category').addEventListener('change',render);
+  $('category').addEventListener('change',()=>{fillScope();render();});
   $('area').addEventListener('change',render);
+  $('scope').addEventListener('change',render);
   makeCombobox($('category'),{placeholder:L.searchSvc,labelledBy:'lbl-cat'});
   makeCombobox($('area'),{placeholder:L.searchArea,labelledBy:'lbl-area'});
   $('quoted').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/[^0-9.]/g,''); render(); });
