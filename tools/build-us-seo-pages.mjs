@@ -122,7 +122,7 @@ function footer() {
 }
 function graph(canonPath, crumbs, faqs, title, desc) {
   return { '@context': 'https://schema.org', '@graph': [
-    { '@type': 'WebPage', '@id': `${ORIGIN}${canonPath}`, url: `${ORIGIN}${canonPath}`, name: title, description: desc, inLanguage: 'en-US', dateModified: LASTMOD, isAccessibleForFree: true, isPartOf: { '@type': 'WebSite', '@id': `${ORIGIN}/us/#website`, name: 'Mizan US', url: `${ORIGIN}/us/` } },
+    { '@type': 'WebPage', '@id': `${ORIGIN}${canonPath}`, url: `${ORIGIN}${canonPath}`, name: title, description: desc, inLanguage: 'en-US', dateModified: LASTMOD, isAccessibleForFree: true, speakable: { '@type': 'SpeakableSpecification', cssSelector: ['h1', '.lede'] }, isPartOf: { '@type': 'WebSite', '@id': `${ORIGIN}/us/#website`, name: 'Mizan US', url: `${ORIGIN}/us/` } },
     { '@type': 'BreadcrumbList', itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c[0], item: `${ORIGIN}${c[1]}` })) },
     ...(faqs ? [{ '@type': 'FAQPage', inLanguage: 'en-US', mainEntity: faqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }] : []),
   ] };
@@ -167,7 +167,10 @@ function serviceHub() {
   const body = groups.map(g => `<div class="idxgroup"><h3>${esc(g.k)}</h3><div class="idxgrid">${g.items.map(s => `<a href="/us/prices/${META[s.id].slug}">${esc(cap(META[s.id].name.replace(/^an? /, '')))}</a>`).join('')}</div></div>`).join('');
   const title = 'US service price guides (2026) | Mizan';
   const desc = `Browse fair-price guides for ${CATEGORIES.length} everyday US services — HVAC, cleaning, movers, haircuts, urgent care and more — across 23 metros. See what residents actually pay.`;
-  const jsonld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, url: `${ORIGIN}${canonPath}`, inLanguage: 'en-US', description: desc, dateModified: LASTMOD };
+  const jsonld = { '@context': 'https://schema.org', '@graph': [
+    { '@type': 'CollectionPage', name: title, url: `${ORIGIN}${canonPath}`, inLanguage: 'en-US', description: desc, dateModified: LASTMOD },
+    { '@type': 'Dataset', name: 'Mizan US market price data', description: `Advertised US price ranges for ${CATEGORIES.length} everyday services with per-category sources (${SVC_SOURCES}) and BEA Regional Price Parities metro multipliers. As of ${AS_OF}.`, url: `${ORIGIN}${canonPath}`, isAccessibleForFree: true, dateModified: LASTMOD, distribution: [{ '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: `${ORIGIN}/data/us-market-prices.json` }] },
+  ] };
   return head(title, desc, canonPath, jsonld) + nav('Check a price', '/us/') + `<main>
 <div class="crumb"><a href="/us/">US home</a> / Price guides</div>
 <h1>US service price guides</h1><p class="lede">What everyday services really cost across the US, as of ${AS_OF}. Each guide shows the typical advertised range from ${esc(SVC_SOURCES)}, a per-metro breakdown, and what residents report actually paying. Pick a service, or <a href="/us/">check a specific quote</a>.</p>${body}</main>` + footer();

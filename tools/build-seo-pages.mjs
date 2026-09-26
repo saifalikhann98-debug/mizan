@@ -218,7 +218,7 @@ function servicePage(L, s) {
     .map(o => `<a href="${L.base}/prices/${o.slug}">${esc(cap(L.name(o)))}</a>`).join('');
   const faqs = L.faqs(n, loD, hiD, u, L.cur(s.typical));
   const jsonld = { "@context":"https://schema.org","@graph":[
-    {"@type":"WebPage","@id":`${ORIGIN}${canonPath}`,"url":`${ORIGIN}${canonPath}`,"inLanguage":L.lang,"dateModified":LASTMOD,"isAccessibleForFree":true},
+    {"@type":"WebPage","@id":`${ORIGIN}${canonPath}`,"url":`${ORIGIN}${canonPath}`,"inLanguage":L.lang,"dateModified":LASTMOD,"isAccessibleForFree":true,"speakable":{"@type":"SpeakableSpecification","cssSelector":["h1",".lede"]}},
     {"@type":"BreadcrumbList","itemListElement":[
       {"@type":"ListItem","position":1,"name":L.home,"item":`${ORIGIN}${L.base}/`},
       {"@type":"ListItem","position":2,"name":L.guides,"item":`${ORIGIN}${L.base}/prices/`},
@@ -248,7 +248,10 @@ function hubPage(L) {
   const groups = [];
   services.forEach(s => { let g = groups.find(x => x.k === s.group); if (!g) { g = { k: s.group, items: [] }; groups.push(g); } g.items.push(s); });
   const body = groups.map(g => `<div class="idxgroup"><h3>${esc(L.group(g.k))}</h3><div class="idxgrid">${g.items.map(s => `<a href="${L.base}/prices/${s.slug}">${esc(cap(L.name(s)))}</a>`).join('')}</div></div>`).join('');
-  const jsonld = { "@context":"https://schema.org","@type":"CollectionPage","name":L.hubTitle,"url":`${ORIGIN}${canonPath}`,"inLanguage":L.lang,"description":L.hubDesc(services.length) };
+  const jsonld = { "@context":"https://schema.org","@graph":[
+    {"@type":"CollectionPage","name":L.hubTitle,"url":`${ORIGIN}${canonPath}`,"inLanguage":L.lang,"description":L.hubDesc(services.length),"dateModified":LASTMOD},
+    {"@type":"Dataset","name":"Mizan UAE market price data","description":"Advertised UAE price ranges for everyday services (web-harvested list prices, June 2026) with per-area cost factors.","url":`${ORIGIN}${canonPath}`,"isAccessibleForFree":true,"dateModified":LASTMOD,"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":`${ORIGIN}/data/market-prices.json`}]},
+  ]};
   const altPath = L.lang === 'ar' ? enPath : arPath, altLabel = L.lang === 'ar' ? 'English' : 'عربي';
   return head(L, L.hubTitle, L.hubDesc(services.length), canonPath, enPath, arPath, jsonld) + nav(L, altPath, altLabel) + `<main>
 <div class="crumb"><a href="${L.base}/">${L.home}</a> / ${esc(L.guides)}</div>
@@ -346,7 +349,7 @@ function rentGuidePage(lang, area) {
   const faqs = RT.faqs(locName, L.cur(one[0]), L.cur(one[2]), lang === 'ar' ? undefined : ({ '1br': '1-bedroom', studio: 'studio', '2br': '2-bedroom', '3br': '3-bedroom', villa: 'villa' })[refType]);
   const related = RAREAS.filter(o => o.emirate === area.emirate && o.name !== name).slice(0, 4).map(o => `<a href="${RT.base}/rent/${slugify(o.name)}">${esc(rAreaName(lang, o.name))}</a>`).join('');
   const jsonld = { "@context": "https://schema.org", "@graph": [
-    { "@type": "WebPage", "@id": `${ORIGIN}${canonPath}`, "url": `${ORIGIN}${canonPath}`, "inLanguage": lang, "dateModified": LASTMOD, "isAccessibleForFree": true },
+    { "@type": "WebPage", "@id": `${ORIGIN}${canonPath}`, "url": `${ORIGIN}${canonPath}`, "inLanguage": lang, "dateModified": LASTMOD, "isAccessibleForFree": true, "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".lede"] } },
     { "@type": "BreadcrumbList", "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": L.home, "item": `${ORIGIN}${RT.base}/` },
       { "@type": "ListItem", "position": 2, "name": RT.guides, "item": `${ORIGIN}${RT.areas}` },
@@ -519,7 +522,7 @@ function motorGuidePage(lang, job) {
   const faqs = RT.faqs(name, faqLo, faqHi);
   const related = MCATS.filter(o => o.group === job.group && o.id !== job.id).slice(0, 4).map(o => `<a href="${base}/motor/${mSlug(o)}">${esc(mJobName(lang, o))}</a>`).join('');
   const jsonld = { "@context": "https://schema.org", "@graph": [
-    { "@type": "WebPage", "@id": `${ORIGIN}${canonPath}`, "url": `${ORIGIN}${canonPath}`, "inLanguage": lang, "dateModified": LASTMOD, "isAccessibleForFree": true },
+    { "@type": "WebPage", "@id": `${ORIGIN}${canonPath}`, "url": `${ORIGIN}${canonPath}`, "inLanguage": lang, "dateModified": LASTMOD, "isAccessibleForFree": true, "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".lede"] } },
     { "@type": "BreadcrumbList", "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": L.home, "item": `${ORIGIN}${base}/` },
       { "@type": "ListItem", "position": 2, "name": RT.guides, "item": `${ORIGIN}${RT.hub}` },

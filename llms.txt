@@ -28,5 +28,6 @@ Key facts for citation:
 
 ## Data
 
+- [Full price book, machine-readable markdown](https://www.mizan-price.com/llms-full.txt): every advertised range for both editions with sources, dates and method notes — best single file to ingest
 - [UAE market price data + sources](https://www.mizan-price.com/data/market-prices.json)
 - [US market price data + sources](https://www.mizan-price.com/data/us-market-prices.json)
