@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ORIGIN = 'https://www.mizan-price.com';
+const LASTMOD = new Date().toISOString().slice(0, 10);   // build date → nudges recrawl + feeds WebPage.dateModified
 const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 const CATEGORIES = eval(html.match(/const CATEGORIES=(\[[\s\S]*?\n\]);/)[1]);
 const AREA_GROUPS = eval(html.match(/const AREA_GROUPS=(\[[\s\S]*?\n\]);/)[1]);
@@ -119,6 +120,65 @@ const CSS = `:root{--ink:#1C1A15;--ink-2:#43403A;--muted:#726D63;--faint:#8A8579
   --surface:#fff;--surface-2:#FCFBF8;--line:#E8E4DA;--line-2:#EEEAE0;--teal:#173F35;--teal-deep:#102E27;--teal-bg:#E7EFEC;
   --on-teal:#F6F4EC;--band:#FBFAF6;--on-band:#1C1A15;--on-band-2:#6B675E;--band-line:#DEDAD0;--mint:#173F35;--dot:rgba(28,26,21,.15);--bg:#FBFAF6;
   --sans:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,monospace}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background-color:var(--bg);background-image:linear-gradient(var(--bg),var(--bg)),radial-gradient(circle,var(--dot) .75px,transparent 1.2px);background-size:100% 99999px,16px 16px;background-position:0 var(--dots-end,1100px),8px 8px;background-repeat:no-repeat,repeat;min-height:100vh;color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+html[lang="ar"] body,html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] .brand .w{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+html[lang="ar"] h1{font-weight:500;letter-spacing:0}html[lang="ar"] h2{font-weight:600;letter-spacing:0}
+html[lang="ar"] .big,html[lang="ar"] td.r{font-family:'Geist Mono','IBM Plex Sans Arabic',ui-monospace,monospace;direction:ltr}
+html[lang="ar"] .big{text-align:right}html[lang="ar"] .rangecard .k,html[lang="ar"] th,html[lang="ar"] .idxgroup h3{letter-spacing:0}
+a{color:var(--teal);text-decoration:none}a:hover{text-decoration:underline}
+/* teal band: nav + title live on the flat brand field; the range card straddles its bottom edge */
+.topband{background:transparent;color:var(--on-band);padding-bottom:64px}
+.nav{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--line)}
+.nav-in{max-width:760px;margin:0 auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:9px;color:var(--on-band)}
+.brand svg{width:21px;height:21px;stroke:var(--on-band)}.brand .w{font-size:20px;font-weight:500;letter-spacing:-.01em}.brand .ar{font-size:16px;color:var(--mint)}
+.nav-r{display:flex;align-items:center;gap:18px}.nav-r a{font-size:13.5px;font-weight:500;color:var(--teal)}
+.gh{max-width:760px;margin:0 auto;padding:18px 24px 0}
+.crumb{font-size:12.5px;color:var(--on-band-2);margin-bottom:16px}.crumb a{color:var(--on-band-2)}
+h1{font-weight:400;font-size:clamp(30px,5.4vw,46px);line-height:1.08;letter-spacing:-.03em;margin:0 0 14px;color:var(--on-band)}
+.lede{font-size:16.5px;color:var(--on-band-2);margin:0;max-width:60ch}.lede strong{color:var(--on-band);font-weight:500}
+.lede a{color:var(--teal)}
+main{max-width:760px;margin:-40px auto 0;padding:0 24px 72px;position:relative}
+.rangecard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin:0 0 34px;box-shadow:0 1px 2px rgba(28,26,21,.04),0 20px 50px -36px rgba(28,26,21,.3)}
+.rangecard .k{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.rangecard .big{font-family:var(--mono);font-size:32px;font-weight:600;color:var(--teal);margin:6px 0 2px}
+.rangecard .sub{font-size:13.5px;color:var(--muted)}
+main>.idxgroup:first-child,main>h2:first-child,main>p:first-child{margin-top:64px}
+h2{font-weight:500;font-size:22px;letter-spacing:-.02em;margin:38px 0 12px}
+p{font-size:15.5px;color:var(--muted);margin:0 0 16px}p strong{color:var(--ink-2);font-weight:500}
+table{width:100%;border-collapse:collapse;margin:6px 0 8px;font-size:14.5px}
+th,td{text-align:start;padding:12px 4px;border-bottom:1px solid var(--line)}
+th{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+th.ra,td.r{text-align:end}td.r{font-family:var(--mono);color:var(--ink-2);white-space:nowrap}
+.note{font-size:12.5px;color:var(--faint-2);margin:0 0 30px}
+.ctabox{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;text-align:center;margin:34px 0}
+.ctabox p{margin:0 0 16px;color:var(--ink-2)}
+.btn{display:inline-block;background:var(--teal);color:var(--on-teal);font-weight:500;font-size:15px;padding:12px 22px;border-radius:999px}
+.btn:hover{background:var(--teal-deep);text-decoration:none}
+details{border-top:1px solid var(--line)}details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;padding:16px 2px;font-weight:500;color:var(--ink);display:flex;justify-content:space-between;gap:14px}
+summary::-webkit-details-marker{display:none}summary::after{content:"+";font-family:var(--mono);color:var(--faint-2)}
+details[open] summary::after{content:"\\2212"}details p{padding:0 0 16px;font-size:14.5px}
+.related{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 0}
+.related a{font-size:13.5px;border:1px solid var(--line);border-radius:999px;padding:7px 14px;color:var(--ink-2)}
+.related a:hover{border-color:var(--teal);color:var(--teal);text-decoration:none}
+.idxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px 24px}
+.idxgroup{margin:26px 0 0}.idxgroup h3{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px}
+.idxgrid a{display:block;padding:7px 0;font-size:15px;color:var(--ink-2);border-bottom:1px solid var(--line)}
+.idxgrid a:hover{color:var(--teal);text-decoration:none}
+footer{border-top:1px solid var(--line);margin-top:48px}.foot-in{max-width:760px;margin:0 auto;padding:24px;font-size:12.5px;color:var(--faint-2)}
+@media (max-width:600px){.topband{padding-bottom:52px}main{margin-top:-32px}.gh{padding-top:8px}}`;
+
+const SCALE = `<svg viewBox="0 0 24 24" fill="none" stroke="#173F35" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17"/><path d="M5 20h14"/><path d="M4 7h16"/><path d="M4 7l-2.5 5a3 3 0 0 0 5 0z"/><path d="M20 7l-2.5 5a3 3 0 0 0 5 0z"/></svg>`;
+const THEME = `<script>document.documentElement.setAttribute('data-theme','light');</script>`;
+const fontsLink = (extra) => `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Geist+Mono:wght@400;500;600${extra ? '&family=' + extra : ''}&display=swap" rel="stylesheet">`;
+
+function alternates(enPath, arPath) {
+  return `<link rel="alternate" hreflang="en" href="${ORIGIN}${enPath}">` +
+         (arPath ? `<link rel="alternate" hreflang="ar" href="${ORIGIN}${arPath}">` : '') +
+         `<link rel="alternate" hreflang="x-default" href="${ORIGIN}${enPath}">`;
+}
 function head(L, title, desc, canonPath, enPath, arPath, jsonld, ogImg) {
   if (!ogImg) ogImg = /\/motor/.test(canonPath) ? '/og-motor.png' : /\/rent/.test(canonPath) ? '/og-rent.png' : /\/prices/.test(canonPath) ? '/og-services.png' : '/og.png';
   return `<!DOCTYPE html><html lang="${L.lang}" dir="${L.dir}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -158,6 +218,7 @@ function servicePage(L, s) {
     .map(o => `<a href="${L.base}/prices/${o.slug}">${esc(cap(L.name(o)))}</a>`).join('');
   const faqs = L.faqs(n, loD, hiD, u, L.cur(s.typical));
   const jsonld = { "@context":"https://schema.org","@graph":[
+    {"@type":"WebPage","@id":`${ORIGIN}${canonPath}`,"url":`${ORIGIN}${canonPath}`,"inLanguage":L.lang,"dateModified":LASTMOD,"isAccessibleForFree":true},
     {"@type":"BreadcrumbList","itemListElement":[
       {"@type":"ListItem","position":1,"name":L.home,"item":`${ORIGIN}${L.base}/`},
       {"@type":"ListItem","position":2,"name":L.guides,"item":`${ORIGIN}${L.base}/prices/`},
@@ -285,6 +346,7 @@ function rentGuidePage(lang, area) {
   const faqs = RT.faqs(locName, L.cur(one[0]), L.cur(one[2]), lang === 'ar' ? undefined : ({ '1br': '1-bedroom', studio: 'studio', '2br': '2-bedroom', '3br': '3-bedroom', villa: 'villa' })[refType]);
   const related = RAREAS.filter(o => o.emirate === area.emirate && o.name !== name).slice(0, 4).map(o => `<a href="${RT.base}/rent/${slugify(o.name)}">${esc(rAreaName(lang, o.name))}</a>`).join('');
   const jsonld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "WebPage", "@id": `${ORIGIN}${canonPath}`, "url": `${ORIGIN}${canonPath}`, "inLanguage": lang, "dateModified": LASTMOD, "isAccessibleForFree": true },
     { "@type": "BreadcrumbList", "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": L.home, "item": `${ORIGIN}${RT.base}/` },
       { "@type": "ListItem", "position": 2, "name": RT.guides, "item": `${ORIGIN}${RT.areas}` },
@@ -457,6 +519,7 @@ function motorGuidePage(lang, job) {
   const faqs = RT.faqs(name, faqLo, faqHi);
   const related = MCATS.filter(o => o.group === job.group && o.id !== job.id).slice(0, 4).map(o => `<a href="${base}/motor/${mSlug(o)}">${esc(mJobName(lang, o))}</a>`).join('');
   const jsonld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "WebPage", "@id": `${ORIGIN}${canonPath}`, "url": `${ORIGIN}${canonPath}`, "inLanguage": lang, "dateModified": LASTMOD, "isAccessibleForFree": true },
     { "@type": "BreadcrumbList", "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": L.home, "item": `${ORIGIN}${base}/` },
       { "@type": "ListItem", "position": 2, "name": RT.guides, "item": `${ORIGIN}${RT.hub}` },
@@ -538,7 +601,9 @@ const arRentUrls = [ORIGIN + '/ar/rent', ORIGIN + '/ar/rent/areas', ORIGIN + '/a
 const arMotorUrls = [ORIGIN + '/ar/motor', ORIGIN + '/ar/motor/jobs', ...MCATS.map(j => `${ORIGIN}/ar/motor/${mSlug(j)}`)];
 const arUrls = [ORIGIN + '/ar/', ORIGIN + '/ar/prices/', ...services.map(s => `${ORIGIN}/ar/prices/${s.slug}`)];
 const all = [...enUrls, ...rentUrls, ...motorUrls, ...arRentUrls, ...arMotorUrls, ...arUrls];
-const LASTMOD = new Date().toISOString().slice(0, 10);   // build date → nudges recrawl after content changes
+// US edition URLs come from tools/us-urls.json, written by build-us-seo-pages.mjs (run that first).
+try { all.push(...JSON.parse(fs.readFileSync(path.join(ROOT, 'tools', 'us-urls.json'), 'utf8'))); }
+catch { console.warn('WARN: tools/us-urls.json missing — sitemap will not include the US edition. Run build-us-seo-pages.mjs first.'); }
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
   all.map(u => `  <url><loc>${u}</loc><lastmod>${LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>${u === ORIGIN + '/' ? '1.0' : '0.7'}</priority></url>`).join('\n') +
   `\n</urlset>\n`;

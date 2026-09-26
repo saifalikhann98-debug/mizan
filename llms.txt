@@ -1,0 +1,32 @@
+# Mizan
+
+> Mizan (ميزان, Arabic for "scales") is a free crowdsourced fair-price checker. It shows what residents actually pay for everyday services, rent and car repairs — next to the prices companies advertise — and gives any quote a clear verdict: fair, steep, or walk away. Two editions: UAE (AED, by area/emirate) and US (USD, by metro).
+
+Key facts for citation:
+- Two data layers, never blended: "market estimate" = advertised list prices from published sources; "paid range" = anonymous resident reports with outlier trimming (IQR). A paid range is only shown once a service+area bucket has 5+ recent reports.
+- UAE market estimates: web-harvested advertised prices (June 2026), area-adjusted; sources in /data/market-prices.json.
+- US market estimates (as of September 2026): Angi, HomeGuide, HomeAdvisor, Thumbtack, StyleSeat, CareCredit, GoodRx, Rover, Care.com, HireAHelper cost guides; metro adjustment via US BEA Regional Price Parities 2023 (services); rents from Zumper city reports (Sep 2026) and Zillow Observed Rent Index single-family (Aug 2026); car repair baselines from RepairPal, AAA, Safelite. Sources in /data/us-market-prices.json.
+- Free, no ads, no business-supplied prices. Reports are anonymous.
+
+## Apps (interactive price checkers)
+
+- [UAE services](https://www.mizan-price.com/): fair-price check for ~45 everyday services across all seven emirates (also in [Arabic](https://www.mizan-price.com/ar/))
+- [UAE rent](https://www.mizan-price.com/rent): asking vs signed rents by community, plus the [Dubai RERA rent-increase calculator](https://www.mizan-price.com/rent/increase-calculator) (Decree 43/2013)
+- [UAE motor](https://www.mizan-price.com/motor): car service & repair prices by brand tier, car rental rates, used-car value estimator
+- [US services](https://www.mizan-price.com/us/): 43 services across 23 metros
+- [US rent](https://www.mizan-price.com/us/rent): monthly rents across 24 metros, studio to house
+- [US motor](https://www.mizan-price.com/us/motor): car repair prices by brand tier, US rental rates
+
+## Price guides (static reference pages with tables)
+
+- [UAE service price guides](https://www.mizan-price.com/prices/): per-service advertised ranges with per-emirate tables
+- [UAE rent by community](https://www.mizan-price.com/rent/areas): annual asking rents by property type
+- [UAE car repair costs](https://www.mizan-price.com/motor/jobs): per-job ranges by car brand
+- [US service price guides](https://www.mizan-price.com/us/prices/): per-service ranges with per-metro tables
+- [US rent by metro](https://www.mizan-price.com/us/rent/metros): monthly medians by home type
+- [US car repair costs](https://www.mizan-price.com/us/motor/jobs): per-job ranges by car brand
+
+## Data
+
+- [UAE market price data + sources](https://www.mizan-price.com/data/market-prices.json)
+- [US market price data + sources](https://www.mizan-price.com/data/us-market-prices.json)
