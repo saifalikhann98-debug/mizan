@@ -103,7 +103,11 @@ headline, ONE brand accent). Still a single self-contained file per app (`index.
 - P4 searchable pickers: `makeCombobox()` type-to-filter over the hidden native selects.
 
 **Remaining:**
-- WhatsApp entry point (the real distribution channel — users message a number, get a verdict).
+- WhatsApp entry point: webhook SHIPPED (`api/whatsapp.js` + `api/bot-data.json` via
+  `tools/build-bot-data.mjs`; UAE services, same honesty rules + reciprocity gate) — needs the
+  Meta-side number/env setup, see `docs/whatsapp-setup.md`.
+- Run `docs/backend-setup.md` §5 SQL (device column + anti-pump trigger) — clients already
+  send the device id but the live DB predates the migration.
 - Server-side filtering/pagination once the 5000-row read cap gets close.
 - Agreement weighting (beyond verified 2×) if pumping is ever observed in the wild.
 

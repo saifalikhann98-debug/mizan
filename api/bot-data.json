@@ -1,0 +1,811 @@
+{
+ "generated": "2026-09-29",
+ "categories": [
+  {
+   "id": "ac",
+   "label": "AC service / cleaning (split unit)",
+   "lo": 150,
+   "hi": 350,
+   "typical": 250,
+   "unit": "/unit"
+  },
+  {
+   "id": "cleaning",
+   "label": "Home deep clean (2-bed)",
+   "lo": 450,
+   "hi": 900,
+   "typical": 600,
+   "unit": "/job"
+  },
+  {
+   "id": "pest",
+   "label": "Pest control",
+   "lo": 150,
+   "hi": 500,
+   "typical": 250,
+   "unit": "/visit"
+  },
+  {
+   "id": "ductclean",
+   "label": "AC duct deep-clean",
+   "lo": 300,
+   "hi": 1200,
+   "typical": 600,
+   "unit": "/job"
+  },
+  {
+   "id": "upholstery",
+   "label": "Sofa & carpet cleaning",
+   "lo": 120,
+   "hi": 450,
+   "typical": 250,
+   "unit": "/job"
+  },
+  {
+   "id": "watertank",
+   "label": "Water-tank cleaning",
+   "lo": 150,
+   "hi": 500,
+   "typical": 300,
+   "unit": "/job"
+  },
+  {
+   "id": "pool",
+   "label": "Pool maintenance",
+   "lo": 350,
+   "hi": 1200,
+   "typical": 650,
+   "unit": "/month"
+  },
+  {
+   "id": "windows",
+   "label": "Window cleaning",
+   "lo": 100,
+   "hi": 400,
+   "typical": 200,
+   "unit": "/visit"
+  },
+  {
+   "id": "handyman",
+   "label": "Handyman (per hour)",
+   "lo": 75,
+   "hi": 200,
+   "typical": 110,
+   "unit": "/hour"
+  },
+  {
+   "id": "plumber",
+   "label": "Plumber call-out",
+   "lo": 100,
+   "hi": 350,
+   "typical": 180,
+   "unit": "/visit"
+  },
+  {
+   "id": "electrician",
+   "label": "Electrician call-out",
+   "lo": 100,
+   "hi": 350,
+   "typical": 180,
+   "unit": "/visit"
+  },
+  {
+   "id": "painting",
+   "label": "Painting (per room)",
+   "lo": 250,
+   "hi": 800,
+   "typical": 450,
+   "unit": "/room"
+  },
+  {
+   "id": "applrepair",
+   "label": "Appliance repair (washer/fridge)",
+   "lo": 150,
+   "hi": 600,
+   "typical": 300,
+   "unit": "/repair"
+  },
+  {
+   "id": "tvmount",
+   "label": "TV wall-mounting",
+   "lo": 100,
+   "hi": 400,
+   "typical": 200,
+   "unit": "/job"
+  },
+  {
+   "id": "acinstall",
+   "label": "AC installation (split)",
+   "lo": 300,
+   "hi": 1200,
+   "typical": 600,
+   "unit": "/unit"
+  },
+  {
+   "id": "carserv",
+   "label": "Car minor service (oil + check)",
+   "lo": 250,
+   "hi": 900,
+   "typical": 500,
+   "unit": "/service"
+  },
+  {
+   "id": "carwash",
+   "label": "Car wash & detailing",
+   "lo": 30,
+   "hi": 600,
+   "typical": 150,
+   "unit": "/service"
+  },
+  {
+   "id": "oilchange",
+   "label": "Oil change",
+   "lo": 150,
+   "hi": 500,
+   "typical": 280,
+   "unit": "/service"
+  },
+  {
+   "id": "tyres",
+   "label": "Tyre replacement (set of 4)",
+   "lo": 600,
+   "hi": 3000,
+   "typical": 1400,
+   "unit": "/set"
+  },
+  {
+   "id": "carac",
+   "label": "Car AC re-gas",
+   "lo": 150,
+   "hi": 500,
+   "typical": 280,
+   "unit": "/service"
+  },
+  {
+   "id": "carbattery",
+   "label": "Car battery replacement",
+   "lo": 250,
+   "hi": 900,
+   "typical": 500,
+   "unit": "/service"
+  },
+  {
+   "id": "tint",
+   "label": "Car window tinting",
+   "lo": 300,
+   "hi": 1500,
+   "typical": 700,
+   "unit": "/car"
+  },
+  {
+   "id": "haircut",
+   "label": "Men's haircut",
+   "lo": 40,
+   "hi": 150,
+   "typical": 70,
+   "unit": "/cut"
+  },
+  {
+   "id": "salon",
+   "label": "Salon — cut + blow-dry",
+   "lo": 120,
+   "hi": 350,
+   "typical": 200,
+   "unit": "/visit"
+  },
+  {
+   "id": "womenshair",
+   "label": "Women’s cut & color",
+   "lo": 200,
+   "hi": 800,
+   "typical": 400,
+   "unit": "/visit"
+  },
+  {
+   "id": "keratin",
+   "label": "Keratin / hair treatment",
+   "lo": 300,
+   "hi": 1500,
+   "typical": 700,
+   "unit": "/visit"
+  },
+  {
+   "id": "manipedi",
+   "label": "Mani-pedi",
+   "lo": 80,
+   "hi": 250,
+   "typical": 140,
+   "unit": "/visit"
+  },
+  {
+   "id": "facial",
+   "label": "Facial",
+   "lo": 150,
+   "hi": 600,
+   "typical": 300,
+   "unit": "/visit"
+  },
+  {
+   "id": "massage",
+   "label": "Massage (60 min)",
+   "lo": 150,
+   "hi": 500,
+   "typical": 300,
+   "unit": "/session"
+  },
+  {
+   "id": "waxing",
+   "label": "Waxing / threading",
+   "lo": 30,
+   "hi": 200,
+   "typical": 90,
+   "unit": "/visit"
+  },
+  {
+   "id": "lashes",
+   "label": "Eyelash extensions",
+   "lo": 150,
+   "hi": 500,
+   "typical": 280,
+   "unit": "/set"
+  },
+  {
+   "id": "gym",
+   "label": "Gym membership (monthly)",
+   "lo": 150,
+   "hi": 600,
+   "typical": 320,
+   "unit": "/month"
+  },
+  {
+   "id": "gp",
+   "label": "GP consultation",
+   "lo": 150,
+   "hi": 500,
+   "typical": 250,
+   "unit": "/visit"
+  },
+  {
+   "id": "dental",
+   "label": "Dental cleaning (scale + polish)",
+   "lo": 150,
+   "hi": 700,
+   "typical": 350,
+   "unit": "/visit"
+  },
+  {
+   "id": "physio",
+   "label": "Physiotherapy session",
+   "lo": 150,
+   "hi": 500,
+   "typical": 300,
+   "unit": "/session"
+  },
+  {
+   "id": "eyetest",
+   "label": "Eye test (optician)",
+   "lo": 50,
+   "hi": 250,
+   "typical": 120,
+   "unit": "/visit"
+  },
+  {
+   "id": "bloodtest",
+   "label": "Blood-test panel",
+   "lo": 150,
+   "hi": 800,
+   "typical": 400,
+   "unit": "/panel"
+  },
+  {
+   "id": "petgroom",
+   "label": "Pet grooming",
+   "lo": 80,
+   "hi": 350,
+   "typical": 180,
+   "unit": "/visit"
+  },
+  {
+   "id": "vet",
+   "label": "Vet consultation",
+   "lo": 150,
+   "hi": 400,
+   "typical": 230,
+   "unit": "/visit"
+  },
+  {
+   "id": "petboard",
+   "label": "Pet boarding",
+   "lo": 50,
+   "hi": 200,
+   "typical": 100,
+   "unit": "/night"
+  },
+  {
+   "id": "maid",
+   "label": "Maid / cleaner (hourly)",
+   "lo": 25,
+   "hi": 60,
+   "typical": 40,
+   "unit": "/hour"
+  },
+  {
+   "id": "nanny",
+   "label": "Nanny (monthly)",
+   "lo": 2500,
+   "hi": 5500,
+   "typical": 3800,
+   "unit": "/month"
+  },
+  {
+   "id": "tutor",
+   "label": "Private tutor",
+   "lo": 80,
+   "hi": 300,
+   "typical": 150,
+   "unit": "/hour"
+  },
+  {
+   "id": "swim",
+   "label": "Swimming lessons",
+   "lo": 80,
+   "hi": 250,
+   "typical": 150,
+   "unit": "/lesson"
+  },
+  {
+   "id": "laundry",
+   "label": "Laundry (per kg)",
+   "lo": 8,
+   "hi": 25,
+   "typical": 15,
+   "unit": "/kg"
+  },
+  {
+   "id": "dryclean",
+   "label": "Dry cleaning (per item)",
+   "lo": 10,
+   "hi": 60,
+   "typical": 25,
+   "unit": "/item"
+  },
+  {
+   "id": "tailoring",
+   "label": "Tailoring / alterations",
+   "lo": 20,
+   "hi": 150,
+   "typical": 60,
+   "unit": "/item"
+  },
+  {
+   "id": "movers",
+   "label": "Movers (1-bed, within Dubai)",
+   "lo": 800,
+   "hi": 2000,
+   "typical": 1100,
+   "unit": "/move"
+  }
+ ],
+ "areas": [
+  {
+   "name": "Al Qusais",
+   "emirate": "Dubai",
+   "mult": 0.9
+  },
+  {
+   "name": "Deira",
+   "emirate": "Dubai",
+   "mult": 0.9
+  },
+  {
+   "name": "Bur Dubai",
+   "emirate": "Dubai",
+   "mult": 0.94
+  },
+  {
+   "name": "Al Karama",
+   "emirate": "Dubai",
+   "mult": 0.92
+  },
+  {
+   "name": "Al Mankhool",
+   "emirate": "Dubai",
+   "mult": 0.94
+  },
+  {
+   "name": "Al Satwa",
+   "emirate": "Dubai",
+   "mult": 0.95
+  },
+  {
+   "name": "Oud Metha",
+   "emirate": "Dubai",
+   "mult": 0.96
+  },
+  {
+   "name": "Al Jaddaf",
+   "emirate": "Dubai",
+   "mult": 0.98
+  },
+  {
+   "name": "Al Quoz",
+   "emirate": "Dubai",
+   "mult": 0.9
+  },
+  {
+   "name": "Al Barsha",
+   "emirate": "Dubai",
+   "mult": 1
+  },
+  {
+   "name": "Barsha Heights",
+   "emirate": "Dubai",
+   "mult": 1
+  },
+  {
+   "name": "Al Sufouh",
+   "emirate": "Dubai",
+   "mult": 1.08
+  },
+  {
+   "name": "Jumeirah",
+   "emirate": "Dubai",
+   "mult": 1.15
+  },
+  {
+   "name": "Umm Suqeim",
+   "emirate": "Dubai",
+   "mult": 1.14
+  },
+  {
+   "name": "Al Wasl",
+   "emirate": "Dubai",
+   "mult": 1.12
+  },
+  {
+   "name": "Al Safa",
+   "emirate": "Dubai",
+   "mult": 1.1
+  },
+  {
+   "name": "Downtown Dubai",
+   "emirate": "Dubai",
+   "mult": 1.15
+  },
+  {
+   "name": "Business Bay",
+   "emirate": "Dubai",
+   "mult": 1.08
+  },
+  {
+   "name": "DIFC",
+   "emirate": "Dubai",
+   "mult": 1.15
+  },
+  {
+   "name": "Za'abeel",
+   "emirate": "Dubai",
+   "mult": 1.1
+  },
+  {
+   "name": "City Walk",
+   "emirate": "Dubai",
+   "mult": 1.14
+  },
+  {
+   "name": "Dubai Marina",
+   "emirate": "Dubai",
+   "mult": 1.12
+  },
+  {
+   "name": "JBR",
+   "emirate": "Dubai",
+   "mult": 1.12
+  },
+  {
+   "name": "JLT",
+   "emirate": "Dubai",
+   "mult": 1.05
+  },
+  {
+   "name": "The Greens",
+   "emirate": "Dubai",
+   "mult": 1.02
+  },
+  {
+   "name": "The Views",
+   "emirate": "Dubai",
+   "mult": 1.05
+  },
+  {
+   "name": "Dubai Media City",
+   "emirate": "Dubai",
+   "mult": 1.05
+  },
+  {
+   "name": "Palm Jumeirah",
+   "emirate": "Dubai",
+   "mult": 1.2
+  },
+  {
+   "name": "Bluewaters Island",
+   "emirate": "Dubai",
+   "mult": 1.18
+  },
+  {
+   "name": "Dubai Hills Estate",
+   "emirate": "Dubai",
+   "mult": 1.08
+  },
+  {
+   "name": "Meydan",
+   "emirate": "Dubai",
+   "mult": 1.08
+  },
+  {
+   "name": "Mohammed Bin Rashid City",
+   "emirate": "Dubai",
+   "mult": 1.08
+  },
+  {
+   "name": "Nad Al Sheba",
+   "emirate": "Dubai",
+   "mult": 1.02
+  },
+  {
+   "name": "Sobha Hartland",
+   "emirate": "Dubai",
+   "mult": 1.06
+  },
+  {
+   "name": "Dubai Creek Harbour",
+   "emirate": "Dubai",
+   "mult": 1.1
+  },
+  {
+   "name": "Dubai Festival City",
+   "emirate": "Dubai",
+   "mult": 1.02
+  },
+  {
+   "name": "Jumeirah Village Circle (JVC)",
+   "emirate": "Dubai",
+   "mult": 0.95
+  },
+  {
+   "name": "Jumeirah Village Triangle (JVT)",
+   "emirate": "Dubai",
+   "mult": 0.95
+  },
+  {
+   "name": "Arjan",
+   "emirate": "Dubai",
+   "mult": 0.93
+  },
+  {
+   "name": "Al Furjan",
+   "emirate": "Dubai",
+   "mult": 0.96
+  },
+  {
+   "name": "Discovery Gardens",
+   "emirate": "Dubai",
+   "mult": 0.88
+  },
+  {
+   "name": "The Gardens",
+   "emirate": "Dubai",
+   "mult": 0.92
+  },
+  {
+   "name": "Production City (IMPZ)",
+   "emirate": "Dubai",
+   "mult": 0.9
+  },
+  {
+   "name": "Motor City",
+   "emirate": "Dubai",
+   "mult": 0.98
+  },
+  {
+   "name": "Dubai Sports City",
+   "emirate": "Dubai",
+   "mult": 0.93
+  },
+  {
+   "name": "Studio City",
+   "emirate": "Dubai",
+   "mult": 0.95
+  },
+  {
+   "name": "Town Square",
+   "emirate": "Dubai",
+   "mult": 0.9
+  },
+  {
+   "name": "Remraam",
+   "emirate": "Dubai",
+   "mult": 0.85
+  },
+  {
+   "name": "Mudon",
+   "emirate": "Dubai",
+   "mult": 0.98
+  },
+  {
+   "name": "Damac Hills",
+   "emirate": "Dubai",
+   "mult": 1
+  },
+  {
+   "name": "Arabian Ranches",
+   "emirate": "Dubai",
+   "mult": 1.1
+  },
+  {
+   "name": "The Springs",
+   "emirate": "Dubai",
+   "mult": 1.08
+  },
+  {
+   "name": "The Meadows",
+   "emirate": "Dubai",
+   "mult": 1.12
+  },
+  {
+   "name": "Emirates Hills",
+   "emirate": "Dubai",
+   "mult": 1.2
+  },
+  {
+   "name": "Jumeirah Park",
+   "emirate": "Dubai",
+   "mult": 1.1
+  },
+  {
+   "name": "Jumeirah Islands",
+   "emirate": "Dubai",
+   "mult": 1.14
+  },
+  {
+   "name": "Silicon Oasis",
+   "emirate": "Dubai",
+   "mult": 0.94
+  },
+  {
+   "name": "Academic City",
+   "emirate": "Dubai",
+   "mult": 0.9
+  },
+  {
+   "name": "International City",
+   "emirate": "Dubai",
+   "mult": 0.85
+  },
+  {
+   "name": "Dubai Investment Park (DIP)",
+   "emirate": "Dubai",
+   "mult": 0.88
+  },
+  {
+   "name": "Dubai South",
+   "emirate": "Dubai",
+   "mult": 0.88
+  },
+  {
+   "name": "Mirdif",
+   "emirate": "Dubai",
+   "mult": 0.95
+  },
+  {
+   "name": "Al Warqa",
+   "emirate": "Dubai",
+   "mult": 0.9
+  },
+  {
+   "name": "Al Mizhar",
+   "emirate": "Dubai",
+   "mult": 0.96
+  },
+  {
+   "name": "Muhaisnah",
+   "emirate": "Dubai",
+   "mult": 0.88
+  },
+  {
+   "name": "Al Twar",
+   "emirate": "Dubai",
+   "mult": 0.9
+  },
+  {
+   "name": "Al Khawaneej",
+   "emirate": "Dubai",
+   "mult": 1
+  },
+  {
+   "name": "Al Nahda (Dubai)",
+   "emirate": "Dubai",
+   "mult": 0.88
+  },
+  {
+   "name": "Abu Dhabi – Corniche",
+   "emirate": "Abu Dhabi",
+   "mult": 1.05
+  },
+  {
+   "name": "Al Reem Island",
+   "emirate": "Abu Dhabi",
+   "mult": 1.08
+  },
+  {
+   "name": "Yas Island",
+   "emirate": "Abu Dhabi",
+   "mult": 1.1
+  },
+  {
+   "name": "Khalifa City",
+   "emirate": "Abu Dhabi",
+   "mult": 0.98
+  },
+  {
+   "name": "Mussafah",
+   "emirate": "Abu Dhabi",
+   "mult": 0.85
+  },
+  {
+   "name": "Al Ain",
+   "emirate": "Abu Dhabi",
+   "mult": 0.82
+  },
+  {
+   "name": "Sharjah – Al Nahda",
+   "emirate": "Sharjah",
+   "mult": 0.8
+  },
+  {
+   "name": "Sharjah – Al Majaz",
+   "emirate": "Sharjah",
+   "mult": 0.82
+  },
+  {
+   "name": "Sharjah – Muwaileh",
+   "emirate": "Sharjah",
+   "mult": 0.78
+  },
+  {
+   "name": "Sharjah – City",
+   "emirate": "Sharjah",
+   "mult": 0.8
+  },
+  {
+   "name": "Ajman – Al Nuaimiya",
+   "emirate": "Ajman",
+   "mult": 0.72
+  },
+  {
+   "name": "Ajman – City",
+   "emirate": "Ajman",
+   "mult": 0.72
+  },
+  {
+   "name": "RAK – Al Nakheel",
+   "emirate": "Ras Al Khaimah",
+   "mult": 0.78
+  },
+  {
+   "name": "RAK – City",
+   "emirate": "Ras Al Khaimah",
+   "mult": 0.78
+  },
+  {
+   "name": "Fujairah – City",
+   "emirate": "Fujairah",
+   "mult": 0.8
+  },
+  {
+   "name": "Umm Al Quwain – City",
+   "emirate": "Umm Al Quwain",
+   "mult": 0.72
+  }
+ ]
+}
